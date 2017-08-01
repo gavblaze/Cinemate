@@ -1,4 +1,4 @@
-package com.example.android.cinemate;
+package com.example.android.cinemate.utilities;
 
 import java.io.IOException;
 import java.io.InputStream;

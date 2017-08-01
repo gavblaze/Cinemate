@@ -30,7 +30,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(mMovies.get(position));
+        holder.mTextView.setText(mMovies.get(position).toString());
     }
 
     @Override
