@@ -1,28 +1,30 @@
 package com.example.android.cinemate.utilities;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Gavin on 31-Jul-17.
  */
 
 public class MovieJsonUtils {
-    private static final String LOG = MovieJsonUtils.class.getName();
-    //private static final String MOVIE_URL = " https://api.themoviedb.org/3/movie/popular?api_key=9bbba1ac9930bbe1a98d6ad3295520a0";
-    //public static ArrayList<String> list = new ArrayList<>();
+    private static final String LOG_TAG = MovieJsonUtils.class.getName();
 
 
-    public static ArrayList<String> parseJson (String stringUrl) throws JSONException {
-       ArrayList<String> list = new ArrayList<>();
+    public static List<String> parseJson (String jsonString) throws JSONException {
+        Log.i(LOG_TAG, "TEST.......MovieJsonUtils parseJson() called");
+       List<String> list = new ArrayList<>();
 
-        JSONObject root = new JSONObject(stringUrl);
+        JSONObject root = new JSONObject(jsonString);
         JSONArray results = root.getJSONArray("results");
 
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < results.length(); i++) {
             JSONObject o = results.getJSONObject(i);
             String title = o.getString("title");
             list.add(title);

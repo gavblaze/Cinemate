@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Gavin on 31-Jul-17.
@@ -16,9 +18,9 @@ import java.util.ArrayList;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
-    ArrayList<String> mMovies;
+    List<String> mMovies;
 
-    public MovieAdapter(ArrayList<String> movies) {
+    public MovieAdapter(List<String> movies) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter constructor called");
         mMovies = movies;
     }
