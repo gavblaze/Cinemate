@@ -29,29 +29,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-//        ArrayList<String> movies = new ArrayList<>();
-//        movies.add("Scarface");
-//        movies.add("Casino");
-//        movies.add("Pulp Fiction");
-//        movies.add("Oldboy");
-//        movies.add("Jackie Brown");
-//        movies.add("From Dusk till Dawn");
-
         mList = new ArrayList<>();
 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        //mMovieAdapter = new MovieAdapter(movies);
-        //mRecyclerView.setAdapter(mMovieAdapter);
-
-
         MovieAsyncTask task = new MovieAsyncTask();
         task.execute(MOVIE_URL);
-
 
     }
 
@@ -62,37 +47,31 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<String> doInBackground(String... strings) {
             String i = strings[0];
 
-            String url = NetworkUtils.getDataFromNetwork(i);
-            Log.i(LOG, "TEST_STRING..." + url);
-//            ArrayList<String> list = new ArrayList<>();
-//            mList = new ArrayList<>();
+            String rawJsonString = NetworkUtils.getDataFromNetwork(i);
+            Log.i(LOG, "TEST_STRING..." + rawJsonString);
 
             try {
-                JSONObject root = new JSONObject(url);
-                JSONArray results = root.getJSONArray("results");
-
-                for (int j = 0; j < mList.size(); j++) {
-                    JSONObject o = results.getJSONObject(j);
-                    String title = o.getString("title");
-
+                JSONObject root = new JSONObject(rawJsonString);
+                JSONArray resultsArray = root.getJSONArray("results");
+                for (int j = 0; j < resultsArray.length(); j++) {
+                    JSONObject object = resultsArray.getJSONObject(j);
+                    String title = object.getString("title");
                     mList.add(title);
                 }
+                return mList;
+
             } catch (JSONException e) {
                 e.printStackTrace();
+                return null;
             }
-
-            Log.i(LOG, "TEST..." + mList.size());
-            return mList;
         }
+
 
         @Override
         protected void onPostExecute(ArrayList<String> strings) {
             super.onPostExecute(strings);
 
-
-
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-            mRecyclerView.setHasFixedSize(true);
 
             mLayoutManager = new LinearLayoutManager(MainActivity.this);
 
@@ -104,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
             mMovieAdapter.notifyDataSetChanged();
 
             mRecyclerView.setAdapter(mMovieAdapter);
-
 
         }
     }
