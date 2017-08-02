@@ -1,5 +1,7 @@
 package com.example.android.cinemate.utilities;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -12,8 +14,10 @@ import java.util.Scanner;
  */
 
 public class NetworkUtils {
+    private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
 
     private static URL createUrl (String stringUrl) {
+        Log.i(LOG_TAG, "TEST.......NetworkUtils createUrl() called");
         URL url = null;
         try {
             url = new URL(stringUrl);
@@ -24,6 +28,7 @@ public class NetworkUtils {
     }
 
     private static String makeHttpRequest (URL url) throws IOException {
+        Log.i(LOG_TAG, "TEST.......NetworkUtils makeHttpRequest() called");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.connect();
         InputStream is = urlConnection.getInputStream();
@@ -41,6 +46,7 @@ public class NetworkUtils {
 
 
     public static String getDataFromNetwork(String stringUrl) {
+        Log.i(LOG_TAG, "TEST.......NetworkUtils getDataFromNetwork() called");
         URL url = createUrl(stringUrl);
         String i = null;
         try {

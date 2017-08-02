@@ -18,8 +18,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String LOG = MainActivity.class.getName();
-    private static final String MOVIE_URL = " https://api.themoviedb.org/3/movie/popular?api_key=9bbba1ac9930bbe1a98d6ad3295520a0";
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/popular?api_key=9bbba1ac9930bbe1a98d6ad3295520a0";
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "TEST.......MainActivity onCreate() called()");
 
         mList = new ArrayList<>();
 
@@ -43,12 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
     public class MovieAsyncTask extends AsyncTask<String, Void, ArrayList<String>> {
 
+
         @Override
         protected ArrayList<String> doInBackground(String... strings) {
+            Log.i(LOG_TAG, "TEST.......MovieAsyncTask doInBackground() called()");
             String i = strings[0];
 
             String rawJsonString = NetworkUtils.getDataFromNetwork(i);
-            Log.i(LOG, "TEST_STRING..." + rawJsonString);
 
             try {
                 JSONObject root = new JSONObject(rawJsonString);
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<String> strings) {
+            Log.i(LOG_TAG, "TEST.......MovieAsyncTask onPostExecute() called()");
             super.onPostExecute(strings);
 
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -76,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             mLayoutManager = new LinearLayoutManager(MainActivity.this);
 
             mRecyclerView.setLayoutManager(mLayoutManager);
-            Log.i(LOG, "TEST..." + strings.size());
 
             mMovieAdapter = new MovieAdapter(strings);
 
