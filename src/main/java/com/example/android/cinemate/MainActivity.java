@@ -19,12 +19,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG = MainActivity.class.getName();
-    private static final String MOVIE_URL = " https://api.themoviedb.org/3/movie/popular?api_key=9bbba1ac9930bbe1a98d6ad3295520a0";
+    private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/popular?api_key=9bbba1ac9930bbe1a98d6ad3295520a0";
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
 
-    private ArrayList<String> mList;
+    //private ArrayList<String> mList;
+
+    private String mString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +39,20 @@ public class MainActivity extends AppCompatActivity {
 //        movies.add("Jackie Brown");
 //        movies.add("From Dusk till Dawn");
 
-        mList = new ArrayList<>();
+        //mList = new ArrayList<>();
+
 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //mString = "Hi";
 
 
         //mMovieAdapter = new MovieAdapter(movies);
         //mRecyclerView.setAdapter(mMovieAdapter);
+
+
 
 
         MovieAsyncTask task = new MovieAsyncTask();
@@ -56,52 +62,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public class MovieAsyncTask extends AsyncTask<String, Void, ArrayList<String>> {
+    public class MovieAsyncTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected ArrayList<String> doInBackground(String... strings) {
+        protected String doInBackground(String... strings) {
             String i = strings[0];
+            if (strings.length != 1) {
+                throw new IllegalArgumentException("Not a valid Url");
+        }
 
-            String url = NetworkUtils.getDataFromNetwork(i);
-            Log.i(LOG, "TEST_STRING..." + url);
-//            ArrayList<String> list = new ArrayList<>();
-//            mList = new ArrayList<>();
+            String rawJsonString = NetworkUtils.getDataFromNetwork(i);
+            Log.i(LOG, "TEST...rawJson = " + rawJsonString);
 
             try {
-                JSONObject root = new JSONObject(url);
-                JSONArray results = root.getJSONArray("results");
+                JSONObject root = new JSONObject(rawJsonString);
+                JSONArray resultsArray = root.getJSONArray("results");
+                JSONObject first = resultsArray.getJSONObject(0);
+                String title = first.getString("title");
+                return title;
 
-                for (int j = 0; j < mList.size(); j++) {
-                    JSONObject o = results.getJSONObject(j);
-                    String title = o.getString("title");
-
-                    mList.add(title);
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
+                return null;
             }
-
-            Log.i(LOG, "TEST..." + mList.size());
-            return mList;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> strings) {
+        protected void onPostExecute(String strings) {
             super.onPostExecute(strings);
 
 
-
             mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
             mRecyclerView.setHasFixedSize(true);
 
             mLayoutManager = new LinearLayoutManager(MainActivity.this);
 
             mRecyclerView.setLayoutManager(mLayoutManager);
-            Log.i(LOG, "TEST..." + strings.size());
 
             mMovieAdapter = new MovieAdapter(strings);
 
-            mMovieAdapter.notifyDataSetChanged();
+            Log.i(LOG, "TEST........" + strings);
+
 
             mRecyclerView.setAdapter(mMovieAdapter);
 

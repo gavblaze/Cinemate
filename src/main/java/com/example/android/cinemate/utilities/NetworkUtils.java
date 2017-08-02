@@ -31,6 +31,7 @@ public class NetworkUtils {
         String line = null;
 
         Scanner scanner = new Scanner(is);
+        scanner.useDelimiter("\\A");
         if (scanner.hasNext()) {
             line = scanner.nextLine();
         }
