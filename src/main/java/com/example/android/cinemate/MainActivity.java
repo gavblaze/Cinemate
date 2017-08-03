@@ -10,6 +10,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.cinemate.utilities.MovieJsonUtils;
 import com.example.android.cinemate.utilities.MovieLoader;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+
+    private Toast mToast;
 
 
     @Override
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mMovieAdapter = new MovieAdapter(data);
+        mMovieAdapter = new MovieAdapter(data, this);
         mRecyclerView.setAdapter(mMovieAdapter);
     }
 
@@ -68,5 +71,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
 
     }
+
+//    @Override
+//    public void onClick(int position) {
+//        if (mToast != null) {
+//            mToast.cancel();
+//        }
+//
+//        mToast = Toast.makeText(this, "Item at position: " + position + " clicked", Toast.LENGTH_SHORT);
+//
+//        mToast.show();
+//    }
 }
 
