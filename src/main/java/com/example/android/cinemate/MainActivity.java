@@ -13,6 +13,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -37,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+    private LoaderManager mLoaderManager;
 
     private View mLoadingIndicator;
     private TextView mEmptyTextView;
@@ -55,9 +60,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
-        LoaderManager loaderManager = getSupportLoaderManager();
+        mLoaderManager = getSupportLoaderManager();
 
-        loaderManager.initLoader(LOADER_ID, null, this);
+        mLoaderManager.initLoader(LOADER_ID, null, this);
     }
 
 
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mRecyclerView.setVisibility(View.INVISIBLE);
         mEmptyTextView.setVisibility(View.VISIBLE);
     }
+
 
 
 
@@ -112,6 +118,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT, title);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        switch (id) {
+
+            case R.id.refresh:
+
+                mLoadingIndicator.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.INVISIBLE);
+                mEmptyTextView.setVisibility(View.INVISIBLE);
+
+                mLoaderManager.restartLoader(LOADER_ID, null, this);
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 
