@@ -1,5 +1,6 @@
 package com.example.android.cinemate.utilities;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class NetworkUtils {
             url = new URL(stringUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return null;
         }
         return url;
     }
@@ -47,12 +49,14 @@ public class NetworkUtils {
 
     public static String getDataFromNetwork(String stringUrl) {
         Log.i(LOG_TAG, "TEST.......NetworkUtils getDataFromNetwork() called");
+
         URL url = createUrl(stringUrl);
-        String i = null;
+        String i = "";
         try {
             i = makeHttpRequest(url);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
         return i;
     }

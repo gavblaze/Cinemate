@@ -1,5 +1,6 @@
 package com.example.android.cinemate.utilities;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,6 +20,9 @@ public class MovieJsonUtils {
 
     public static List<String> parseJson (String jsonString) throws JSONException {
         Log.i(LOG_TAG, "TEST.......MovieJsonUtils parseJson() called");
+        if (TextUtils.isEmpty(jsonString)) {
+            return null;
+        }
        List<String> list = new ArrayList<>();
 
         JSONObject root = new JSONObject(jsonString);
