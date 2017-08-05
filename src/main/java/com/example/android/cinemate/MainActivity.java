@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.MovieLoader;
 
 import java.util.List;
@@ -24,7 +25,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
     private static final int LOADER_ID = 333;
     private static boolean PREFERENCE_CHANGED = false;
     private MovieAdapter mMovieAdapter;
@@ -81,19 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<List<String>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String sortBy = sharedPrefs.getString(
-                getString(R.string.sort_order_key),
-                getString(R.string.default_value));
-        Uri baseUri = Uri.parse(MOVIE_URL);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-
-        /*The path is the part of the URL before the ?*/
-        uriBuilder.appendPath(sortBy);
-
-        Log.i(LOG_TAG, "URI built.........." + uriBuilder.toString());
-
-        return new MovieLoader(this, uriBuilder.toString());
+        return new MovieLoader(this, MoviePreferences.stringUrlFromSharedPreferences(this));
     }
 
     @Override

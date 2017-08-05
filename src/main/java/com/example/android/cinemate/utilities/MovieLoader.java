@@ -15,6 +15,8 @@ import java.util.List;
 public class MovieLoader extends AsyncTaskLoader<List<String>> {
     private static final String LOG_TAG = MovieLoader.class.getSimpleName();
 
+    private List<String> mData;
+
     private String mStringUrl;
     public MovieLoader(Context context, String stringUrl) {
         super(context);
@@ -23,7 +25,13 @@ public class MovieLoader extends AsyncTaskLoader<List<String>> {
 
     @Override
     protected void onStartLoading() {
-        forceLoad();
+        if (mData != null) {
+            // Use cached data
+            deliverResult(mData);
+        } else {
+            // We have no data, so kick off loading it
+            forceLoad();
+        }
     }
 
     @Override
@@ -39,5 +47,11 @@ public class MovieLoader extends AsyncTaskLoader<List<String>> {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public void deliverResult(List<String> data) {
+        mData = data;
+        super.deliverResult(data);
     }
 }

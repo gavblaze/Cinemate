@@ -38,9 +38,6 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case android.R.id.home:
-                super.onBackPressed();
-                return true;
             case R.id.share:
                 shareMovie();
                 return true;
