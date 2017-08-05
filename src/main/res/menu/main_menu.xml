@@ -5,7 +5,11 @@
     <item
         android:id="@+id/refresh"
         android:title="Refresh"
-        app:showAsAction="always"
-        />
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/settings"
+        android:title="Settings"
+        app:showAsAction="ifRoom"/>
 
 </menu>

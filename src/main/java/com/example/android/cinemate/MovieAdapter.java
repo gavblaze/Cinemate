@@ -19,16 +19,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     List<String> mMovies;
     private ListItemClickHandler mListItemClickHandler;
 
-    public MovieAdapter(List<String> movies, ListItemClickHandler listItemClicked) {
+    public MovieAdapter(ListItemClickHandler listItemClicked) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter constructor called");
-        mMovies = movies;
+        //mMovies = movies;
         mListItemClickHandler = listItemClicked;
     }
-
-    public interface ListItemClickHandler {
-        void onItemClicked(String position);
-    }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -47,7 +42,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
+        if (null == mMovies) return 0;
             return mMovies.size();
+    }
+
+    public void setMovieData(List<String> data) {
+        mMovies = data;
+        notifyDataSetChanged();
+    }
+
+    /*Think about using this in future instead of passing the data in the constructor*/
+
+    public interface ListItemClickHandler {
+        void onItemClicked(String position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -62,7 +69,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            //int title = getAdapterPosition();
             String title = mTextView.getText().toString();
             mListItemClickHandler.onItemClicked(title);
         }

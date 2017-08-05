@@ -1,36 +1,21 @@
 package com.example.android.cinemate;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.android.cinemate.utilities.MovieJsonUtils;
 import com.example.android.cinemate.utilities.MovieLoader;
-import com.example.android.cinemate.utilities.NetworkUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler {
@@ -54,11 +39,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mEmptyTextView = (TextView) findViewById(R.id.emptyStateTextView);
 
         mLoadingIndicator.setVisibility(View.VISIBLE);
+
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mMovieAdapter = new MovieAdapter(this);
+
+        mRecyclerView.setAdapter(mMovieAdapter);
+
 
         mLoaderManager = getSupportLoaderManager();
 
@@ -100,11 +95,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else {
 
             showMovieDataView();
-            mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-            mLayoutManager = new LinearLayoutManager(this);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mMovieAdapter = new MovieAdapter(data, this);
-            mRecyclerView.setAdapter(mMovieAdapter);
+
+            mMovieAdapter.setMovieData(data);
+
         }
     }
 
@@ -123,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -132,19 +125,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         int id = item.getItemId();
         switch (id) {
-
             case R.id.refresh:
-
                 mLoadingIndicator.setVisibility(View.VISIBLE);
-                mRecyclerView.setVisibility(View.INVISIBLE);
-                mEmptyTextView.setVisibility(View.INVISIBLE);
-
-                mLoaderManager.restartLoader(LOADER_ID, null, this);
+                mMovieAdapter.setMovieData(null);
+                getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
                 return true;
+            case R.id.settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 }
 
