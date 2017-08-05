@@ -6,7 +6,6 @@
         android:entries="@array/list_pref_entries"
         android:entryValues="@array/list_pref_entry_values"
         android:key="@string/sort_order_key"
-        android:summary="%s"
         android:title="@string/sort_order_title"
         />
 </PreferenceScreen>
