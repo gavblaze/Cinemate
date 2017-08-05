@@ -1,10 +1,13 @@
 package com.example.android.cinemate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,19 +21,18 @@ import com.example.android.cinemate.utilities.MovieLoader;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/popular?api_key=9bbba1ac9930bbe1a98d6ad3295520a0";
+    private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
     private static final int LOADER_ID = 333;
+    private static boolean PREFERENCE_CHANGED = false;
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private LoaderManager mLoaderManager;
-
     private View mLoadingIndicator;
     private TextView mEmptyTextView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +60,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mLoaderManager = getSupportLoaderManager();
 
         mLoaderManager.initLoader(LOADER_ID, null, this);
-    }
 
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.registerOnSharedPreferenceChangeListener(this);
+    }
 
 
     public void showMovieDataView() {
@@ -73,14 +77,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-
-
     @Override
     public Loader<List<String>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
-            return new MovieLoader(this, MOVIE_URL);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String sortBy = sharedPrefs.getString(
+                getString(R.string.sort_order_key),
+                getString(R.string.default_value));
+        Uri baseUri = Uri.parse(MOVIE_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
 
+        /*The path is the part of the URL before the ?*/
+        uriBuilder.appendPath(sortBy);
+
+        Log.i(LOG_TAG, "URI built.........." + uriBuilder.toString());
+
+        return new MovieLoader(this, uriBuilder.toString());
     }
 
     @Override
@@ -136,6 +149,27 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        PREFERENCE_CHANGED = true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (PREFERENCE_CHANGED) {
+            getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+            PREFERENCE_CHANGED = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 }
 
