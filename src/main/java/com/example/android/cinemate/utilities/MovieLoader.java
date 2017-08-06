@@ -27,11 +27,12 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     protected void onStartLoading() {
+        Log.i(LOG_TAG, "TEST.......MovieLoader onStartLoading() called");
         if (mData != null) {
             // Use cached data
             deliverResult(mData);
         } else {
-            // We have no data, so kick off loading it
+            //We have no data, so kick off loading it
             forceLoad();
         }
     }

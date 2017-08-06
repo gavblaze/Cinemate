@@ -34,7 +34,10 @@ public class MovieJsonUtils {
             JSONObject o = results.getJSONObject(i);
             String title = o.getString("title");
             String posterPath = o.getString("poster_path");
-            list.add(new Movie(title, posterPath));
+            String rating = o.getString("vote_average");
+            String overView = o.getString("overview");
+            String releaseDate = o.getString("release_date");
+            list.add(new Movie(title, posterPath, rating, overView, releaseDate));
         }
         return list;
     }

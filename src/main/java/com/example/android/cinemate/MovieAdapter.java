@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.cinemate.utilities.ImageUtils;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -52,14 +54,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
 
-        //holder.mMovieTitleTextView.setText(mMovies.get(position).getmTitle());
-
         String path = mMovies.get(position).getmPosterPath();
 
         String urlImageString = ImageUtils.getMovieImage(path, BASE_IMAGE_SIZE);
 
-        Log.i(LOG_TAG, "TEST...................Url = " + urlImageString);
         Context context = holder.mPosterImageView.getContext();
+
         Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
     }
 
@@ -81,12 +81,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        //public TextView mMovieTitleTextView;
+
         public ImageView mPosterImageView;
         public ViewHolder(View itemView) {
             super(itemView);
 
-            //mMovieTitleTextView = (TextView) itemView.findViewById(R.id.movieNameTextView);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
 
             itemView.setOnClickListener(this);

@@ -21,15 +21,24 @@ public class Movie implements Parcelable {
     };
     private String mTitle;
     private String mPosterPath;
+    private String mRating;
+    private String mOverview;
+    private String mReleaseDate;
 
-    public Movie(String title, String posterPath) {
+    public Movie(String title, String posterPath, String rating, String overview, String releaseDate) {
         this.mTitle = title;
         this.mPosterPath = posterPath;
+        this.mRating = rating;
+        this.mOverview = overview;
+        this.mReleaseDate = releaseDate;
     }
 
     protected Movie(Parcel in) {
         mTitle = in.readString();
         mPosterPath = in.readString();
+        mRating = in.readString();
+        mOverview = in.readString();
+        mReleaseDate = in.readString();
     }
 
     public String getmTitle() {
@@ -48,6 +57,30 @@ public class Movie implements Parcelable {
         this.mPosterPath = mPosterPath;
     }
 
+    public String getmRating() {
+        return mRating;
+    }
+
+    public void setmRating(String mRating) {
+        this.mRating = mRating;
+    }
+
+    public String getmOverview() {
+        return mOverview;
+    }
+
+    public void setmOverview(String mOverview) {
+        this.mOverview = mOverview;
+    }
+
+    public String getmReleaseDate() {
+        return mReleaseDate;
+    }
+
+    public void setmReleaseDate(String mReleaseDate) {
+        this.mReleaseDate = mReleaseDate;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -57,5 +90,8 @@ public class Movie implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mTitle);
         parcel.writeString(mPosterPath);
+        parcel.writeString(mRating);
+        parcel.writeString(mOverview);
+        parcel.writeString(mReleaseDate);
     }
 }

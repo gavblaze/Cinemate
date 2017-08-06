@@ -6,31 +6,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#b2dfdb"
-    android:padding="16dp"
     tools:context="com.example.android.cinemate.DetailActivity">
 
     <ImageView
         android:id="@+id/detailMovieImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="-17dp"
-        android:layout_marginTop="-17dp"
+        android:layout_width="69dp"
+        android:layout_height="105dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailTitle"
         tools:src="@mipmap/ic_launcher"
-        tools:text="Scarface!"/>
+        />
 
     <TextView
-        android:id="@+id/detailMovieTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/detailOverview"
+        android:layout_width="348dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="39dp"
+        android:layout_marginTop="36dp"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailMovieImageView"
+        tools:text="After getting a green card in exchange for assassinating a Cuban government official, Tony Montana (Al Pacino) stakes a claim on the drug trade in Miami."/>
+
+    <TextView
+        android:id="@+id/detailTitle"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:layout_width="0dp"
+        android:layout_height="69dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/detailImageView"
+        android:gravity="center_vertical"
+        android:text="TextView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Scarface"/>
+
+    <TextView
+        android:id="@+id/detailYear"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
         app:layout_constraintLeft_toRightOf="@+id/detailMovieImageView"
-        app:layout_constraintTop_toTopOf="@+id/detailImageView"
-        tools:text="Scarface is the best!"/>
+        app:layout_constraintTop_toBottomOf="@+id/detailTitle"
+        tools:text="2017"/>
+
+    <TextView
+        android:id="@+id/detailRating"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="7dp"
+        android:text="TextView"
+        app:layout_constraintLeft_toLeftOf="@+id/detailYear"
+        app:layout_constraintTop_toBottomOf="@+id/detailYear"
+        tools:text="8.5/10"/>
 
 
 </android.support.constraint.ConstraintLayout>

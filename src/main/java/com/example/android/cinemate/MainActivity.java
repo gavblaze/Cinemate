@@ -1,7 +1,10 @@
 package com.example.android.cinemate;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.MovieLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
         mGridLayoutMananger = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
         mMovieAdapter = new MovieAdapter(this);
@@ -70,6 +75,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
+
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (!isConnected) {
+            mEmptyTextView.setText("No network detected");
+        }
     }
 
 
@@ -96,20 +112,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
+         /*We declared this so we can initialise the list and
+            pass the data to new activity based on the position of item clicked*/
+        mMovieList = data;
 
+        mMovieAdapter.setMovieData(data);
 
-        if (data == null) {
+        if (null == data) {
             showErrorMessage();
         } else {
-
-            /*We declared this nso we can initialise the list and
-            pass the data to new activity based on the position of item clicked*/
-            mMovieList = data;
-
             showMovieDataView();
-
-            mMovieAdapter.setMovieData(data);
-
         }
     }
 
@@ -122,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieList.get(position);
-        intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath()));
+        intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath(), movie.getmRating(), movie.getmOverview(), movie.getmReleaseDate()));
         startActivity(intent);
     }
 
@@ -140,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (id) {
             case R.id.refresh:
                 mLoadingIndicator.setVisibility(View.VISIBLE);
+                showMovieDataView();
                 mMovieAdapter.setMovieData(null);
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
                 return true;
