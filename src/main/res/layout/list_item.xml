@@ -2,21 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="16dp">
+              android:layout_height="match_parent"
+              android:background="#aed581"
+              android:orientation="vertical"
+    >
 
     <ImageView
         android:id="@+id/posterImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
         tools:src="@mipmap/ic_launcher"/>
-
-    <TextView
-        android:id="@+id/movieNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        tools:text="Scarface"/>
 
 </LinearLayout>

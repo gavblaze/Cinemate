@@ -2,6 +2,7 @@ package com.example.android.cinemate;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +39,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         Log.i(LOG_TAG, "TEST.......MovieAdapter onCreateViewHolder() called");
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+
+        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+        lp.height = (int) (parent.getMeasuredHeight() / 2);
+        v.setLayoutParams(lp);
+
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -46,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
 
-        holder.mMovieTitleTextView.setText(mMovies.get(position).getmTitle());
+        //holder.mMovieTitleTextView.setText(mMovies.get(position).getmTitle());
 
         String path = mMovies.get(position).getmPosterPath();
 
@@ -75,12 +81,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView mMovieTitleTextView;
+        //public TextView mMovieTitleTextView;
         public ImageView mPosterImageView;
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mMovieTitleTextView = (TextView) itemView.findViewById(R.id.movieNameTextView);
+            //mMovieTitleTextView = (TextView) itemView.findViewById(R.id.movieNameTextView);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
 
             itemView.setOnClickListener(this);
@@ -89,8 +95,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-//            String title = mTextView.getText().toString();
-//            String path = mPosterTextView.getText().toString();
             mListItemClickHandler.onItemClicked(position);
         }
     }

@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static boolean PREFERENCE_CHANGED = false;
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
+    private GridLayoutManager mGridLayoutMananger;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
     private TextView mEmptyTextView;
@@ -56,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mGridLayoutMananger = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(mGridLayoutMananger);
         mMovieAdapter = new MovieAdapter(this);
 
         mRecyclerView.setAdapter(mMovieAdapter);
