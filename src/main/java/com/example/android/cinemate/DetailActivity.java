@@ -10,8 +10,11 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class DetailActivity extends AppCompatActivity {
     private TextView mDetailTextView;
+    private TextView mDetailPathTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,12 +22,13 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         mDetailTextView = (TextView) findViewById(R.id.detailTextView);
+        mDetailPathTextView = (TextView) findViewById(R.id.detailPathTextView);
 
         Intent intentThatStartedActivity = getIntent();
-        if (intentThatStartedActivity.hasExtra(Intent.EXTRA_TEXT)) {
-            String movie = intentThatStartedActivity.getStringExtra(Intent.EXTRA_TEXT);
-            mDetailTextView.setText(movie);
-        }
+        Movie recievedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
+
+        mDetailTextView.setText(recievedMovie.getmTitle());
+        mDetailPathTextView.setText(recievedMovie.getmPosterPath());
     }
 
     @Override

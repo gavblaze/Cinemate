@@ -20,9 +20,10 @@ import android.widget.TextView;
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.MovieLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final int LOADER_ID = 333;
@@ -34,12 +35,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private View mLoadingIndicator;
     private TextView mEmptyTextView;
 
+    /*This is just so we can get reference to our data
+    * based on the clicked position*/
+    private List<Movie> mMovieList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreate() called");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
@@ -78,14 +84,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
     @Override
-    public Loader<List<String>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
         return new MovieLoader(this, MoviePreferences.stringUrlFromSharedPreferences(this));
     }
 
     @Override
-    public void onLoadFinished(Loader<List<String>> loader, List<String> data) {
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -95,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             showErrorMessage();
         } else {
 
+            /*We declared this nso we can initialise the list and
+            pass the data to new activity based on the position of item clicked*/
+            mMovieList = data;
+
             showMovieDataView();
 
             mMovieAdapter.setMovieData(data);
@@ -103,14 +113,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoaderReset(Loader<List<String>> loader) {
+    public void onLoaderReset(Loader<List<Movie>> loader) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
     }
 
     @Override
-    public void onItemClicked(String title) {
+    public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT, title);
+        Movie movie = mMovieList.get(position);
+        intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath()));
         startActivity(intent);
     }
 

@@ -20,7 +20,7 @@ import java.util.List;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    List<String> mMovies;
+    List<Movie> mMovies;
     private ListItemClickHandler mListItemClickHandler;
 
     public MovieAdapter(ListItemClickHandler listItemClicked) {
@@ -41,7 +41,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
-        holder.mTextView.setText(mMovies.get(position).toString());
+        holder.mTextView.setText(mMovies.get(position).getmTitle().toString());
+        holder.mPosterTextView.setText(mMovies.get(position).getmPosterPath().toString());
     }
 
     @Override
@@ -50,7 +51,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             return mMovies.size();
     }
 
-    public void setMovieData(List<String> data) {
+    public void setMovieData(List<Movie> data) {
         mMovies = data;
         notifyDataSetChanged();
     }
@@ -58,23 +59,27 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     /*Think about using this in future instead of passing the data in the constructor*/
 
     public interface ListItemClickHandler {
-        void onItemClicked(String position);
+        void onItemClicked(int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView mTextView;
+        public TextView mPosterTextView;
         public ViewHolder(View itemView) {
             super(itemView);
 
             mTextView = (TextView) itemView.findViewById(R.id.moviesTextView);
+            mPosterTextView = (TextView) itemView.findViewById(R.id.posterTextView);
 
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            String title = mTextView.getText().toString();
-            mListItemClickHandler.onItemClicked(title);
+            int position = getAdapterPosition();
+//            String title = mTextView.getText().toString();
+//            String path = mPosterTextView.getText().toString();
+            mListItemClickHandler.onItemClicked(position);
         }
     }
 }
