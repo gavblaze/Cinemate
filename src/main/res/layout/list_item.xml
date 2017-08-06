@@ -6,17 +6,16 @@
               android:layout_height="40dp"
               android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/moviesTextView"
+    <!--<TextView-->
+    <!--android:id="@+id/moviesTextView"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--tools:text="Scarface"/>-->
+
+    <ImageView
+        android:id="@+id/posterImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Scarface"/>
-
-    <TextView
-        android:id="@+id/posterTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="www.something.com"/>
-
+        android:src="@mipmap/ic_launcher"/>
 
 </LinearLayout>

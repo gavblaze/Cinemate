@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#b2dfdb"
+    android:padding="16dp"
     tools:context="com.example.android.cinemate.DetailActivity">
 
-    <TextView
-        android:id="@+id/detailTextView"
+    <ImageView
+        android:id="@+id/detailMovieImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Scarface is the best!"/>
+        android:layout_marginLeft="-17dp"
+        android:layout_marginTop="-17dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@mipmap/ic_launcher"
+        tools:text="Scarface!"/>
 
     <TextView
-        android:id="@+id/detailPathTextView"
+        android:id="@+id/detailMovieTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/detailImageView"
+        app:layout_constraintLeft_toRightOf="@+id/detailMovieImageView"
+        app:layout_constraintTop_toTopOf="@+id/detailImageView"
         tools:text="Scarface is the best!"/>
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
