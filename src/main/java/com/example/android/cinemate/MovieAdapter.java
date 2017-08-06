@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,8 +22,7 @@ import java.util.List;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p";
-    private static final String BASE_SIZE = "w185";
+    private static final String BASE_IMAGE_SIZE = "w185";
 
     List<Movie> mMovies;
     private ListItemClickHandler mListItemClickHandler;
@@ -45,22 +45,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
-//        holder.mTextView.setText(mMovies.get(position).getmTitle().toString());
-//        holder.mPosterTextView.setText(mMovies.get(position).getmPosterPath().toString());
+
+        holder.mMovieTitleTextView.setText(mMovies.get(position).getmTitle());
 
         String path = mMovies.get(position).getmPosterPath();
 
-        Uri baseUri = Uri.parse(BASE_IMAGE_URL);
-
-        Uri.Builder builder = baseUri.buildUpon();
-        builder.appendPath(BASE_SIZE);
-        builder.appendPath(path);
-
-        String urlImageString = builder.toString();
+        String urlImageString = ImageUtils.getMovieImage(path, BASE_IMAGE_SIZE);
 
         Log.i(LOG_TAG, "TEST...................Url = " + urlImageString);
         Context context = holder.mPosterImageView.getContext();
-        Picasso.with(context).load("http://image.tmdb.org/t/p/w185//2Fy31QB9kn3XSudA15tV7UWQ9XLuW.jpg").into(holder.mPosterImageView);
+        Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
     }
 
     @Override
@@ -81,12 +75,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        //public TextView mTextView;
+        public TextView mMovieTitleTextView;
         public ImageView mPosterImageView;
         public ViewHolder(View itemView) {
             super(itemView);
 
-            //mTextView = (TextView) itemView.findViewById(R.id.moviesTextView);
+            mMovieTitleTextView = (TextView) itemView.findViewById(R.id.movieNameTextView);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
 
             itemView.setOnClickListener(this);

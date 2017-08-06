@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="40dp"
-              android:orientation="vertical">
-
-    <!--<TextView-->
-    <!--android:id="@+id/moviesTextView"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--tools:text="Scarface"/>-->
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:padding="16dp">
 
     <ImageView
         android:id="@+id/posterImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"/>
+        tools:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/movieNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        tools:text="Scarface"/>
 
 </LinearLayout>

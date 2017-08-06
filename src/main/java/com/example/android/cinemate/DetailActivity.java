@@ -1,6 +1,7 @@
 package com.example.android.cinemate;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,7 +10,12 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.cinemate.utilities.ImageUtils;
+import com.squareup.picasso.Picasso;
+
 public class DetailActivity extends AppCompatActivity {
+
+    private static final String BASE_IMAGE_SIZE = "w185";
     private TextView mDetailMovieTextView;
     private ImageView detailMovieImageView;
 
@@ -25,7 +31,12 @@ public class DetailActivity extends AppCompatActivity {
         Movie recievedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
 
         mDetailMovieTextView.setText(recievedMovie.getmTitle());
-        //mDetailPathTextView.setText(recievedMovie.getmPosterPath());
+
+        String urlPathReceived = recievedMovie.getmPosterPath();
+
+        String urlForImage = ImageUtils.getMovieImage(urlPathReceived, BASE_IMAGE_SIZE);
+
+        Picasso.with(getApplicationContext()).load(urlForImage).into(detailMovieImageView);
     }
 
     @Override
