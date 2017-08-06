@@ -1,6 +1,7 @@
 package com.example.android.cinemate;
 
 import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,7 +34,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onCreateViewHolder() called");
 
+
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+
+        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+        lp.height = parent.getMeasuredHeight() / 2;
+
+        v.setLayoutParams(lp);
+
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
