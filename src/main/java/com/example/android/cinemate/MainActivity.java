@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -20,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.MovieLoader;
@@ -42,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /*This is just so we can get reference to our data
     * based on the clicked position*/
-    private List<Movie> mMovieList;
+
+    private List<Movie> mMovieList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
@@ -65,27 +67,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mGridLayoutMananger = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
         mMovieAdapter = new MovieAdapter(this);
-
         mRecyclerView.setAdapter(mMovieAdapter);
 
 
         mLoaderManager = getSupportLoaderManager();
 
-        mLoaderManager.initLoader(LOADER_ID, null, this);
+        mLoaderManager.initLoader(LOADER_ID, null, MainActivity.this);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        if (!isConnected) {
-            mEmptyTextView.setText("No network detected");
-        }
     }
 
 
@@ -112,13 +103,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+        mMovieAdapter.setMovieData(data);
+
          /*We declared this so we can initialise the list and
             pass the data to new activity based on the position of item clicked*/
         mMovieList = data;
 
-        mMovieAdapter.setMovieData(data);
+//        ConnectivityManager cm =
+//                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        boolean isConnected = activeNetwork != null &&
+//                activeNetwork.isConnectedOrConnecting();
 
-        if (null == data) {
+
+        if (data == null) {
+            Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
             showErrorMessage();
         } else {
             showMovieDataView();
@@ -128,6 +129,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<List<Movie>> loader) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
+        mMovieList.clear();
+    }
+
+    private void invalidateData() {
+        Log.i(LOG_TAG, "TEST.......MainActivity invalidateData() called");
+        mMovieAdapter.setMovieData(null);
     }
 
     @Override
@@ -153,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case R.id.refresh:
                 mLoadingIndicator.setVisibility(View.VISIBLE);
                 showMovieDataView();
-                mMovieAdapter.setMovieData(null);
+                invalidateData();
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
                 return true;
             case R.id.settings:
@@ -173,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onStart() {
         super.onStart();
         if (PREFERENCE_CHANGED) {
-            getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+            getSupportLoaderManager().restartLoader(5, null, this);
             PREFERENCE_CHANGED = false;
         }
     }

@@ -27,6 +27,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     protected void onStartLoading() {
+
         Log.i(LOG_TAG, "TEST.......MovieLoader onStartLoading() called");
         if (mData != null) {
             // Use cached data
@@ -40,6 +41,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
     @Override
     public List<Movie> loadInBackground() {
         Log.i(LOG_TAG, "TEST.......MovieLoader loadInBackground() called");
+
         if (mStringUrl == null) {
             return null;
         }
@@ -54,6 +56,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     public void deliverResult(List<Movie> data) {
+        Log.i(LOG_TAG, "TEST.......MovieLoader deliverResult() called");
         mData = data;
         super.deliverResult(data);
     }

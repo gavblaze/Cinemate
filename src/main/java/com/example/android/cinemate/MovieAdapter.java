@@ -16,6 +16,7 @@ import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,8 +32,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     private ListItemClickHandler mListItemClickHandler;
 
     public MovieAdapter(ListItemClickHandler listItemClicked) {
-        Log.i(LOG_TAG, "TEST.......MovieAdapter constructor called");
-        //mMovies = movies;
         mListItemClickHandler = listItemClicked;
     }
 
@@ -52,7 +51,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
 
         String path = mMovies.get(position).getmPosterPath();
 
@@ -60,7 +58,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         Context context = holder.mPosterImageView.getContext();
 
-        Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
+        Picasso.with(context).load(urlImageString).memoryPolicy(MemoryPolicy.NO_STORE).into(holder.mPosterImageView);
     }
 
     @Override
@@ -70,6 +68,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public void setMovieData(List<Movie> data) {
+        Log.i(LOG_TAG, "TEST.......MovieAdapter setMovieData() called");
+        if (mMovies != null) mMovies.clear();
+        //mMovies.clear();
         mMovies = data;
         notifyDataSetChanged();
     }
@@ -82,7 +83,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public ImageView mPosterImageView;
+        public final ImageView mPosterImageView;
         public ViewHolder(View itemView) {
             super(itemView);
 

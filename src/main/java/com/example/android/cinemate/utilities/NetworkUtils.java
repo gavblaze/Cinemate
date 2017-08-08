@@ -18,7 +18,7 @@ public class NetworkUtils {
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
 
     private static URL createUrl (String stringUrl) {
-        Log.i(LOG_TAG, "TEST.......NetworkUtils createUrl() called");
+        //Log.i(LOG_TAG, "TEST.......NetworkUtils createUrl() called");
         URL url = null;
         try {
             url = new URL(stringUrl);
@@ -30,10 +30,18 @@ public class NetworkUtils {
     }
 
     private static String makeHttpRequest (URL url) throws IOException {
-        Log.i(LOG_TAG, "TEST.......NetworkUtils makeHttpRequest() called");
+        //Log.i(LOG_TAG, "TEST.......NetworkUtils makeHttpRequest() called");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.connect();
-        InputStream is = urlConnection.getInputStream();
+        InputStream is = null;
+
+        Thread thread = new Thread();
+        try {
+            is = urlConnection.getInputStream();
+            thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         String line = null;
 
@@ -48,7 +56,7 @@ public class NetworkUtils {
 
 
     public static String getDataFromNetwork(String stringUrl) {
-        Log.i(LOG_TAG, "TEST.......NetworkUtils getDataFromNetwork() called");
+        //Log.i(LOG_TAG, "TEST.......NetworkUtils getDataFromNetwork() called");
 
         URL url = createUrl(stringUrl);
         String i = "";
