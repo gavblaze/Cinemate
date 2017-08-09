@@ -63,6 +63,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    public void addMoreItems(List<String> newData) {
+        if (mMovies != null) {
+            mMovies.addAll(newData);
+            notifyDataSetChanged();
+        } else {
+            mMovies = newData;
+            notifyDataSetChanged();
+        }
+    }
+
     /*Think about using this in future instead of passing the data in the constructor*/
 
     public interface ListItemClickHandler {

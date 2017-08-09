@@ -16,19 +16,25 @@ import java.net.URL;
 public class MoviePreferences {
     private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
 
-    public static String stringUrlFromSharedPreferences(Context context) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+//    public static String stringUrlFromSharedPreferences(Context context) {
+//        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+//
+//        String sortBy = sharedPrefs.getString(
+//                context.getString(R.string.sort_order_key),
+//                context.getString(R.string.sort_order_default_value));
+//
+//        Uri baseUri = Uri.parse(MOVIE_URL);
+//
+//        Uri.Builder builder = baseUri.buildUpon();
+//
+//        builder.appendPath(sortBy);
+//
+//        return builder.toString();
+//    }
 
-        String sortBy = sharedPrefs.getString(
-                context.getString(R.string.sort_order_key),
-                context.getString(R.string.sort_order_default_value));
-
-        Uri baseUri = Uri.parse(MOVIE_URL);
-
-        Uri.Builder builder = baseUri.buildUpon();
-
-        builder.appendPath(sortBy);
-
-        return builder.toString();
+    public static String preferredSortOrder(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String path = sharedPreferences.getString(context.getString(R.string.sort_order_key), context.getString(R.string.sort_order_default_value));
+        return path;
     }
 }
