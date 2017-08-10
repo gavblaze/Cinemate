@@ -21,9 +21,11 @@ public class DetailActivity extends AppCompatActivity {
         mDetailTextView = (TextView) findViewById(R.id.detailTextView);
 
         Intent intentThatStartedActivity = getIntent();
-        if (intentThatStartedActivity.hasExtra(Intent.EXTRA_TEXT)) {
-            String movie = intentThatStartedActivity.getStringExtra(Intent.EXTRA_TEXT);
-            mDetailTextView.setText(movie);
+        if (intentThatStartedActivity.hasExtra(Intent.ACTION_MAIN)) {
+            Movie movie = intentThatStartedActivity.getExtras().getParcelable(Intent.ACTION_MAIN);
+
+            String overview = movie.getmOverView();
+            mDetailTextView.setText(overview);
         }
     }
 

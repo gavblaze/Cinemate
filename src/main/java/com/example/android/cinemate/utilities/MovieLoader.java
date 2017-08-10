@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import com.example.android.cinemate.Movie;
+
 import org.json.JSONException;
 
 import java.util.List;
@@ -12,10 +14,10 @@ import java.util.List;
  * Created by Gavin on 02-Aug-17.
  */
 
-public class MovieLoader extends AsyncTaskLoader<List<String>> {
+public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
     private static final String LOG_TAG = MovieLoader.class.getSimpleName();
 
-    private List<String> mData;
+    private List<Movie> mData;
 
     private String mStringUrl;
     public MovieLoader(Context context, String stringUrl) {
@@ -35,7 +37,7 @@ public class MovieLoader extends AsyncTaskLoader<List<String>> {
     }
 
     @Override
-    public List<String> loadInBackground() {
+    public List<Movie> loadInBackground() {
         Log.i(LOG_TAG, "TEST.......MovieLoader loadInBackground() called");
         if (mStringUrl == null) {
             return null;
@@ -50,7 +52,7 @@ public class MovieLoader extends AsyncTaskLoader<List<String>> {
     }
 
     @Override
-    public void deliverResult(List<String> data) {
+    public void deliverResult(List<Movie> data) {
         mData = data;
         super.deliverResult(data);
     }

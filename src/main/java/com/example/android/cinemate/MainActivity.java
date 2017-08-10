@@ -2,9 +2,8 @@ package com.example.android.cinemate;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Movie;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -17,17 +16,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.EndlessRecyclerViewScrollListener;
 import com.example.android.cinemate.utilities.MovieLoader;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
 
@@ -39,18 +35,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private GridLayoutManager mGridLayoutManager;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
-
     private TextView mEmptyTextView;
-    private Bundle mBundle;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreate() called");
-
-
-        //mBundle.putString(KEY, "https://api.themoviedb.org/3/movie/top_rated?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US&page=6");
-        //mList = new ArrayList<>();
 
 
         super.onCreate(savedInstanceState);
@@ -76,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mLoaderManager = getSupportLoaderManager();
 
-        mLoaderManager.initLoader(LOADER_ID, mBundle, this);
+        mLoaderManager.initLoader(LOADER_ID, null, this);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
@@ -122,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
     @Override
-    public Loader<List<String>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
         String currentPage;
@@ -137,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(Loader<List<String>> loader, List<String> data) {
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -155,15 +145,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoaderReset(Loader<List<String>> loader) {
+    public void onLoaderReset(Loader<List<Movie>> loader) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
     }
 
     @Override
     public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        String item = mMovieAdapter.getPosition(position);
-        intent.putExtra(Intent.EXTRA_TEXT, item);
+        Movie clickedMovie = mMovieAdapter.getPosition(position);
+        intent.putExtra(Intent.ACTION_MAIN, clickedMovie);
         startActivity(intent);
     }
 
@@ -181,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (id) {
             case R.id.refresh:
                 mLoadingIndicator.setVisibility(View.VISIBLE);
+                mEmptyTextView.setVisibility(View.INVISIBLE);
                 mMovieAdapter.setMovieData(null);
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
                 return true;

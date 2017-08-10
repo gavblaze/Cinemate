@@ -1,6 +1,7 @@
 package com.example.android.cinemate;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ import java.util.List;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    List<String> mMovieList = new ArrayList<>();
+    List<Movie> mMovieList = new ArrayList<>();
 
     private ListItemClickHandler mListItemClickHandler;
 
@@ -52,7 +54,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
-        holder.mTextView.setText(mMovieList.get(position).toString());
+
+        Context context = holder.mImageView.getContext();
+
+        String posterSize = TmdbUrlUtils.POSTER_SIZE;
+        String imagePath = mMovieList.get(position).getmPosterPath();
+
+        Uri baseUri = Uri.parse(TmdbUrlUtils.BASE_POSTER_URL);
+        Uri.Builder builder = baseUri.buildUpon();
+        builder.appendPath(posterSize);
+        builder.appendEncodedPath(imagePath);
+        String imageUrl = builder.toString();
+
+        Picasso.with(context).load(imageUrl).into(holder.mImageView);
     }
 
     @Override
@@ -63,13 +77,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
 
     /*Think about using this in future instead of passing the data in the constructor*/
-    public void setMovieData(List<String> data) {
+    public void setMovieData(List<Movie> data) {
         mMovieList = data;
         notifyDataSetChanged();
     }
 
 
-    public void addItems(List<String> data) {
+    public void addItems(List<Movie> data) {
         // If our list is empty set the data returned on our List
         if (mMovieList == null) {
 
@@ -83,7 +97,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     //Allows us to get the value of item at current position
-    public String getPosition(int position) {
+    public Movie getPosition(int position) {
         return mMovieList.get(position);
     }
 
@@ -94,11 +108,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView mTextView;
+        public ImageView mImageView;
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mTextView = (TextView) itemView.findViewById(R.id.moviesTextView);
+            mImageView = (ImageView) itemView.findViewById(R.id.imagePoster);
 
             itemView.setOnClickListener(this);
         }
