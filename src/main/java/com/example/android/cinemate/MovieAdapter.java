@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,12 +23,13 @@ import java.util.List;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
-    List<String> mMovies;
+    List<String> mMovieList = new ArrayList<>();
+
     private ListItemClickHandler mListItemClickHandler;
 
     public MovieAdapter(ListItemClickHandler listItemClicked) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter constructor called");
-        //mMovies = movies;
+
         mListItemClickHandler = listItemClicked;
     }
 
@@ -49,34 +52,45 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
-        holder.mTextView.setText(mMovies.get(position).toString());
+        holder.mTextView.setText(mMovieList.get(position).toString());
     }
 
     @Override
     public int getItemCount() {
-        if (null == mMovies) return 0;
-            return mMovies.size();
+        if (null == mMovieList) return 0;
+        return mMovieList.size();
     }
 
+
+    /*Think about using this in future instead of passing the data in the constructor*/
     public void setMovieData(List<String> data) {
-        mMovies = data;
+        mMovieList = data;
         notifyDataSetChanged();
     }
 
-    public void addMoreItems(List<String> newData) {
-        if (mMovies != null) {
-            mMovies.addAll(newData);
-            notifyDataSetChanged();
+
+    public void addItems(List<String> data) {
+        // If our list is empty set the data returned on our List
+        if (mMovieList == null) {
+
+            mMovieList = data;
+
         } else {
-            mMovies = newData;
-            notifyDataSetChanged();
+            // If our list isn't empty add the new items returned to it
+            mMovieList.addAll(data);
         }
+        notifyDataSetChanged();
     }
 
-    /*Think about using this in future instead of passing the data in the constructor*/
+    //Allows us to get the value of item at current position
+    public String getPosition(int position) {
+        return mMovieList.get(position);
+    }
+
+
 
     public interface ListItemClickHandler {
-        void onItemClicked(String position);
+        void onItemClicked(int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -91,8 +105,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            String title = mTextView.getText().toString();
-            mListItemClickHandler.onItemClicked(title);
+            int position = getAdapterPosition();
+            mListItemClickHandler.onItemClicked(position);
         }
     }
 }

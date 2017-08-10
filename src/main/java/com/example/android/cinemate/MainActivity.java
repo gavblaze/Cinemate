@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.EndlessRecyclerViewScrollListener;
@@ -29,10 +30,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
 
     private static final int LOADER_ID = 333;
-    private final static String KEY = "key";
+    private final static String KEY = "page_key";
     private static boolean PREFERENCE_CHANGED = false;
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
@@ -40,20 +40,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
 
-    //private EndlessRecyclerViewScrollListener scrollListener;
     private TextView mEmptyTextView;
     private Bundle mBundle;
-    private List<String> mList;
-    private MovieLoader mMovieLoader;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreate() called");
 
-        mBundle = new Bundle();
+
         //mBundle.putString(KEY, "https://api.themoviedb.org/3/movie/top_rated?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US&page=6");
-        mList = new ArrayList<>();
+        //mList = new ArrayList<>();
 
 
         super.onCreate(savedInstanceState);
@@ -105,18 +102,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
 
-
-//        String sortOrder = MoviePreferences.preferredSortOrder(this);
-//        Uri baseUri = Uri.parse(stringUrl);
-//        Uri.Builder builder = baseUri.buildUpon();
-//        builder.appendQueryParameter("page", String.valueOf(offset));
-//        String newUrl = builder.toString();
-//        Log.i(LOG_TAG, "RETURNED.........." + newUrl);
-        //String urlOfCurrentPage = TmdbUrlUtils.stringUrlOfCurrentPage(this, offset);
         String currentPage = String.valueOf(offset);
-        mBundle.putString(KEY, currentPage);
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY, currentPage);
 
-        getSupportLoaderManager().restartLoader(LOADER_ID, mBundle, this);
+        getSupportLoaderManager().restartLoader(LOADER_ID, bundle, this);
     }
 
 
@@ -135,22 +125,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<List<String>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
-
-//        mBundle = args;
-//        String i = args.getString(KEY);
-//        if (i != null) {
-//            mMovieLoader = new MovieLoader(this, i);
-//        } else {
-//            mMovieLoader = new MovieLoader(this, MoviePreferences.stringUrlFromSharedPreferences(this));
-//        }
-//        return mMovieLoader;
         String currentPage;
-        if (args != null) {
-            currentPage = args.getString(KEY);
-        } else {
+        // If nothing passed from bundle we are on page 1
+        if (args == null) {
             currentPage = "1";
+        } else {
+            // Else get the page value passed and append it to the query URL
+            currentPage = args.getString(KEY);
         }
-        return mMovieLoader = new MovieLoader(this, TmdbUrlUtils.stringUrlOfCurrentPage(this, currentPage));
+        return new MovieLoader(this, TmdbUrlUtils.builtUrl(this, currentPage));
     }
 
     @Override
@@ -159,18 +142,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
 
-
         if (data == null) {
+
             showErrorMessage();
+
         } else {
 
             showMovieDataView();
 
-
-            //mMovieAdapter.setMovieData(data);
-
-            mMovieAdapter.addMoreItems(data);
-
+            mMovieAdapter.addItems(data);
         }
     }
 
@@ -180,9 +160,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onItemClicked(String title) {
+    public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT, title);
+        String item = mMovieAdapter.getPosition(position);
+        intent.putExtra(Intent.EXTRA_TEXT, item);
         startActivity(intent);
     }
 
@@ -200,8 +181,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (id) {
             case R.id.refresh:
                 mLoadingIndicator.setVisibility(View.VISIBLE);
-                //mMovieAdapter.setMovieData(null);
-                mMovieAdapter.addMoreItems(null);
+                mMovieAdapter.setMovieData(null);
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
                 return true;
             case R.id.settings:

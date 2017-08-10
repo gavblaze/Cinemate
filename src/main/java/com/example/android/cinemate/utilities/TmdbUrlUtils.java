@@ -10,16 +10,17 @@ import com.example.android.cinemate.data.MoviePreferences;
  */
 
 public class TmdbUrlUtils {
-    public static String BASE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
 
-    public static String stringUrlOfCurrentPage(Context context, String page) {
+    public static final String BASE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
+
+    public static String builtUrl(Context context, String pageNumber) {
+
         String sortBy = MoviePreferences.preferredSortOrder(context);
+
         Uri baseUri = Uri.parse(BASE_URL);
         Uri.Builder builder = baseUri.buildUpon();
         builder.appendPath(sortBy);
-        builder.appendQueryParameter("page", page);
+        builder.appendQueryParameter("page", pageNumber);
         return builder.toString();
     }
-
-    //public static String preferredStringUrl
 }
