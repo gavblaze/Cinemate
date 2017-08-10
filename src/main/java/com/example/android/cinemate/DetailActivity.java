@@ -1,31 +1,56 @@
 package com.example.android.cinemate;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.Picasso;
+
 public class DetailActivity extends AppCompatActivity {
-    private TextView mDetailTextView;
+    private TextView mTitleTextView;
+    private TextView mOverviewTextView;
+    private ImageView mPosterImageView;
+    private TextView mLanguageTextView;
+    private TextView mReleaseDateTextView;
+    private TextView mRatingTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mDetailTextView = (TextView) findViewById(R.id.detailTextView);
+        mTitleTextView = (TextView) findViewById(R.id.detailTitle);
+        mOverviewTextView = (TextView) findViewById(R.id.detailOverview);
+        mPosterImageView = (ImageView) findViewById(R.id.detailMoviePoster);
+        mReleaseDateTextView = (TextView) findViewById(R.id.detailYear);
+        mRatingTextView = (TextView) findViewById(R.id.detailRating);
 
         Intent intentThatStartedActivity = getIntent();
         if (intentThatStartedActivity.hasExtra(Intent.ACTION_MAIN)) {
             Movie movie = intentThatStartedActivity.getExtras().getParcelable(Intent.ACTION_MAIN);
 
-            String overview = movie.getmOverView();
-            mDetailTextView.setText(overview);
+            Uri baseUri = Uri.parse(TmdbUrlUtils.BASE_POSTER_URL);
+            Uri.Builder builder = baseUri.buildUpon();
+            builder.appendPath(TmdbUrlUtils.POSTER_SIZE);
+            builder.appendEncodedPath(movie.getmPosterPath());
+            String posterUrl = builder.toString();
+
+
+            mTitleTextView.setText(movie.getmTitle());
+            mOverviewTextView.setText(movie.getmOverView());
+            Picasso.with(this).load(posterUrl).into(mPosterImageView);
+            mReleaseDateTextView.setText(movie.getmReleaseDate());
+            mRatingTextView.setText(movie.getmVoteAverage());
+
         }
     }
 
@@ -54,7 +79,7 @@ public class DetailActivity extends AppCompatActivity {
     public void shareMovie() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, mDetailTextView.getText());
+        intent.putExtra(Intent.EXTRA_TEXT, mTitleTextView.getText());
         intent.setType("text/plain");
         startActivity(intent);
     }

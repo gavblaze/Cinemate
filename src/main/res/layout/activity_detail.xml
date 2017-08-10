@@ -5,12 +5,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#b2dfdb"
     tools:context="com.example.android.cinemate.DetailActivity">
 
+    <ImageView
+        android:id="@+id/detailMoviePoster"
+        android:layout_width="69dp"
+        android:layout_height="105dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailTitle"
+        tools:src="@mipmap/ic_launcher"/>
+
     <TextView
-        android:id="@+id/detailTextView"
-        tools:text="Scarface is the best!"
+        android:id="@+id/detailOverview"
+        android:layout_width="348dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailMoviePoster"
+        tools:text="After getting a green card in exchange for assassinating a Cuban government official, Tony Montana (Al Pacino) stakes a claim on the drug trade in Miami."/>
+
+    <TextView
+        android:id="@+id/detailTitle"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:layout_width="0dp"
+        android:layout_height="69dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        android:gravity="center_vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Scarface"/>
+
+    <TextView
+        android:id="@+id/detailYear"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toRightOf="@+id/detailMoviePoster"
+        app:layout_constraintTop_toBottomOf="@+id/detailTitle"
+        tools:text="2017/09/27"/>
+
+    <TextView
+        android:id="@+id/detailRating"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="7dp"
+        app:layout_constraintLeft_toLeftOf="@+id/detailYear"
+        app:layout_constraintTop_toBottomOf="@+id/detailYear"
+        tools:text="8.5/10"/>
+
 
 </android.support.constraint.ConstraintLayout>
