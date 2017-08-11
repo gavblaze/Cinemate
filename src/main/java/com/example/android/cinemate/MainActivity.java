@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.example.android.cinemate.utilities.EndlessRecyclerViewScrollListener;
 import com.example.android.cinemate.utilities.MovieLoader;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -93,9 +94,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
 
         String currentPage = String.valueOf(offset);
+
         Bundle bundle = new Bundle();
         bundle.putString(KEY, currentPage);
-
         getSupportLoaderManager().restartLoader(LOADER_ID, bundle, this);
     }
 
@@ -116,9 +117,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
         String currentPage;
+
         // If nothing passed from bundle we are on page 1
         if (args == null) {
+
             currentPage = "1";
+
         } else {
             // Else get the page value passed and append it to the query URL
             currentPage = args.getString(KEY);
@@ -141,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             showMovieDataView();
 
             mMovieAdapter.addItems(data);
+
         }
     }
 
@@ -182,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {

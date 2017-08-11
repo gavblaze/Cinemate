@@ -1,5 +1,6 @@
 package com.example.android.cinemate;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NavUtils;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
@@ -44,12 +47,22 @@ public class DetailActivity extends AppCompatActivity {
             builder.appendEncodedPath(movie.getmPosterPath());
             String posterUrl = builder.toString();
 
+            Context context = mPosterImageView.getContext();
 
             mTitleTextView.setText(movie.getmTitle());
             mOverviewTextView.setText(movie.getmOverView());
-            Picasso.with(this).load(posterUrl).into(mPosterImageView);
+            Picasso.with(this)
+                    .load(posterUrl)
+                    .noPlaceholder()
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_STORE)
+                    .into(mPosterImageView);
             mReleaseDateTextView.setText(movie.getmReleaseDate());
             mRatingTextView.setText(movie.getmVoteAverage());
+
+            Picasso.with(context).invalidate(posterUrl);
 
         }
     }

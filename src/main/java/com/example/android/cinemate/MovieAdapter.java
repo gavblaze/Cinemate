@@ -9,10 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -65,8 +65,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         builder.appendPath(posterSize);
         builder.appendEncodedPath(imagePath);
         String imageUrl = builder.toString();
+        Log.i(LOG_TAG, "TESTER...................." + imageUrl);
 
-        Picasso.with(context).load(imageUrl).into(holder.mImageView);
+        Picasso.with(context)
+                .load(imageUrl)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .memoryPolicy(MemoryPolicy.NO_STORE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_STORE)
+                .noPlaceholder()
+                .into(holder.mImageView);
+
+        Picasso.with(context).invalidate(imageUrl);
     }
 
     @Override
