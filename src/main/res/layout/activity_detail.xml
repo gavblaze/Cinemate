@@ -8,6 +8,16 @@
     android:background="#b2dfdb"
     tools:context="com.example.android.cinemate.DetailActivity">
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="57dp"
+        android:layout_marginTop="56dp"
+        android:src="@drawable/ic_favorite_border_black_24dp"
+        app:layout_constraintLeft_toRightOf="@+id/detailRating"
+        app:layout_constraintTop_toTopOf="@+id/detailTitle"/>
+
     <ImageView
         android:id="@+id/detailMovieImageView"
         android:layout_width="69dp"

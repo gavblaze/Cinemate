@@ -1,13 +1,16 @@
 package com.example.android.cinemate;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
@@ -20,6 +23,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mDetailMovieRating;
     private TextView mDetailMovieReleaseDate;
     private ImageView mDetailMovieImageView;
+    private FloatingActionButton mFab;
 
 
     @Override
@@ -45,6 +49,14 @@ public class DetailActivity extends AppCompatActivity {
         String urlPathReceived = recievedMovie.getmPosterPath();
         String urlForImage = ImageUtils.getMovieImage(urlPathReceived, BASE_IMAGE_SIZE);
         Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
+
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "It worked", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
