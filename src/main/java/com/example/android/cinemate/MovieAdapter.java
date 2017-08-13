@@ -59,6 +59,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         Context context = holder.mPosterImageView.getContext();
 
         Picasso.with(context).load(urlImageString).memoryPolicy(MemoryPolicy.NO_STORE).into(holder.mPosterImageView);
+
+        holder.mPosterImageView.setTag(position);
     }
 
     @Override
