@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieList.get(position);
         intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath(), movie.getmRating(), movie.getmOverview(), movie.getmReleaseDate()));
+        intent.putExtra("value", movie.ismIsFavourite());
         startActivity(intent);
     }
 
@@ -172,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         PREFERENCE_CHANGED = true;
     }
 

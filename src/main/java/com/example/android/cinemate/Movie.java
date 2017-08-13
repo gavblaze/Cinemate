@@ -1,5 +1,6 @@
 package com.example.android.cinemate;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -25,6 +26,9 @@ public class Movie implements Parcelable {
     private String mOverview;
     private String mReleaseDate;
 
+    private boolean mIsFavourite;
+    private Context mContext;
+
     public Movie(String title, String posterPath, String rating, String overview, String releaseDate) {
         this.mTitle = title;
         this.mPosterPath = posterPath;
@@ -32,6 +36,11 @@ public class Movie implements Parcelable {
         this.mOverview = overview;
         this.mReleaseDate = releaseDate;
     }
+
+    public Movie(Boolean b) {
+        this.mIsFavourite = b;
+    }
+
 
     protected Movie(Parcel in) {
         mTitle = in.readString();
@@ -79,6 +88,14 @@ public class Movie implements Parcelable {
 
     public void setmReleaseDate(String mReleaseDate) {
         this.mReleaseDate = mReleaseDate;
+    }
+
+    public boolean ismIsFavourite() {
+        return mIsFavourite;
+    }
+
+    public void setmIsFavourite(boolean mIsFavourite) {
+        this.mIsFavourite = mIsFavourite;
     }
 
     @Override

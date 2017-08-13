@@ -38,7 +38,7 @@ public class NetworkUtils {
         Thread thread = new Thread();
         try {
             is = urlConnection.getInputStream();
-            thread.sleep(5000);
+            thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

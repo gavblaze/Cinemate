@@ -21,7 +21,6 @@ public class FavouritesDbHelper extends SQLiteOpenHelper {
                     FavouriteEntry.COLUMN_NAME_TITLE + " TEXT," +
                     FavouriteEntry.COLUMN_NAME_OVERVIEW + " TEXT," +
                     FavouriteEntry.COLUMN_POSTER_PATH + " TEXT," +
-                    FavouriteEntry.COLUMN_NAME_LANGUAGE + " TEXT," +
                     FavouriteEntry.COLUMN_NAME_RELEASE_DATE + " TEXT," +
                     FavouriteEntry.COLUMN_NAME_VOTE_AVERAGE + " TEXT)";
 
