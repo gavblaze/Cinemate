@@ -42,6 +42,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private View mLoadingIndicator;
     private TextView mEmptyTextView;
 
+    private int firstVisibleItem, visibleItemCount, totalItemCount;
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 4;
+    private int pageCount = 1;
+
+
     /*This is just so we can get reference to our data
     * based on the clicked position*/
 
@@ -69,6 +76,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mGridLayoutMananger.getItemCount();
+                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        pageCount++;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    int page = pageCount;
+
+                    loading = true;
+                }
+            }
+        });
+
 
         mLoaderManager = getSupportLoaderManager();
 
@@ -94,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
+
 
         return new MovieLoader(this, MoviePreferences.stringUrlFromSharedPreferences(this));
     }
@@ -141,8 +172,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieList.get(position);
-        intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath(), movie.getmRating(), movie.getmOverview(), movie.getmReleaseDate()));
-        intent.putExtra("value", movie.ismIsFavourite());
+        //intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath(), movie.getmRating(), movie.getmOverview(), movie.getmReleaseDate()));
+        intent.putExtra(Intent.EXTRA_TEXT, movie);
         startActivity(intent);
     }
 
@@ -181,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onStart() {
         super.onStart();
         if (PREFERENCE_CHANGED) {
-            getSupportLoaderManager().restartLoader(5, null, this);
+            getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
             PREFERENCE_CHANGED = false;
         }
     }

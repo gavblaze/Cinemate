@@ -71,8 +71,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public void setMovieData(List<Movie> data) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter setMovieData() called");
-        if (mMovies != null) mMovies.clear();
-        //mMovies.clear();
+        //if (mMovies != null) mMovies.clear();
         mMovies = data;
         notifyDataSetChanged();
     }

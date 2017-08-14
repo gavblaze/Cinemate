@@ -103,6 +103,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
 
                 //addFavouriteToDatabase();
 
+
                 if (isAlreadyInDataBase(receivedMovie.getmTitle())) {
                     mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
                     // we need to delete
