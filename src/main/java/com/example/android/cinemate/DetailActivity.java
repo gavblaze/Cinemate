@@ -53,11 +53,6 @@ public class DetailActivity extends AppCompatActivity {
             mOverviewTextView.setText(movie.getmOverView());
             Picasso.with(this)
                     .load(posterUrl)
-                    .noPlaceholder()
-                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-                    .memoryPolicy(MemoryPolicy.NO_STORE)
-                    .networkPolicy(NetworkPolicy.NO_CACHE)
-                    .networkPolicy(NetworkPolicy.NO_STORE)
                     .into(mPosterImageView);
             mReleaseDateTextView.setText(movie.getmReleaseDate());
             mRatingTextView.setText(movie.getmVoteAverage());

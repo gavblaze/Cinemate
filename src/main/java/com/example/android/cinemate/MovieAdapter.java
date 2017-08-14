@@ -69,11 +69,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         Picasso.with(context)
                 .load(imageUrl)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .memoryPolicy(MemoryPolicy.NO_STORE)
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .networkPolicy(NetworkPolicy.NO_STORE)
-                .noPlaceholder()
                 .into(holder.mImageView);
 
         Picasso.with(context).invalidate(imageUrl);
