@@ -6,9 +6,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +41,8 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
 
     private String mUrlPosterPath;
 
+    private Movie mReceivedMovie;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +56,14 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
 
         Intent intentThatStartedActivity = getIntent();
-        final Movie receivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
+        //final Movie receivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
 
-        mDetailMovieTitle.setText(receivedMovie.getmTitle());
-        mDetailMovieOverView.setText(receivedMovie.getmOverview());
-        mDetailMovieRating.setText(receivedMovie.getmRating());
-        mDetailMovieReleaseDate.setText(receivedMovie.getmReleaseDate());
+        mReceivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
+
+        mDetailMovieTitle.setText(mReceivedMovie.getmTitle());
+        mDetailMovieOverView.setText(mReceivedMovie.getmOverview());
+        mDetailMovieRating.setText(mReceivedMovie.getmRating());
+        mDetailMovieReleaseDate.setText(mReceivedMovie.getmReleaseDate());
 
 
         // Create the DB helper (this will create the database if run for the first time)
@@ -64,13 +72,13 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         mDb = mDbHelper.getWritableDatabase();
 
 
-        mUrlPosterPath = receivedMovie.getmPosterPath();
+        mUrlPosterPath = mReceivedMovie.getmPosterPath();
         String urlForImage = ImageUtils.getMovieImage(mUrlPosterPath, BASE_IMAGE_SIZE);
         Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
-        if (isAlreadyInDataBase(receivedMovie.getmTitle())) {
+        if (isInDatabase(mReceivedMovie.getmId())) {
             mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
         } else {
             mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
@@ -104,22 +112,34 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
                 //addFavouriteToDatabase();
 
 
-                if (isAlreadyInDataBase(receivedMovie.getmTitle())) {
+//                if (isAlreadyInDataBase(receivedMovie.getmTitle())) {
+//                    mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+//                    // we need to delete
+//                    deleteFromDataBase(receivedMovie.getmTitle());
+//                    Toast.makeText(getApplicationContext(), "Deleted from favourites", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    addFavouriteToDatabase();
+//                    mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
+//                    Toast.makeText(getApplicationContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
+//                }
+                if (isInDatabase(mReceivedMovie.getmId())) {
                     mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-                    // we need to delete
-                    deleteFromDataBase(receivedMovie.getmTitle());
-                    Toast.makeText(getApplicationContext(), "Deleted from favourites", Toast.LENGTH_SHORT).show();
+                    deleteFromFavouritesDb(mReceivedMovie.getmId());
+                    //Toast.makeText(getApplicationContext(), "deleted from faves", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Items in db = " + getCount(), Toast.LENGTH_SHORT).show();
                 } else {
-                    addFavouriteToDatabase();
+                    addToFavouritesDb();
                     mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
-                    Toast.makeText(getApplicationContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "added to faves", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Items in db = " + getCount(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
 
-    public long addFavouriteToDatabase() {
+    public long addToFavouritesDb() {
+        int id = mReceivedMovie.getmId();
         String title = mDetailMovieTitle.getText().toString();
         String overview = mDetailMovieOverView.getText().toString();
         String posterpath = mUrlPosterPath;
@@ -127,6 +147,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         String voteaverage = mDetailMovieRating.getText().toString();
 
         ContentValues values = new ContentValues();
+        values.put(FavouriteEntry._ID, id);
         values.put(FavouriteEntry.COLUMN_NAME_TITLE, title);
         values.put(FavouriteEntry.COLUMN_NAME_OVERVIEW, overview);
         values.put(FavouriteEntry.COLUMN_POSTER_PATH, posterpath);
@@ -135,31 +156,67 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
 
         long newRowId = mDb.insert(FavouriteEntry.TABLE_NAME, null, values);
 
-        //Toast.makeText(this, "items in database: " + newRowId, Toast.LENGTH_SHORT).show();
+        //Snackbar.make(findViewById(R.id.recyclerView), "Row id: " + newRowId, Snackbar.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Row id: " + newRowId, Toast.LENGTH_SHORT).show();
 
         return newRowId;
     }
 
-    public void deleteFromDataBase(String title) {
-        // Define 'where' part of query.
-        String selection = FavouriteEntry.COLUMN_NAME_TITLE + " LIKE ?";
-// Specify arguments in placeholder order.
-        String[] selectionArgs = {title};
-// Issue SQL statement.
-        mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
+//    public void deleteFromDataBase(String title) {
+//        // Define 'where' part of query.
+//        String selection = FavouriteEntry.COLUMN_NAME_TITLE + " LIKE ?";
+//// Specify arguments in placeholder order.
+//        String[] selectionArgs = {title};
+//// Issue SQL statement.
+//        mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
+//
+//    }
 
+    public void deleteFromFavouritesDb(int id) {
+        String selection = FavouriteEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
     }
 
-    public boolean isAlreadyInDataBase(String title) {
+//    public boolean isAlreadyInDataBase(String title) {
+//        mDb = mDbHelper.getReadableDatabase();
+//
+//        // Define a projection that specifies which columns from the database
+//// you will actually use after this query.
+//        String[] projection = {
+//                FavouriteEntry.COLUMN_NAME_TITLE
+//        };
+//        String selection = FavouriteEntry.COLUMN_NAME_TITLE + " = ?";
+//        String[] selectionArgs = {title};
+//
+//        Cursor cursor = mDb.query(
+//                FavouriteEntry.TABLE_NAME,
+//                projection,
+//                selection,
+//                selectionArgs,
+//                null,
+//                null,
+//                null
+//        );
+//
+//        if (cursor.getCount() > 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+
+    public boolean isInDatabase(int id) {
         mDb = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
 // you will actually use after this query.
         String[] projection = {
-                FavouriteEntry.COLUMN_NAME_TITLE
+                FavouriteEntry._ID
         };
-        String selection = FavouriteEntry.COLUMN_NAME_TITLE + " = ?";
-        String[] selectionArgs = {title};
+        String selection = FavouriteEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
 
         Cursor cursor = mDb.query(
                 FavouriteEntry.TABLE_NAME,
@@ -176,6 +233,13 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         } else {
             return false;
         }
+    }
+
+    public int getCount() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + FavouriteEntry.TABLE_NAME, null);
+        int itemsInDb = cursor.getCount();
+        return itemsInDb;
     }
 
 

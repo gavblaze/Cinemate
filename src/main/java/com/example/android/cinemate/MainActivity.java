@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onStart() {
         super.onStart();
         if (PREFERENCE_CHANGED) {
+            mMovieAdapter.setMovieData(null);
             getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
             PREFERENCE_CHANGED = false;
         }

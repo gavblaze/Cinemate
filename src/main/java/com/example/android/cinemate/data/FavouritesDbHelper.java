@@ -18,6 +18,7 @@ public class FavouritesDbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + FavouriteEntry.TABLE_NAME + " (" +
+                    FavouriteEntry._ID + " INTEGER PRIMARY KEY," +
                     FavouriteEntry.COLUMN_NAME_TITLE + " TEXT," +
                     FavouriteEntry.COLUMN_NAME_OVERVIEW + " TEXT," +
                     FavouriteEntry.COLUMN_POSTER_PATH + " TEXT," +

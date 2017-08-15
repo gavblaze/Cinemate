@@ -71,13 +71,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public void setMovieData(List<Movie> data) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter setMovieData() called");
-        //if (mMovies != null) mMovies.clear();
         mMovies = data;
         notifyDataSetChanged();
     }
 
     /*Think about using this in future instead of passing the data in the constructor*/
-
     public interface ListItemClickHandler {
         void onItemClicked(int position);
     }

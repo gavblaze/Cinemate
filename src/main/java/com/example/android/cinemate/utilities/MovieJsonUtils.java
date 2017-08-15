@@ -37,7 +37,8 @@ public class MovieJsonUtils {
             String rating = o.getString("vote_average");
             String overView = o.getString("overview");
             String releaseDate = o.getString("release_date");
-            list.add(new Movie(title, posterPath, rating, overView, releaseDate));
+            int id = o.getInt("id");
+            list.add(new Movie(id, title, posterPath, rating, overView, releaseDate));
         }
         return list;
     }
