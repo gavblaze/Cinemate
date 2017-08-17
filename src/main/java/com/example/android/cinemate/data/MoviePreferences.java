@@ -17,8 +17,6 @@ import java.net.URL;
  */
 
 public class MoviePreferences {
-    public static final boolean DEFAULT_FLAG = false;
-    public static final String IS_FAVE = "is-fave";
     private static final String MOVIE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
 
     public static String stringUrlFromSharedPreferences(Context context) {
@@ -35,18 +33,5 @@ public class MoviePreferences {
         builder.appendPath(sortBy);
 
         return builder.toString();
-    }
-
-    public static void setFavouriteFlag(Context context, boolean flag) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(IS_FAVE, flag);
-        editor.apply();
-    }
-
-    public static boolean getFavouriteFlag(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean w = sharedPreferences.getBoolean(IS_FAVE, DEFAULT_FLAG);
-        return w;
     }
 }

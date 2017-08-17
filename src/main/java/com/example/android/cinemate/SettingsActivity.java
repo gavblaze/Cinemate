@@ -1,5 +1,6 @@
 package com.example.android.cinemate;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -54,6 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
             ListPreference listPreference = (ListPreference) preference;
             listPreference.setValue(o.toString());
             listPreference.setSummary(listPreference.getEntry());
+
             return true;
         }
 

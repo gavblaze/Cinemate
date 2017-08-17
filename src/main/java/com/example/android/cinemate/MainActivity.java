@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,7 +32,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final int LOADER_ID = 333;
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private boolean loading = true;
     private int visibleThreshold = 4;
     private int pageCount = 1;
+
+    private Toast mToast;
 
 
     /*This is just so we can get reference to our data
@@ -141,14 +145,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             pass the data to new activity based on the position of item clicked*/
         mMovieList = data;
 
-//        ConnectivityManager cm =
-//                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        boolean isConnected = activeNetwork != null &&
-//                activeNetwork.isConnectedOrConnecting();
-
-
         if (data == null) {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
             showErrorMessage();
@@ -172,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieList.get(position);
-        //intent.putExtra(Intent.EXTRA_TEXT, new Movie(movie.getmTitle(), movie.getmPosterPath(), movie.getmRating(), movie.getmOverview(), movie.getmReleaseDate()));
         intent.putExtra(Intent.EXTRA_TEXT, movie);
         startActivity(intent);
     }
@@ -223,6 +218,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object o) {
+        return false;
     }
 }
 

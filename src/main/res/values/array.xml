@@ -3,11 +3,14 @@
     <string-array name="list_pref_entries">
         <item>@string/most_popular_label</item>
         <item>@string/top_rated_label</item>
+        <item>Favourites</item>
     </string-array>
 
     <string-array name="list_pref_entry_values">
         <item>@string/most_populary_value</item>
         <item>@string/top_rated_value</item>
+        <item>@string/favourite_value</item>
     </string-array>
+
 
 </resources>

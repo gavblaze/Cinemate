@@ -2,17 +2,12 @@ package com.example.android.cinemate;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,11 +18,10 @@ import android.widget.Toast;
 
 import com.example.android.cinemate.data.FavouritesContract.FavouriteEntry;
 import com.example.android.cinemate.data.FavouritesDbHelper;
-import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class DetailActivity extends AppCompatActivity {
 
     private static final String BASE_IMAGE_SIZE = "w185";
     private TextView mDetailMovieTitle;
@@ -132,6 +126,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
                     mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
                     //Toast.makeText(getApplicationContext(), "added to faves", Toast.LENGTH_SHORT).show();
                     Toast.makeText(getApplicationContext(), "Items in db = " + getCount(), Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -156,55 +151,14 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
 
         long newRowId = mDb.insert(FavouriteEntry.TABLE_NAME, null, values);
 
-        //Snackbar.make(findViewById(R.id.recyclerView), "Row id: " + newRowId, Snackbar.LENGTH_SHORT).show();
-        //Toast.makeText(this, "Row id: " + newRowId, Toast.LENGTH_SHORT).show();
-
         return newRowId;
     }
-
-//    public void deleteFromDataBase(String title) {
-//        // Define 'where' part of query.
-//        String selection = FavouriteEntry.COLUMN_NAME_TITLE + " LIKE ?";
-//// Specify arguments in placeholder order.
-//        String[] selectionArgs = {title};
-//// Issue SQL statement.
-//        mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
-//
-//    }
 
     public void deleteFromFavouritesDb(int id) {
         String selection = FavouriteEntry._ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
         mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
     }
-
-//    public boolean isAlreadyInDataBase(String title) {
-//        mDb = mDbHelper.getReadableDatabase();
-//
-//        // Define a projection that specifies which columns from the database
-//// you will actually use after this query.
-//        String[] projection = {
-//                FavouriteEntry.COLUMN_NAME_TITLE
-//        };
-//        String selection = FavouriteEntry.COLUMN_NAME_TITLE + " = ?";
-//        String[] selectionArgs = {title};
-//
-//        Cursor cursor = mDb.query(
-//                FavouriteEntry.TABLE_NAME,
-//                projection,
-//                selection,
-//                selectionArgs,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        if (cursor.getCount() > 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
 
 
     public boolean isInDatabase(int id) {
@@ -271,28 +225,6 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         intent.putExtra(Intent.EXTRA_TEXT, mDetailMovieOverView.getText());
         intent.setType("text/plain");
         startActivity(intent);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(MoviePreferences.IS_FAVE)) {
-        }
-
-//    @Override
-//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//
-//        if (key.equals(MoviePreferences.IS_FAVE)) {
-//            IS_FAVOURITE = MoviePreferences.getFavouriteFlag(this);
-//            MoviePreferences.setFavouriteFlag(this, IS_FAVOURITE);
-//        }
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-//    }
     }
 }
 
