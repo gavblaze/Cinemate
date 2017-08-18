@@ -37,7 +37,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.i(LOG_TAG, "TEST.......MovieAdapter onCreateViewHolder() called");
+        //Log.i(LOG_TAG, "TEST.......MovieAdapter onCreateViewHolder() called");
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
@@ -58,7 +58,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         Context context = holder.mPosterImageView.getContext();
 
-        Picasso.with(context).load(urlImageString).memoryPolicy(MemoryPolicy.NO_STORE).into(holder.mPosterImageView);
+        Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
 
         holder.mPosterImageView.setTag(position);
     }
@@ -70,7 +70,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public void setMovieData(List<Movie> data) {
-        Log.i(LOG_TAG, "TEST.......MovieAdapter setMovieData() called");
+        //Log.i(LOG_TAG, "TEST.......MovieAdapter setMovieData() called");
         mMovies = data;
         notifyDataSetChanged();
     }
