@@ -3,7 +3,7 @@
     <string-array name="list_pref_entries">
         <item>@string/most_popular_label</item>
         <item>@string/top_rated_label</item>
-        <item>Favourites</item>
+        <item>@string/favourite_label</item>
     </string-array>
 
     <string-array name="list_pref_entry_values">

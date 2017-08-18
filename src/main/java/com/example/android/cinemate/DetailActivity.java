@@ -1,6 +1,7 @@
 package com.example.android.cinemate;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +22,9 @@ import com.example.android.cinemate.data.FavouritesDbHelper;
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailActivity extends AppCompatActivity {
 
     private static final String BASE_IMAGE_SIZE = "w185";
@@ -37,6 +41,34 @@ public class DetailActivity extends AppCompatActivity {
 
     private Movie mReceivedMovie;
 
+    public static List<Movie> getFavourites(Context context) {
+        ArrayList<Movie> data = new ArrayList<>();
+        //mDb = mDbHelper.getReadableDatabase();
+        FavouritesDbHelper dbHelper = new FavouritesDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+
+        // Define a projection that specifies which columns from the database
+// you will actually use after this query.
+        String[] projection = {
+                FavouriteEntry.COLUMN_POSTER_PATH
+        };
+
+        Cursor cursor = db.query(
+                FavouriteEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        Movie movie = null;
+        while (cursor.moveToNext()) {
+            data.add(movie);
+        }
+        return data;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +82,6 @@ public class DetailActivity extends AppCompatActivity {
         mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
 
         Intent intentThatStartedActivity = getIntent();
-        //final Movie receivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
 
         mReceivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
 
@@ -132,7 +163,6 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-
     public long addToFavouritesDb() {
         int id = mReceivedMovie.getmId();
         String title = mDetailMovieTitle.getText().toString();
@@ -159,7 +189,6 @@ public class DetailActivity extends AppCompatActivity {
         String[] selectionArgs = {String.valueOf(id)};
         mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
     }
-
 
     public boolean isInDatabase(int id) {
         mDb = mDbHelper.getReadableDatabase();
@@ -195,7 +224,6 @@ public class DetailActivity extends AppCompatActivity {
         int itemsInDb = cursor.getCount();
         return itemsInDb;
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
