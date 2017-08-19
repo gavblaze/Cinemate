@@ -1,21 +1,24 @@
 package com.example.android.cinemate;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
@@ -25,6 +28,10 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mLanguageTextView;
     private TextView mReleaseDateTextView;
     private TextView mRatingTextView;
+    private FloatingActionButton mFab;
+
+    private Movie mMovie;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,27 +46,89 @@ public class DetailActivity extends AppCompatActivity {
 
         Intent intentThatStartedActivity = getIntent();
         if (intentThatStartedActivity.hasExtra(Intent.ACTION_MAIN)) {
-            Movie movie = intentThatStartedActivity.getExtras().getParcelable(Intent.ACTION_MAIN);
+            mMovie = intentThatStartedActivity.getExtras().getParcelable(Intent.ACTION_MAIN);
 
             Uri baseUri = Uri.parse(TmdbUrlUtils.BASE_POSTER_URL);
             Uri.Builder builder = baseUri.buildUpon();
             builder.appendPath(TmdbUrlUtils.POSTER_SIZE);
-            builder.appendEncodedPath(movie.getmPosterPath());
+            builder.appendEncodedPath(mMovie.getmPosterPath());
             String posterUrl = builder.toString();
 
             Context context = mPosterImageView.getContext();
 
-            mTitleTextView.setText(movie.getmTitle());
-            mOverviewTextView.setText(movie.getmOverView());
+            mTitleTextView.setText(mMovie.getmTitle());
+            mOverviewTextView.setText(mMovie.getmOverView());
             Picasso.with(this)
                     .load(posterUrl)
                     .into(mPosterImageView);
-            mReleaseDateTextView.setText(movie.getmReleaseDate());
-            mRatingTextView.setText(movie.getmVoteAverage());
+            mReleaseDateTextView.setText(mMovie.getmReleaseDate());
+            mRatingTextView.setText(mMovie.getmVoteAverage());
 
             Picasso.with(context).invalidate(posterUrl);
 
         }
+
+
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+
+        if (isInDatabase(mMovie.getmId())) {
+            mFab.setImageResource(R.drawable.ic_star_black_24dp);
+        }
+
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isInDatabase(mMovie.getmId())) {
+                    mFab.setImageResource(R.drawable.ic_star_black_24dp);
+                    addToFavourites();
+                    Toast.makeText(getApplicationContext(), "Items in db: " + getCount(), Toast.LENGTH_SHORT).show();
+                } else {
+                    mFab.setImageResource(R.drawable.ic_star_border_black_24dp);
+                    deleteFromFavourites(mMovie.getmId());
+                    Toast.makeText(getApplicationContext(), "Items in db: " + getCount(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public boolean isInDatabase(int id) {
+
+        String[] projection = {MovieEntry.COLUMN_NAME_ID};
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = getContentResolver().query(MovieEntry.CONTENT_URI, projection, selection, selectionArgs, null);
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return ((cursor != null ? cursor.getCount() : 0) > 0);
+    }
+
+
+    public void addToFavourites() {
+        ContentValues values = new ContentValues();
+        values.put(MovieEntry.COLUMN_NAME_ID, mMovie.getmId());
+        values.put(MovieEntry.COLUMN_NAME_TITLE, mMovie.getmTitle());
+        values.put(MovieEntry.COLUMN_NAME_OVERVIEW, mMovie.getmOverView());
+        values.put(MovieEntry.COLUMN_NAME_POSTER_PATH, mMovie.getmPosterPath());
+        values.put(MovieEntry.COLUMN_NAME_LANGUAGE, mMovie.getmLanguage());
+        values.put(MovieEntry.COLUMN_NAME_RELEASE_DATE, mMovie.getmReleaseDate());
+        values.put(MovieEntry.COLUMN_NAME_VOTE_AVERAGE, mMovie.getmVoteAverage());
+        getContentResolver().insert(MovieEntry.CONTENT_URI, values);
+    }
+
+    public void deleteFromFavourites(int id) {
+        String selection = MovieEntry.COLUMN_NAME_ID;
+        String[] selectionArgs = {String.valueOf(id)};
+        getContentResolver().delete(ContentUris.withAppendedId(MovieEntry.CONTENT_URI, id), selection, selectionArgs);
+    }
+
+    public int getCount() {
+        Cursor cursor = getContentResolver().query(MovieEntry.CONTENT_URI, null, null, null, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 
     @Override

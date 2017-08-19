@@ -8,11 +8,22 @@
     android:background="#b2dfdb"
     tools:context="com.example.android.cinemate.DetailActivity">
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="47dp"
+        android:layout_marginRight="27dp"
+        android:src="@drawable/ic_star_border_black_24dp"
+        app:layout_constraintBottom_toTopOf="@+id/detailOverview"
+        app:layout_constraintRight_toRightOf="parent"/>
+
     <ImageView
         android:id="@+id/detailMoviePoster"
         android:layout_width="69dp"
         android:layout_height="105dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailTitle"
@@ -34,9 +45,6 @@
         style="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_width="0dp"
         android:layout_height="69dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
         android:gravity="center_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -48,6 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginLeft="130dp"
+        android:layout_marginStart="130dp"
         android:layout_marginTop="10dp"
         app:layout_constraintLeft_toRightOf="@+id/detailMoviePoster"
         app:layout_constraintTop_toBottomOf="@+id/detailTitle"
@@ -57,7 +66,6 @@
         android:id="@+id/detailRating"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginLeft="0dp"
         android:layout_marginTop="7dp"
         app:layout_constraintLeft_toLeftOf="@+id/detailYear"
         app:layout_constraintTop_toBottomOf="@+id/detailYear"

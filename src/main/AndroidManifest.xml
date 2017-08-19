@@ -31,6 +31,11 @@
             android:parentActivityName=".MainActivity"
             >
         </activity>
+
+        <provider
+            android:name=".data.MovieProvider"
+            android:authorities="com.example.android.cinemate"
+            android:exported="false"/>
     </application>
 
 </manifest>

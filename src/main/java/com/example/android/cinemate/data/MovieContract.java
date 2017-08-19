@@ -1,5 +1,6 @@
 package com.example.android.cinemate.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -7,6 +8,9 @@ import android.provider.BaseColumns;
  */
 
 public final class MovieContract {
+    public static final String CONTENT_AUTHORITY = "com.example.android.cinemate";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final String PATH = "movies";
     private MovieContract() {
     }
 
@@ -19,5 +23,7 @@ public final class MovieContract {
         public static final String COLUMN_NAME_LANGUAGE = "language";
         public static final String COLUMN_NAME_RELEASE_DATE = "releasedate";
         public static final String COLUMN_NAME_VOTE_AVERAGE = "voteaverage";
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH);
     }
 }
