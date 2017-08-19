@@ -3,7 +3,6 @@ package com.example.android.cinemate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.example.android.cinemate.utilities.EndlessRecyclerViewScrollListener;
 import com.example.android.cinemate.utilities.MovieLoader;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -59,15 +57,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mGridLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
 
-
         mMovieAdapter = new MovieAdapter(this);
 
         mRecyclerView.setAdapter(mMovieAdapter);
 
+        String preference = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.sort_order_key), getString(R.string.top_rated_value));
 
         mLoaderManager = getSupportLoaderManager();
 
         mLoaderManager.initLoader(LOADER_ID, null, this);
+
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
@@ -114,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
+
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
         String currentPage;
@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             currentPage = args.getString(KEY);
         }
         return new MovieLoader(this, TmdbUrlUtils.builtUrl(this, currentPage));
+
     }
 
     @Override
