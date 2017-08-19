@@ -65,7 +65,6 @@ public class DetailActivity extends AppCompatActivity {
             mRatingTextView.setText(mMovie.getmVoteAverage());
 
             Picasso.with(context).invalidate(posterUrl);
-
         }
 
 
