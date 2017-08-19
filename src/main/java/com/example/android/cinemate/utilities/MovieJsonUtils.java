@@ -32,6 +32,7 @@ public class MovieJsonUtils {
 
         for (int i = 0; i < results.length(); i++) {
             JSONObject o = results.getJSONObject(i);
+            int movieId = o.getInt("id");
             String title = o.getString("title");
             String overview = o.getString("overview");
             String posterPath = o.getString("poster_path");
@@ -40,7 +41,7 @@ public class MovieJsonUtils {
             String voteAverage = o.getString("vote_average");
 
 
-            list.add(new Movie(title, overview, posterPath, language, releaseDate, voteAverage));
+            list.add(new Movie(movieId, title, overview, posterPath, language, releaseDate, voteAverage));
         }
         return list;
     }

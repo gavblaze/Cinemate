@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void loadNextDataFromApi(int offset) {
-        Log.i(LOG_TAG, "MainActivity loadNetDataFromApi() called");
+        Log.i(LOG_TAG, "MainActivity loadNextDataFromApi() called");
         // Send an API request to retrieve appropriate paginated data
         //  --> Send the request including an offset value (i.e `page`) as a query parameter.
         //  --> Deserialize and construct new model objects from the API response
