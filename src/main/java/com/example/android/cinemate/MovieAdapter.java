@@ -1,6 +1,7 @@
 package com.example.android.cinemate;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.cinemate.data.MovieContract;
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
@@ -28,7 +30,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     private static final String BASE_IMAGE_SIZE = "w185";
 
-    List<Movie> mMovies;
+    Cursor mCursor;
+
+
     private ListItemClickHandler mListItemClickHandler;
 
     public MovieAdapter(ListItemClickHandler listItemClicked) {
@@ -51,31 +55,33 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        mCursor.moveToPosition(position);
 
-        String path = mMovies.get(position).getmPosterPath();
+        int posterpathIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH);
+        String imgpath = mCursor.getString(posterpathIndex);
 
-        String urlImageString = ImageUtils.getMovieImage(path, BASE_IMAGE_SIZE);
+
+        String urlImageString = ImageUtils.getMovieImage(imgpath, BASE_IMAGE_SIZE);
 
         Context context = holder.mPosterImageView.getContext();
 
         Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
 
-        holder.mPosterImageView.setTag(position);
     }
 
     @Override
     public int getItemCount() {
-        if (null == mMovies) return 0;
-            return mMovies.size();
+        if (mCursor == null) return 0;
+        return mCursor.getCount();
     }
 
-    public void setMovieData(List<Movie> data) {
-        //Log.i(LOG_TAG, "TEST.......MovieAdapter setMovieData() called");
-        mMovies = data;
+    public void swapCursor(Cursor newValue) {
+        mCursor = newValue;
         notifyDataSetChanged();
+        ;
     }
 
-    /*Think about using this in future instead of passing the data in the constructor*/
+
     public interface ListItemClickHandler {
         void onItemClicked(int position);
     }

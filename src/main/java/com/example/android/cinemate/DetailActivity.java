@@ -1,8 +1,6 @@
 package com.example.android.cinemate;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,14 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.data.MovieDbHelper;
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
 

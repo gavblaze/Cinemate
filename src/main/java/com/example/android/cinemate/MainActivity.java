@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,18 +20,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.cinemate.data.DataUtils;
 import com.example.android.cinemate.data.MovieContract;
 import com.example.android.cinemate.data.MovieDbHelper;
-import com.example.android.cinemate.data.MoviePreferences;
-import com.example.android.cinemate.utilities.MovieLoader;
+import com.example.android.cinemate.data.TmdbUrlUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
 
@@ -50,8 +45,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 *
 **/
 
-    private static final int LOADER_JSON = 0;
-    private static final int LOADER_DB = 1;
+    private static final int LOADER = 0;
 
     private static boolean PREFERENCE_CHANGED = false;
     private MovieAdapter mMovieAdapter;
@@ -72,125 +66,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     /*This is just so we can get reference to our data
     * based on the clicked position*/
 
-    private List<Movie> mMovieList = new ArrayList<>();
+    //private List<Movie> mMovieList = new ArrayList<>();
 
-
-    private LoaderManager.LoaderCallbacks<List<Movie>> movieFromJson = new LoaderManager.LoaderCallbacks<List<Movie>>() {
-        @Override
-        public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-            Log.i(LOG_TAG, "TEST.......movieFromJson onCreateLoader() called");
-            return new MovieLoader(MainActivity.this, MoviePreferences.stringUrlFromSharedPreferences(getApplicationContext()));
-        }
-
-        @Override
-        public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
-            Log.i(LOG_TAG, "TEST.......movieFromJson onLoadFinished() called");
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-
-            mMovieAdapter.setMovieData(data);
-
-         /*We declared this so we can initialise the list and
-            pass the data to new activity based on the position of item clicked*/
-            mMovieList = data;
-
-            if (data == null) {
-                Toast.makeText(MainActivity.this, "No data", Toast.LENGTH_SHORT).show();
-                showErrorMessage();
-            } else {
-                showMovieDataView();
-
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<List<Movie>> loader) {
-            Log.i(LOG_TAG, "TEST.......movieFromJson loaderReset() called");
-            mMovieAdapter.setMovieData(null);
-
-        }
-    };
-
-    private LoaderManager.LoaderCallbacks<List<Movie>> movieFromDb = new LoaderManager.LoaderCallbacks<List<Movie>>() {
-        List<Movie> mData;
-
-        @Override
-        public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-            Log.i(LOG_TAG, "TEST.......movieFromDb onCreateLoader() called");
-
-            return new AsyncTaskLoader<List<Movie>>(MainActivity.this) {
-                @Override
-                protected void onStartLoading() {
-                    if (mData != null) {
-                        deliverResult(mData);
-                    } else {
-                        forceLoad();
-                    }
-                }
-
-                @Override
-                public List<Movie> loadInBackground() {
-                    Log.i(LOG_TAG, "TEST.......movieFromDb loadInBackGround() called");
-
-                    mDb = mDbHelper.getReadableDatabase();
-                    ArrayList<Movie> data = new ArrayList<>();
-                    mCursor = mDb.query(
-                            MovieContract.MovieEntry.TABLE_NAME,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null
-                    );
-
-                    while (mCursor.moveToNext()) {
-                        int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.MovieEntry._ID));
-                        String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_TITLE));
-                        String posterPath = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH));
-                        String rating = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE));
-                        String overview = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_OVERVIEW));
-                        String releasedate = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE));
-                        data.add(new Movie(id, title, posterPath, rating, overview, releasedate));
-                    }
-                    mCursor.close();
-                    return data;
-                }
-
-                @Override
-                public void deliverResult(List<Movie> data) {
-                    //Log.i(LOG_TAG, "TEST.......MovieLoader deliverResult() called");
-                    mData = data;
-                    super.deliverResult(data);
-                }
-            };
-
-
-        }
-
-        @Override
-        public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
-            Log.i(LOG_TAG, "TEST.......movieFromDb onLoadFinished() called");
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-
-            mMovieAdapter.setMovieData(data);
-
-         /*We declared this so we can initialise the list and
-            pass the data to new activity based on the position of item clicked*/
-            mMovieList = data;
-
-            if (data == null) {
-                Toast.makeText(MainActivity.this, "No data", Toast.LENGTH_SHORT).show();
-                showErrorMessage();
-            } else {
-                showMovieDataView();
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<List<Movie>> loader) {
-            mMovieAdapter.setMovieData(null);
-        }
-    };
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -205,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mEmptyTextView = (TextView) findViewById(R.id.emptyStateTextView);
 
-        mLoadingIndicator.setVisibility(View.VISIBLE);
+        //mLoadingIndicator.setVisibility(View.VISIBLE);
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -216,31 +93,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
+        showLoading();
+
         mLoaderManager = getSupportLoaderManager();
 
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("sort_order_key", "top_rated");
 
         mDbHelper = new MovieDbHelper(this);
 
-        if (mPref.equals(getString(R.string.favourite_value))) {
+        mLoaderManager.initLoader(LOADER, null, this);
+
+        DataUtils task = new DataUtils(this);
+        task.execute(TmdbUrlUtils.MOVIE_URL);
 
 
-            mLoaderManager.initLoader(LOADER_DB, null, movieFromDb);
-
-        } else {
-
-            mLoaderManager.initLoader(LOADER_JSON, null, movieFromJson);
-        }
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
     }
 
-    public void showMovieDataView() {
-        mEmptyTextView.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
+//    public void showMovieDataView() {
+//        mEmptyTextView.setVisibility(View.INVISIBLE);
+//        mRecyclerView.setVisibility(View.VISIBLE);
+//    }
 
     public void showErrorMessage() {
         mRecyclerView.setVisibility(View.INVISIBLE);
@@ -248,17 +124,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
 
-    private void invalidateData() {
-        Log.i(LOG_TAG, "TEST.......MainActivity invalidateData() called");
-        mMovieAdapter.setMovieData(null);
-    }
+//    private void invalidateData() {
+//        Log.i(LOG_TAG, "TEST.......MainActivity invalidateData() called");
+//        mMovieAdapter.setMovieData(null);
+//    }
 
     @Override
     public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        Movie movie = mMovieList.get(position);
-        intent.putExtra(Intent.EXTRA_TEXT, movie);
-        startActivity(intent);
+//        Movie movie = mMovieList.get(position);
+//        intent.putExtra(Intent.EXTRA_TEXT, movie);
+//        startActivity(intent);
     }
 
     @Override
@@ -275,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         switch (id) {
             case R.id.refresh:
                 mLoadingIndicator.setVisibility(View.VISIBLE);
-                showMovieDataView();
-                invalidateData();
-                getSupportLoaderManager().restartLoader(LOADER_JSON, null, movieFromJson);
+                //showMovieDataView();
+                //invalidateData();
+                getSupportLoaderManager().restartLoader(LOADER, null, this);
                 return true;
             case R.id.settings:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -291,13 +167,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
         PREFERENCE_CHANGED = true;
+    }
 
-        String p = sharedPreferences.getString(key, getString(R.string.most_populary_value));
-        if (p.equals(getString(R.string.favourite_value))) {
-            mLoaderManager.restartLoader(LOADER_DB, null, movieFromDb);
-        } else {
-            mLoaderManager.restartLoader(LOADER_JSON, null, movieFromJson);
-        }
+    private void showMovieDataView() {
+        /* First, hide the loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        /* Finally, make sure the weather data is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * This method will make the loading indicator visible and hide the weather View and error
+     * message.
+     * <p>
+     * Since it is okay to redundantly set the visibility of a View, we don't need to check whether
+     * each view is currently visible or invisible.
+     */
+    private void showLoading() {
+        /* Then, hide the weather data */
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        /* Finally, show the loading indicator */
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -315,6 +205,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        showMovieDataView();
+        mMovieAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMovieAdapter.swapCursor(null);
     }
 }
 

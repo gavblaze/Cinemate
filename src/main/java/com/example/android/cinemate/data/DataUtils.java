@@ -31,7 +31,7 @@ public class DataUtils extends AsyncTask<String, Void, List<Movie>> {
     protected List<Movie> doInBackground(String... strings) {
         String i = strings[0];
         if (i.isEmpty()) return null;
-        String url = NetworkUtils.getDataFromNetwork(TmdbUrlUtils.MOVIE_URL);
+        String url = NetworkUtils.getDataFromNetwork(i);
         try {
             return MovieJsonUtils.parseJson(url);
         } catch (JSONException e) {
