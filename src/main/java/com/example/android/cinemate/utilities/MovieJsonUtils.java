@@ -1,5 +1,7 @@
 package com.example.android.cinemate.utilities;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -11,6 +13,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.android.cinemate.data.MovieContract.MovieEntry;
 
 /**
  * Created by Gavin on 31-Jul-17.
@@ -25,10 +29,11 @@ public class MovieJsonUtils {
         if (TextUtils.isEmpty(jsonString)) {
             return null;
         }
-        List<Movie> list = new ArrayList<>();
 
         JSONObject root = new JSONObject(jsonString);
         JSONArray results = root.getJSONArray("results");
+
+        List<Movie> list = new ArrayList<>();
 
         for (int i = 0; i < results.length(); i++) {
             JSONObject o = results.getJSONObject(i);
@@ -39,6 +44,7 @@ public class MovieJsonUtils {
             String releaseDate = o.getString("release_date");
             int id = o.getInt("id");
             list.add(new Movie(id, title, posterPath, rating, overView, releaseDate));
+
         }
         return list;
     }

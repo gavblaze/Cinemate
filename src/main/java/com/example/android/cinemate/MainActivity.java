@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,8 +22,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.cinemate.data.FavouritesContract;
-import com.example.android.cinemate.data.FavouritesDbHelper;
+import com.example.android.cinemate.data.DataUtils;
+import com.example.android.cinemate.data.MovieContract;
+import com.example.android.cinemate.data.MovieDbHelper;
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.MovieLoader;
 
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private TextView mEmptyTextView;
 
     private SQLiteDatabase mDb;
-    private FavouritesDbHelper mDbHelper;
+    private MovieDbHelper mDbHelper;
 
     private Cursor mCursor;
 
@@ -106,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         @Override
         public void onLoaderReset(Loader<List<Movie>> loader) {
             Log.i(LOG_TAG, "TEST.......movieFromJson loaderReset() called");
+            mMovieAdapter.setMovieData(null);
 
         }
     };
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                     mDb = mDbHelper.getReadableDatabase();
                     ArrayList<Movie> data = new ArrayList<>();
                     mCursor = mDb.query(
-                            FavouritesContract.FavouriteEntry.TABLE_NAME,
+                            MovieContract.MovieEntry.TABLE_NAME,
                             null,
                             null,
                             null,
@@ -144,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                     );
 
                     while (mCursor.moveToNext()) {
-                        int id = mCursor.getInt(mCursor.getColumnIndex(FavouritesContract.FavouriteEntry._ID));
-                        String title = mCursor.getString(mCursor.getColumnIndex(FavouritesContract.FavouriteEntry.COLUMN_NAME_TITLE));
-                        String posterPath = mCursor.getString(mCursor.getColumnIndex(FavouritesContract.FavouriteEntry.COLUMN_POSTER_PATH));
-                        String rating = mCursor.getString(mCursor.getColumnIndex(FavouritesContract.FavouriteEntry.COLUMN_NAME_VOTE_AVERAGE));
-                        String overview = mCursor.getString(mCursor.getColumnIndex(FavouritesContract.FavouriteEntry.COLUMN_NAME_OVERVIEW));
-                        String releasedate = mCursor.getString(mCursor.getColumnIndex(FavouritesContract.FavouriteEntry.COLUMN_NAME_RELEASE_DATE));
+                        int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.MovieEntry._ID));
+                        String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_TITLE));
+                        String posterPath = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH));
+                        String rating = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE));
+                        String overview = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_OVERVIEW));
+                        String releasedate = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE));
                         data.add(new Movie(id, title, posterPath, rating, overview, releasedate));
                     }
                     mCursor.close();
@@ -184,12 +184,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             } else {
                 showMovieDataView();
             }
-
         }
 
         @Override
         public void onLoaderReset(Loader<List<Movie>> loader) {
-
+            mMovieAdapter.setMovieData(null);
         }
     };
 
@@ -221,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("sort_order_key", "top_rated");
 
-        mDbHelper = new FavouritesDbHelper(this);
+        mDbHelper = new MovieDbHelper(this);
 
         if (mPref.equals(getString(R.string.favourite_value))) {
 
@@ -278,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                 mLoadingIndicator.setVisibility(View.VISIBLE);
                 showMovieDataView();
                 invalidateData();
-                getSupportLoaderManager().restartLoader(5, null, movieFromJson);
+                getSupportLoaderManager().restartLoader(LOADER_JSON, null, movieFromJson);
                 return true;
             case R.id.settings:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
