@@ -62,6 +62,7 @@ public class MovieProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -76,13 +77,17 @@ public class MovieProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
+        Uri uriOfInserted;
         switch (match) {
             case MOVIE:
                 long idOfMovieInserted = db.insert(MovieEntry.TABLE_NAME, null, contentValues);
-                return ContentUris.withAppendedId(uri, idOfMovieInserted);
+                uriOfInserted = ContentUris.withAppendedId(uri, idOfMovieInserted);
+                break;
             default:
                 throw new IllegalArgumentException("Insertion is not succesfull for " + uri);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return uriOfInserted;
     }
 
     @Override

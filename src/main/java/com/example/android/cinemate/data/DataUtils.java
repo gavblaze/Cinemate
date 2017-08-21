@@ -51,6 +51,7 @@ public class DataUtils extends AsyncTask<String, Void, List<Movie>> {
             values.put(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH, movie.getmPosterPath());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE, movie.getmReleaseDate());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getmRating());
+            values.put(MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER, MoviePreferences.getValueFromPreferences(mContext));
             mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
         }
     }

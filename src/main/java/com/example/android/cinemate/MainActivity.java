@@ -20,14 +20,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.data.DataUtils;
 import com.example.android.cinemate.data.MovieContract;
 import com.example.android.cinemate.data.MovieDbHelper;
+import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.data.TmdbUrlUtils;
+import com.example.android.cinemate.data.MovieContract.MovieEntry;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final int INDEX_MOVIE_ID = 0;
 
 
 /*In this less than ideal situation while trying to implement the favourites part of the project I realised that
@@ -44,46 +47,37 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 *  use otherLoader
 *
 **/
-
+public static final int INDEX_MOVIE_TITLE = 1;
+    public static final int INDEX_MOVIE_OVERVIEW = 2;
+    public static final int INDEX_MOVIE_POSTERPATH = 3;
+    public static final int INDEX_MOVIE_RELEASE_DATE = 4;
+    public static final int INDEX_MOVIE_VOTE_AVERAGE = 5;
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
-
     private static boolean PREFERENCE_CHANGED = false;
+    private static String[] MOVIE_TABLE_PROJECTION = {
+            MovieEntry.COLUMN_NAME_ID,
+            MovieEntry.COLUMN_NAME_TITLE,
+            MovieEntry.COLUMN_NAME_OVERVIEW,
+            MovieEntry.COLUMN_NAME_POSTER_PATH,
+            MovieEntry.COLUMN_NAME_RELEASE_DATE,
+            MovieEntry.COLUMN_NAME_VOTE_AVERAGE,
+            MovieEntry.COLUMN_NAME_SORT_ORDER
+    };
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutMananger;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
-    private TextView mEmptyTextView;
 
-    private SQLiteDatabase mDb;
-    private MovieDbHelper mDbHelper;
-
-    private Cursor mCursor;
-
-
-    private String mPref;
-
-    /*This is just so we can get reference to our data
-    * based on the clicked position*/
-
-    //private List<Movie> mMovieList = new ArrayList<>();
-
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mEmptyTextView = (TextView) findViewById(R.id.emptyStateTextView);
-
-        //mLoadingIndicator.setVisibility(View.VISIBLE);
-
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -97,45 +91,46 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mLoaderManager = getSupportLoaderManager();
 
-        mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("sort_order_key", "top_rated");
-
-        mDbHelper = new MovieDbHelper(this);
-
         mLoaderManager.initLoader(LOADER, null, this);
-
-        DataUtils task = new DataUtils(this);
-        task.execute(TmdbUrlUtils.MOVIE_URL);
-
-
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
-
-    }
-
-//    public void showMovieDataView() {
-//        mEmptyTextView.setVisibility(View.INVISIBLE);
-//        mRecyclerView.setVisibility(View.VISIBLE);
-//    }
-
-    public void showErrorMessage() {
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mEmptyTextView.setVisibility(View.VISIBLE);
     }
 
 
-//    private void invalidateData() {
-//        Log.i(LOG_TAG, "TEST.......MainActivity invalidateData() called");
-//        mMovieAdapter.setMovieData(null);
-//    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String selection = MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
+        String[] selectionArgs = {MoviePreferences.getValueFromPreferences(this)};
+        return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        showMovieDataView();
+        mMovieAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMovieAdapter.swapCursor(null);
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
+        PREFERENCE_CHANGED = true;
+    }
 
     @Override
     public void onItemClicked(int position) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-//        Movie movie = mMovieList.get(position);
-//        intent.putExtra(Intent.EXTRA_TEXT, movie);
-//        startActivity(intent);
+        Movie movie = mMovieAdapter.getItemClicked(position);
+        intent.putExtra(Intent.EXTRA_TEXT, movie);
+        startActivity(intent);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,8 +146,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         switch (id) {
             case R.id.refresh:
                 mLoadingIndicator.setVisibility(View.VISIBLE);
-                //showMovieDataView();
-                //invalidateData();
+                mMovieAdapter.swapCursor(null);
                 getSupportLoaderManager().restartLoader(LOADER, null, this);
                 return true;
             case R.id.settings:
@@ -164,40 +158,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
-        PREFERENCE_CHANGED = true;
-    }
-
-    private void showMovieDataView() {
-        /* First, hide the loading indicator */
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
-        /* Finally, make sure the weather data is visible */
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * This method will make the loading indicator visible and hide the weather View and error
-     * message.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't need to check whether
-     * each view is currently visible or invisible.
-     */
-    private void showLoading() {
-        /* Then, hide the weather data */
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        /* Finally, show the loading indicator */
-        mLoadingIndicator.setVisibility(View.VISIBLE);
-    }
-
-    @Override
     protected void onStart() {
         Log.i(LOG_TAG, "TEST.......MainActivity onStart() called");
         super.onStart();
-        //if (PREFERENCE_CHANGED) {
-        //    mMovieAdapter.setMovieData(null);
-        // }
-        // PREFERENCE_CHANGED = false;
+        DataUtils task = new DataUtils(this);
+        task.execute(TmdbUrlUtils.electedUrl(this));
+        if (PREFERENCE_CHANGED) {
+            mMovieAdapter.swapCursor(null);
+            getSupportLoaderManager().restartLoader(LOADER, null, MainActivity.this);
+        }
+        PREFERENCE_CHANGED = false;
     }
 
     @Override
@@ -207,20 +177,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, null, null, null, null);
+    private void showMovieDataView() {
+        /* First, hide the loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        /* Finally, make sure the weather data is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        showMovieDataView();
-        mMovieAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mMovieAdapter.swapCursor(null);
+    private void showLoading() {
+        /* Then, hide the weather data */
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        /* Finally, show the loading indicator */
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 }
 

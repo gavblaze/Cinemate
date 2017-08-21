@@ -24,7 +24,10 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                     MovieEntry.COLUMN_NAME_OVERVIEW + " TEXT," +
                     MovieEntry.COLUMN_NAME_POSTER_PATH + " TEXT," +
                     MovieEntry.COLUMN_NAME_RELEASE_DATE + " TEXT," +
-                    MovieEntry.COLUMN_NAME_VOTE_AVERAGE + " TEXT)";
+                    MovieEntry.COLUMN_NAME_VOTE_AVERAGE + " TEXT," +
+                    MovieEntry.COLUMN_NAME_SORT_ORDER + " TEXT," +
+                    " UNIQUE" + " (" + MovieEntry.COLUMN_NAME_ID + ")" +
+                    "ON CONFLICT REPLACE)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME;

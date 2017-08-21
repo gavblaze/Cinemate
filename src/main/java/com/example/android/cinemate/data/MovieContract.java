@@ -24,9 +24,9 @@ public class MovieContract {
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_OVERVIEW = "overview";
         public static final String COLUMN_NAME_POSTER_PATH = "posterpath";
-        //public static final String COLUMN_NAME_LANGUAGE = "language";
         public static final String COLUMN_NAME_RELEASE_DATE = "releasedate";
         public static final String COLUMN_NAME_VOTE_AVERAGE = "voteaverage";
+        public static final String COLUMN_NAME_SORT_ORDER = "sortorder";
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH);
     }

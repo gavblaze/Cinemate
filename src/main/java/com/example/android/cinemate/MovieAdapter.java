@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.data.MovieContract;
 import com.example.android.cinemate.utilities.ImageUtils;
@@ -78,9 +79,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void swapCursor(Cursor newValue) {
         mCursor = newValue;
         notifyDataSetChanged();
-        ;
     }
 
+    public Movie getItemClicked(int position) {
+        mCursor.moveToPosition(position);
+
+        int id = mCursor.getInt(MainActivity.INDEX_MOVIE_ID);
+        String title = mCursor.getString(MainActivity.INDEX_MOVIE_TITLE);
+        String posterpath = mCursor.getString(MainActivity.INDEX_MOVIE_POSTERPATH);
+        String rating = mCursor.getString(MainActivity.INDEX_MOVIE_VOTE_AVERAGE);
+        String overview = mCursor.getString(MainActivity.INDEX_MOVIE_OVERVIEW);
+        String releasedate = mCursor.getString(MainActivity.INDEX_MOVIE_RELEASE_DATE);
+
+        return new Movie(id, title, posterpath, rating, overview, releasedate);
+    }
 
     public interface ListItemClickHandler {
         void onItemClicked(int position);
