@@ -3,11 +3,8 @@ package com.example.android.cinemate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -19,15 +16,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.cinemate.data.DataUtils;
 import com.example.android.cinemate.data.MovieContract;
-import com.example.android.cinemate.data.MovieDbHelper;
+import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.data.TmdbUrlUtils;
-import com.example.android.cinemate.data.MovieContract.MovieEntry;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static final int INDEX_MOVIE_ID = 0;
@@ -97,6 +91,26 @@ public static final int INDEX_MOVIE_TITLE = 1;
         sp.registerOnSharedPreferenceChangeListener(this);
     }
 
+    @Override
+    protected void onStart() {
+        Log.i(LOG_TAG, "TEST.......MainActivity onStart() called");
+        super.onStart();
+        DataUtils task = new DataUtils(this);
+        task.execute(TmdbUrlUtils.electedUrl(this));
+        if (PREFERENCE_CHANGED) {
+            mMovieAdapter.swapCursor(null);
+            getSupportLoaderManager().restartLoader(LOADER, null, MainActivity.this);
+        }
+        PREFERENCE_CHANGED = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -155,26 +169,6 @@ public static final int INDEX_MOVIE_TITLE = 1;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        Log.i(LOG_TAG, "TEST.......MainActivity onStart() called");
-        super.onStart();
-        DataUtils task = new DataUtils(this);
-        task.execute(TmdbUrlUtils.electedUrl(this));
-        if (PREFERENCE_CHANGED) {
-            mMovieAdapter.swapCursor(null);
-            getSupportLoaderManager().restartLoader(LOADER, null, MainActivity.this);
-        }
-        PREFERENCE_CHANGED = false;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private void showMovieDataView() {

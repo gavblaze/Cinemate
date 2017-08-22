@@ -24,41 +24,11 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mDetailMovieReleaseDate;
     private ImageView mDetailMovieImageView;
     private FloatingActionButton mFab;
-    private SQLiteDatabase mDb;
-    private MovieDbHelper mDbHelper;
 
     private String mUrlPosterPath;
 
     private Movie mReceivedMovie;
 
-//    public static List<Movie> getFavourites(Context context) {
-//        ArrayList<Movie> data = new ArrayList<>();
-//        //mDb = mDbHelper.getReadableDatabase();
-//        MovieDbHelper dbHelper = new MovieDbHelper(context);
-//        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//
-//
-//        // Define a projection that specifies which columns from the database
-//// you will actually use after this query.
-//        String[] projection = {
-//                FavouriteEntry.COLUMN_POSTER_PATH
-//        };
-//
-//        Cursor cursor = db.query(
-//                FavouriteEntry.TABLE_NAME,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null
-//        );
-//        Movie movie = null;
-//        while (cursor.moveToNext()) {
-//            data.add(movie);
-//        }
-//        return data;
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +51,6 @@ public class DetailActivity extends AppCompatActivity {
         mDetailMovieReleaseDate.setText(mReceivedMovie.getmReleaseDate());
 
 
-        // Create the DB helper (this will create the database if run for the first time)
-        mDbHelper = new MovieDbHelper(this);
-        // Get the repository in write mode
-        mDb = mDbHelper.getWritableDatabase();
-
 
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
         String urlForImage = ImageUtils.getMovieImage(mUrlPosterPath, BASE_IMAGE_SIZE);
@@ -93,91 +58,15 @@ public class DetailActivity extends AppCompatActivity {
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
-//        if (isInDatabase(mReceivedMovie.getmId())) {
-//            mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
-//        } else {
-//            mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-//        }
 
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                if (isInDatabase(mReceivedMovie.getmId())) {
-//                    mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-//                    deleteFromFavouritesDb(mReceivedMovie.getmId());
-//                    Toast.makeText(getApplicationContext(), "Items in db = " + getCount(), Toast.LENGTH_SHORT).show();
-//                } else {
-//                    addToFavouritesDb();
-//                    mFab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
-//                    Toast.makeText(getApplicationContext(), "Items in db = " + getCount(), Toast.LENGTH_SHORT).show();
-//                }
             }
         });
     }
 
-//    public long addToFavouritesDb() {
-//        int id = mReceivedMovie.getmId();
-//        String title = mDetailMovieTitle.getText().toString();
-//        String overview = mDetailMovieOverView.getText().toString();
-//        String posterpath = mUrlPosterPath;
-//        String releasedate = mDetailMovieReleaseDate.getText().toString();
-//        String voteaverage = mDetailMovieRating.getText().toString();
-//
-//        ContentValues values = new ContentValues();
-//        values.put(FavouriteEntry._ID, id);
-//        values.put(FavouriteEntry.COLUMN_NAME_TITLE, title);
-//        values.put(FavouriteEntry.COLUMN_NAME_OVERVIEW, overview);
-//        values.put(FavouriteEntry.COLUMN_POSTER_PATH, posterpath);
-//        values.put(FavouriteEntry.COLUMN_NAME_RELEASE_DATE, releasedate);
-//        values.put(FavouriteEntry.COLUMN_NAME_VOTE_AVERAGE, voteaverage);
-//
-//        long newRowId = mDb.insert(FavouriteEntry.TABLE_NAME, null, values);
-//
-//        return newRowId;
-//    }
-//
-//    public void deleteFromFavouritesDb(int id) {
-//        String selection = FavouriteEntry._ID + " = ?";
-//        String[] selectionArgs = {String.valueOf(id)};
-//        mDb.delete(FavouriteEntry.TABLE_NAME, selection, selectionArgs);
-//    }
-//
-//    public boolean isInDatabase(int id) {
-//        mDb = mDbHelper.getReadableDatabase();
-//
-//        // Define a projection that specifies which columns from the database
-//// you will actually use after this query.
-//        String[] projection = {
-//                FavouriteEntry._ID
-//        };
-//        String selection = FavouriteEntry._ID + " = ?";
-//        String[] selectionArgs = {String.valueOf(id)};
-//
-//        Cursor cursor = mDb.query(
-//                FavouriteEntry.TABLE_NAME,
-//                projection,
-//                selection,
-//                selectionArgs,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        if (cursor.getCount() > 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-//
-//    public int getCount() {
-//        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + FavouriteEntry.TABLE_NAME, null);
-//        int itemsInDb = cursor.getCount();
-//        return itemsInDb;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
