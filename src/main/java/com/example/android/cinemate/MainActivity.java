@@ -48,6 +48,7 @@ public static final int INDEX_MOVIE_TITLE = 1;
     public static final int INDEX_MOVIE_VOTE_AVERAGE = 5;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
+    private static final int FAVE_LOADER = 1;
     private static boolean PREFERENCE_CHANGED = false;
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
@@ -87,6 +88,7 @@ public static final int INDEX_MOVIE_TITLE = 1;
 
         mLoaderManager.initLoader(LOADER, null, this);
 
+
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
     }
@@ -94,11 +96,15 @@ public static final int INDEX_MOVIE_TITLE = 1;
     @Override
     protected void onStart() {
         Log.i(LOG_TAG, "TEST.......MainActivity onStart() called");
+        String preference = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.sort_order_key), getString(R.string.sort_order_default_value));
         super.onStart();
-        DataUtils task = new DataUtils(this);
-        task.execute(TmdbUrlUtils.electedUrl(this));
-        if (PREFERENCE_CHANGED) {
+        if (PREFERENCE_CHANGED && preference.equals(getString(R.string.favourite_value))) {
             mMovieAdapter.swapCursor(null);
+            getSupportLoaderManager().restartLoader(FAVE_LOADER, null, this);
+        } else {
+            mMovieAdapter.swapCursor(null);
+            DataUtils task = new DataUtils(this);
+            task.execute(TmdbUrlUtils.electedUrl(this));
             getSupportLoaderManager().restartLoader(LOADER, null, MainActivity.this);
         }
         PREFERENCE_CHANGED = false;
@@ -114,9 +120,19 @@ public static final int INDEX_MOVIE_TITLE = 1;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String selection = MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
-        String[] selectionArgs = {MoviePreferences.getValueFromPreferences(this)};
-        return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
+
+        switch (id) {
+            case LOADER:
+                String selection = MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
+                String[] selectionArgs = {MoviePreferences.getValueFromPreferences(this)};
+                return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
+            case FAVE_LOADER:
+                String selection1 = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
+                String[] selectionArgs1 = {String.valueOf(MovieEntry.IS_FAVOURITE)};
+                return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection1, selectionArgs1, null);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     @Override
