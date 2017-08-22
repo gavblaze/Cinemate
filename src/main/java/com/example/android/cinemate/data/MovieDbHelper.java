@@ -26,7 +26,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                     MovieEntry.COLUMN_NAME_RELEASE_DATE + " TEXT," +
                     MovieEntry.COLUMN_NAME_VOTE_AVERAGE + " TEXT," +
                     MovieEntry.COLUMN_NAME_SORT_ORDER + " TEXT," +
-                    MovieEntry.COLUMN_NAME_FAVOURITE + "INTEGER DEFAULT 0," +
+                    MovieEntry.COLUMN_NAME_FAVOURITE + " INTEGER DEFAULT 0," +
                     " UNIQUE" + " (" + MovieEntry.COLUMN_NAME_ID + ")" +
                     "ON CONFLICT IGNORE)";
 

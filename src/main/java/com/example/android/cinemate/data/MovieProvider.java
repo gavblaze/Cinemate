@@ -107,8 +107,24 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int count;
+        switch (match) {
+            case MOVIE:
+                count = db.update(MovieEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                break;
+            case MOVIE_ID:
+                selection = MovieEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                count = db.update(MovieEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Update is not succesfull for " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return count;
     }
 
     @Override

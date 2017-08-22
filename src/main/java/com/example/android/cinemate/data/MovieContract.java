@@ -30,6 +30,8 @@ public class MovieContract {
         public static final String COLUMN_NAME_FAVOURITE = "favourite";
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH);
+
+        public static final int IS_FAVOURITE = 1;
     }
 }
 

@@ -1,7 +1,10 @@
 package com.example.android.cinemate;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.android.cinemate.data.MovieContract;
 import com.example.android.cinemate.data.MovieDbHelper;
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
@@ -28,6 +34,7 @@ public class DetailActivity extends AppCompatActivity {
     private String mUrlPosterPath;
 
     private Movie mReceivedMovie;
+
 
 
     @Override
@@ -63,6 +70,14 @@ public class DetailActivity extends AppCompatActivity {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(getApplication(), "Item clicked", Toast.LENGTH_SHORT).show();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MovieContract.MovieEntry.COLUMN_NAME_FAVOURITE, MovieContract.MovieEntry.IS_FAVOURITE);
+                Uri uriToUpdate = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
+                String selection = MovieContract.MovieEntry.COLUMN_NAME_ID + "=?";
+                String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+                getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
+
             }
         });
     }
