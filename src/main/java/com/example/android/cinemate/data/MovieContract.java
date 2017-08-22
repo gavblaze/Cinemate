@@ -31,6 +31,7 @@ public class MovieContract {
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH);
 
+        public static final int IS_DEFAULT = 0;
         public static final int IS_FAVOURITE = 1;
     }
 }

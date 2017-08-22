@@ -3,7 +3,7 @@ package com.example.android.cinemate;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,9 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.cinemate.data.MovieContract;
-import com.example.android.cinemate.data.MovieDbHelper;
 import com.example.android.cinemate.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
+import com.example.android.cinemate.data.MovieContract.MovieEntry;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -57,13 +57,15 @@ public class DetailActivity extends AppCompatActivity {
         mDetailMovieRating.setText(mReceivedMovie.getmRating());
         mDetailMovieReleaseDate.setText(mReceivedMovie.getmReleaseDate());
 
-
-
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
         String urlForImage = ImageUtils.getMovieImage(mUrlPosterPath, BASE_IMAGE_SIZE);
         Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
+
+        if (isFavourite(mReceivedMovie.getmId())) {
+            mFab.setImageResource(R.drawable.ic_favorite_black_24dp);
+        }
 
 
 
@@ -71,15 +73,50 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplication(), "Item clicked", Toast.LENGTH_SHORT).show();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MovieContract.MovieEntry.COLUMN_NAME_FAVOURITE, MovieContract.MovieEntry.IS_FAVOURITE);
-                Uri uriToUpdate = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
-                String selection = MovieContract.MovieEntry.COLUMN_NAME_ID + "=?";
-                String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
-                getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
-
+                if (!isFavourite(mReceivedMovie.getmId())) {
+                    mFab.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    setToFavouriteInDb();
+                } else {
+                    mFab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    setToDefaultInDb();
+                }
             }
         });
+    }
+
+
+    public boolean isFavourite(int movieId) {
+        Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
+        String[] projection = {MovieEntry.COLUMN_NAME_FAVOURITE};
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+        Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
+        cursor.moveToNext();
+        int indexOfValue = cursor.getColumnIndex(MovieEntry.COLUMN_NAME_FAVOURITE);
+        int value = cursor.getInt(indexOfValue);
+        if (value == MovieEntry.IS_FAVOURITE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void setToFavouriteInDb() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_FAVOURITE);
+        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
+    }
+
+    public void setToDefaultInDb() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_DEFAULT);
+        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
     }
 
 
