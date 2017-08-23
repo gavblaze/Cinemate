@@ -2,8 +2,8 @@ package com.example.android.cinemate.data;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.android.cinemate.Movie;
 import com.example.android.cinemate.utilities.MovieJsonUtils;
@@ -11,24 +11,23 @@ import com.example.android.cinemate.utilities.NetworkUtils;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.example.android.cinemate.data.MovieProvider;
 
 /**
  * Created by Gavin on 20-Aug-17.
  */
 
-public class DataUtils extends AsyncTask<String, Void, List<Movie>> {
+public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
+    private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     private Context mContext;
 
-    public DataUtils(Context context) {
+    public FetchMovieTask(Context context) {
         this.mContext = context;
     }
 
     @Override
     protected List<Movie> doInBackground(String... strings) {
+        Log.i(LOG_TAG, "TEST.......FetchMovieTask doInBackGround() called");
         String i = strings[0];
         if (i.isEmpty()) return null;
         String url = NetworkUtils.getDataFromNetwork(i);

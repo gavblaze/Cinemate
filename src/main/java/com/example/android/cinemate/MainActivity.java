@@ -17,30 +17,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.android.cinemate.data.DataUtils;
-import com.example.android.cinemate.data.MovieContract;
+import com.example.android.cinemate.data.FetchMovieTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.data.MoviePreferences;
-import com.example.android.cinemate.data.TmdbUrlUtils;
+import com.example.android.cinemate.utilities.TmdbUrlUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static final int INDEX_MOVIE_ID = 0;
 
 
-/*In this less than ideal situation while trying to implement the favourites part of the project I realised that
-* I will need to save favourites to a Database. In doing so now I would need to query any favourite added and display in the
-* Main Activity which displays a List of objects from JSON?
-* How do we do this? In this case I would need to query data from a Cursor to display the favourites in the same Main Activity
-* I would need 2 x Loader.Callbacks (The link between the LoaderManager & the activity) - Even though in this case I decided
-* to make both querys return List objects LoaderCallbacks<List> - to display data from diferrent datasets you need to have the LoaderCallbacks as variables
-* rather than call Implement:
-*
-*  if (preference is favourite) {
-*  use thisLoader;
-*  else if (preference is other) {
-*  use otherLoader
-*
-**/
 public static final int INDEX_MOVIE_TITLE = 1;
     public static final int INDEX_MOVIE_OVERVIEW = 2;
     public static final int INDEX_MOVIE_POSTERPATH = 3;
@@ -48,7 +36,6 @@ public static final int INDEX_MOVIE_TITLE = 1;
     public static final int INDEX_MOVIE_VOTE_AVERAGE = 5;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
-    private static final int FAVE_LOADER = 1;
     private static boolean PREFERENCE_CHANGED = false;
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
@@ -88,61 +75,63 @@ public static final int INDEX_MOVIE_TITLE = 1;
 
         mLoaderManager.initLoader(LOADER, null, this);
 
-
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
     }
 
+    /*We override onStart() and call the AsyncTask for data here rather than onCreate()
+    * If we call in onCreate() and change the List preference to Popular the data will not be displayed
+    * because our FetchMovieTask object has already been called in onCreate() - data will only show if the app is closed
+    * and re-opened.
+    * Also when we click the UP button we can restart the loader to display the new data based on the ListPreference selected
+    * (onStart() is always called just before Activity is displayed*/
+
     @Override
     protected void onStart() {
         Log.i(LOG_TAG, "TEST.......MainActivity onStart() called");
-        String preference = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.sort_order_key), getString(R.string.sort_order_default_value));
         super.onStart();
-        if (PREFERENCE_CHANGED && preference.equals(getString(R.string.favourite_value))) {
+        if (MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
             mMovieAdapter.swapCursor(null);
-            getSupportLoaderManager().restartLoader(FAVE_LOADER, null, this);
+            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         } else {
-            mMovieAdapter.swapCursor(null);
-            DataUtils task = new DataUtils(this);
+            FetchMovieTask task = new FetchMovieTask(this);
             task.execute(TmdbUrlUtils.electedUrl(this));
-            getSupportLoaderManager().restartLoader(LOADER, null, MainActivity.this);
+            mMovieAdapter.swapCursor(null);
+            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         }
-        PREFERENCE_CHANGED = false;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        sp.unregisterOnSharedPreferenceChangeListener(this);
-    }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
-        switch (id) {
-            case LOADER:
-                String selection = MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
-                String[] selectionArgs = {MoviePreferences.getValueFromPreferences(this)};
-                return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
-            case FAVE_LOADER:
-                String selection1 = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
-                String[] selectionArgs1 = {String.valueOf(MovieEntry.IS_FAVOURITE)};
-                return new CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection1, selectionArgs1, null);
-            default:
-                throw new IllegalArgumentException();
+        String selection;
+        String[] selectionArgs;
+
+        /*If ListPreference is an instance of "Favourite" query the favourites column of db*/
+        if (MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
+            selection = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
+            selectionArgs = new String[]{String.valueOf(MovieEntry.IS_FAVOURITE)};
+        } else {
+            /*If ListPreference is an instance of "Popular or Top Rated" query the sort_order column of the db*/
+            selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
+            selectionArgs = new String[]{MoviePreferences.getValueFromPreferences(this)};
         }
+        return new CursorLoader(this, MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
         showMovieDataView();
         mMovieAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
         mMovieAdapter.swapCursor(null);
     }
 
@@ -199,6 +188,13 @@ public static final int INDEX_MOVIE_TITLE = 1;
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Finally, show the loading indicator */
         mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 }
 

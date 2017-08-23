@@ -16,14 +16,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.cinemate.data.MovieContract;
-import com.example.android.cinemate.utilities.ImageUtils;
-import com.squareup.picasso.Picasso;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
+import com.example.android.cinemate.utilities.ImageUtils;
+import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private static final String BASE_IMAGE_SIZE = "w185";
+
     private TextView mDetailMovieTitle;
     private TextView mDetailMovieOverView;
     private TextView mDetailMovieRating;
@@ -58,7 +58,7 @@ public class DetailActivity extends AppCompatActivity {
         mDetailMovieReleaseDate.setText(mReceivedMovie.getmReleaseDate());
 
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
-        String urlForImage = ImageUtils.getMovieImage(mUrlPosterPath, BASE_IMAGE_SIZE);
+        String urlForImage = ImageUtils.getMovieImage(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
         Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);

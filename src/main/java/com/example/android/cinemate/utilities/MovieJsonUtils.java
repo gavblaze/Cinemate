@@ -23,9 +23,7 @@ import com.example.android.cinemate.data.MovieContract.MovieEntry;
 public class MovieJsonUtils {
     private static final String LOG_TAG = MovieJsonUtils.class.getName();
 
-
     public static List<Movie> parseJson(String jsonString) throws JSONException {
-        Log.i(LOG_TAG, "TEST.......MovieJsonUtils parseJson() called");
         if (TextUtils.isEmpty(jsonString)) {
             return null;
         }
@@ -44,7 +42,6 @@ public class MovieJsonUtils {
             String releaseDate = o.getString("release_date");
             int id = o.getInt("id");
             list.add(new Movie(id, title, posterPath, rating, overView, releaseDate));
-
         }
         return list;
     }
