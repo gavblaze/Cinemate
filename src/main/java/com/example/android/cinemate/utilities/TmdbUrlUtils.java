@@ -16,9 +16,7 @@ public class TmdbUrlUtils {
 
     public static final String BASE_MOVIE_URL = "https://api.themoviedb.org/3/movie/?api_key=9bbba1ac9930bbe1a98d6ad3295520a0&language=en-US";
 
-    public static final String BASE_IMAGE_SIZE = "w185";
-
-    public static String electedUrl(Context context) {
+    public static String urlFromPreferences(Context context) {
 
         String adoptedPath = MoviePreferences.getValueFromPreferences(context);
 

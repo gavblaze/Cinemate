@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
             if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
                 FetchMovieTask task = new FetchMovieTask(this);
-                task.execute(TmdbUrlUtils.electedUrl(this));
+                task.execute(TmdbUrlUtils.urlFromPreferences(this));
             } else {
                  /*If saved instance state is NOT null we already have an ArrayList of Parcebale Movie objects.
                  We can re-use these on rotate instead of fetching the same data*/
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         } else {
             FetchMovieTask task = new FetchMovieTask(this);
-            task.execute(TmdbUrlUtils.electedUrl(this));
+            task.execute(TmdbUrlUtils.urlFromPreferences(this));
             mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         }
     }
