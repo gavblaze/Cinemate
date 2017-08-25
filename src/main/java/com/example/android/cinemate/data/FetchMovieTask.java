@@ -3,7 +3,6 @@ package com.example.android.cinemate.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.android.cinemate.Movie;
 import com.example.android.cinemate.utilities.MovieJsonUtils;
@@ -18,18 +17,17 @@ import java.util.List;
  */
 
 public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
-    private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     private Context mContext;
+
 
     public FetchMovieTask(Context context) {
         this.mContext = context;
     }
 
+
     @Override
     protected List<Movie> doInBackground(String... strings) {
-        Log.i(LOG_TAG, "TEST.......FetchMovieTask doInBackGround() called");
         String i = strings[0];
-        if (i.isEmpty()) return null;
         String url = NetworkUtils.getDataFromNetwork(i);
         try {
             return MovieJsonUtils.parseJson(url);
@@ -42,7 +40,12 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     @Override
     protected void onPostExecute(List<Movie> movies) {
 
-        for (Movie movie : movies) {
+        insertIntoDb(movies);
+    }
+
+
+    public void insertIntoDb(List<Movie> listMovie) {
+        for (Movie movie : listMovie) {
             ContentValues values = new ContentValues();
             values.put(MovieContract.MovieEntry.COLUMN_NAME_ID, movie.getmId());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_TITLE, movie.getmTitle());
@@ -52,6 +55,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
             values.put(MovieContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getmRating());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER, MoviePreferences.getValueFromPreferences(mContext));
             mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
+
         }
     }
 }

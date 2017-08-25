@@ -21,9 +21,9 @@ public class MoviePreferences {
     public static String getValueFromPreferences(Context context) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String sortBy = sharedPrefs.getString(
+        String selectedListPref = sharedPrefs.getString(
                 context.getString(R.string.sort_order_key),
                 context.getString(R.string.sort_order_default_value));
-        return sortBy;
+        return selectedListPref;
     }
 }

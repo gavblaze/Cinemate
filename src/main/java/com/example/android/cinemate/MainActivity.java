@@ -23,20 +23,33 @@ import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+
+
+    /*In this less than ideal situation while trying to implement the favourites part of the project I realised that
+    * I will need to save favourites to a Database. In doing so now I would need to query any favourite added and display in the
+    * Main Activity which displays a List of objects from JSON?
+    * How do we do this? In this case I would need to query data from a Cursor to display the favourites in the same Main Activity
+    * I would need 2 x Loader.Callbacks (The link between the LoaderManager & the activity) - Even though in this case I decided
+    * to make both querys return List objects LoaderCallbacks<List> - to display data from diferrent datasets you need to have the LoaderCallbacks as variables
+    * rather than call Implement:
+    *
+    *  if (preference is favourite) {
+    *  use thisLoader;
+    *  else if (preference is other) {
+    *  use otherLoader
+    *
+    **/
     public static final int INDEX_MOVIE_ID = 0;
-
-
-public static final int INDEX_MOVIE_TITLE = 1;
+    public static final int INDEX_MOVIE_TITLE = 1;
     public static final int INDEX_MOVIE_OVERVIEW = 2;
     public static final int INDEX_MOVIE_POSTERPATH = 3;
     public static final int INDEX_MOVIE_RELEASE_DATE = 4;
     public static final int INDEX_MOVIE_VOTE_AVERAGE = 5;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
-    private static boolean PREFERENCE_CHANGED = false;
+
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
             MovieEntry.COLUMN_NAME_TITLE,
@@ -52,11 +65,28 @@ public static final int INDEX_MOVIE_TITLE = 1;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
 
+    /*Movie is Parcelable. So we can check if instance state is null on rotate, we declare mMovieList*/
+    private ArrayList<Movie> mMovieList;
+    private String MOVIE_KEY = "movies_key";
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /* If our preference is NOT an instance of Favourite*/
+        if (!MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
+            /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
+            if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
+                FetchMovieTask task = new FetchMovieTask(this);
+                task.execute(TmdbUrlUtils.electedUrl(this));
+            } else {
+                 /*If saved instance state is NOT null we already have an ArrayList of Parcebale Movie objects.
+                 We can re-use these on rotate instead of fetching the same data*/
+                mMovieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
+            }
+        }
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -79,29 +109,12 @@ public static final int INDEX_MOVIE_TITLE = 1;
         sp.registerOnSharedPreferenceChangeListener(this);
     }
 
-    /*We override onStart() and call the AsyncTask for data here rather than onCreate()
-    * If we call in onCreate() and change the List preference to Popular the data will not be displayed
-    * because our FetchMovieTask object has already been called in onCreate() - data will only show if the app is closed
-    * and re-opened.
-    * Also when we click the UP button we can restart the loader to display the new data based on the ListPreference selected
-    * (onStart() is always called just before Activity is displayed*/
 
     @Override
-    protected void onStart() {
-        Log.i(LOG_TAG, "TEST.......MainActivity onStart() called");
-        super.onStart();
-        if (MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
-            mMovieAdapter.swapCursor(null);
-            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
-        } else {
-            FetchMovieTask task = new FetchMovieTask(this);
-            task.execute(TmdbUrlUtils.electedUrl(this));
-            mMovieAdapter.swapCursor(null);
-            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
-        }
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(MOVIE_KEY, mMovieList);
+        super.onSaveInstanceState(outState);
     }
-
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -124,14 +137,12 @@ public static final int INDEX_MOVIE_TITLE = 1;
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
         showMovieDataView();
         mMovieAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
         mMovieAdapter.swapCursor(null);
     }
 
@@ -139,8 +150,16 @@ public static final int INDEX_MOVIE_TITLE = 1;
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
-        PREFERENCE_CHANGED = true;
+
+        if (MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
+            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
+        } else {
+            FetchMovieTask task = new FetchMovieTask(this);
+            task.execute(TmdbUrlUtils.electedUrl(this));
+            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
+        }
     }
+
 
     @Override
     public void onItemClicked(int position) {
@@ -172,7 +191,7 @@ public static final int INDEX_MOVIE_TITLE = 1;
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             default:
-                return super.onOptionsItemSelected(item);
+                return false;
         }
     }
 
