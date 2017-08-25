@@ -18,7 +18,7 @@ import java.net.URL;
 
 public class MoviePreferences {
 
-    public static String getValueFromPreferences(Context context) {
+    public static String preferenceSelected(Context context) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String selectedListPref = sharedPrefs.getString(

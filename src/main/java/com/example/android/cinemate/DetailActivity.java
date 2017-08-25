@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
-import com.example.android.cinemate.utilities.ImageUtils;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
@@ -58,7 +57,7 @@ public class DetailActivity extends AppCompatActivity {
         mDetailMovieReleaseDate.setText(mReceivedMovie.getmReleaseDate());
 
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
-        String urlForImage = ImageUtils.getMovieImage(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
+        String urlForImage = TmdbUrlUtils.getImageUrl(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
         Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
@@ -72,13 +71,14 @@ public class DetailActivity extends AppCompatActivity {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplication(), "Item clicked", Toast.LENGTH_SHORT).show();
                 if (!isFavourite(mReceivedMovie.getmId())) {
                     mFab.setImageResource(R.drawable.ic_favorite_black_24dp);
                     setToFavouriteInDb();
+                    Toast.makeText(getApplication(), "Added to favourites", Toast.LENGTH_SHORT).show();
                 } else {
                     mFab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     setToDefaultInDb();
+                    Toast.makeText(getApplication(), "Removed from favourites", Toast.LENGTH_SHORT).show();
                 }
             }
         });

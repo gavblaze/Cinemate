@@ -26,21 +26,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-
-    /*In this less than ideal situation while trying to implement the favourites part of the project I realised that
-    * I will need to save favourites to a Database. In doing so now I would need to query any favourite added and display in the
-    * Main Activity which displays a List of objects from JSON?
-    * How do we do this? In this case I would need to query data from a Cursor to display the favourites in the same Main Activity
-    * I would need 2 x Loader.Callbacks (The link between the LoaderManager & the activity) - Even though in this case I decided
-    * to make both querys return List objects LoaderCallbacks<List> - to display data from diferrent datasets you need to have the LoaderCallbacks as variables
-    * rather than call Implement:
-    *
-    *  if (preference is favourite) {
-    *  use thisLoader;
-    *  else if (preference is other) {
-    *  use otherLoader
-    *
-    **/
     public static final int INDEX_MOVIE_ID = 0;
     public static final int INDEX_MOVIE_TITLE = 1;
     public static final int INDEX_MOVIE_OVERVIEW = 2;
@@ -65,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
 
-    /*Movie is Parcelable. So we can check if instance state is null on rotate, we declare mMovieList*/
+    /*Movie is Parcelable. So we can check if instance state is null on rotate. We declare mMovieList*/
     private ArrayList<Movie> mMovieList;
     private String MOVIE_KEY = "movies_key";
 
@@ -76,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         setContentView(R.layout.activity_main);
 
         /* If our preference is NOT an instance of Favourite*/
-        if (!MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
+        if (!MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
             /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
             if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
                 FetchMovieTask task = new FetchMovieTask(this);
@@ -124,13 +109,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         String[] selectionArgs;
 
         /*If ListPreference is an instance of "Favourite" query the favourites column of db*/
-        if (MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
+        if (MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
             selection = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
             selectionArgs = new String[]{String.valueOf(MovieEntry.IS_FAVOURITE)};
         } else {
             /*If ListPreference is an instance of "Popular or Top Rated" query the sort_order column of the db*/
             selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
-            selectionArgs = new String[]{MoviePreferences.getValueFromPreferences(this)};
+            selectionArgs = new String[]{MoviePreferences.preferenceSelected(this)};
         }
         return new CursorLoader(this, MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
     }
@@ -151,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
 
-        if (MoviePreferences.getValueFromPreferences(this).equals(getString(R.string.favourite_value))) {
+        if (MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
             mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         } else {
             FetchMovieTask task = new FetchMovieTask(this);

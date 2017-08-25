@@ -13,12 +13,11 @@ import com.example.android.cinemate.data.MovieContract.MovieEntry;
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Favourites.db";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
-                    MovieEntry._ID + " INTEGER PRIMARY KEY," +
                     MovieEntry.COLUMN_NAME_ID + " INTEGER," +
                     MovieEntry.COLUMN_NAME_TITLE + " TEXT," +
                     MovieEntry.COLUMN_NAME_OVERVIEW + " TEXT," +

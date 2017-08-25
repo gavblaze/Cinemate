@@ -2,25 +2,16 @@ package com.example.android.cinemate;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.cinemate.data.MovieContract;
-import com.example.android.cinemate.utilities.ImageUtils;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
+import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Gavin on 31-Jul-17.
@@ -28,8 +19,6 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
-
-    private static final String BASE_IMAGE_SIZE = "w185";
 
     Cursor mCursor;
 
@@ -61,8 +50,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         int posterpathIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH);
         String imgpath = mCursor.getString(posterpathIndex);
 
-
-        String urlImageString = ImageUtils.getMovieImage(imgpath, BASE_IMAGE_SIZE);
+        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.BASE_IMAGE_SIZE);
 
         Context context = holder.mPosterImageView.getContext();
 
