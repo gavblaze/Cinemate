@@ -45,5 +45,24 @@ public class MovieJsonUtils {
         }
         return list;
     }
+
+    public static List<String> parseTrailerData(String jsonString) throws JSONException {
+        JSONObject root = new JSONObject(jsonString);
+        JSONArray results = root.getJSONArray("results");
+
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0; i < results.length(); i++) {
+            JSONObject o = results.getJSONObject(i);
+            String trailerId = o.getString("id");
+            String trailerKey = o.getString("key");
+            String trailerName = o.getString("name");
+            String trailerSite = o.getString("site");
+            String trailerSize = o.getString("size");
+
+            list.add(trailerKey);
+        }
+        return list;
+    }
 }
 

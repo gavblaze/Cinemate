@@ -5,9 +5,12 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,11 +19,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//import com.example.android.cinemate.data.FetchTrailerTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
+import com.example.android.cinemate.utilities.MovieJsonUtils;
+import com.example.android.cinemate.utilities.NetworkUtils;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+import org.json.JSONException;
+
+import java.util.List;
+
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickHandler {
+    private static String LOG_TAG = DetailActivity.class.getSimpleName();
 
 
     private TextView mDetailMovieTitle;
@@ -34,12 +45,28 @@ public class DetailActivity extends AppCompatActivity {
 
     private Movie mReceivedMovie;
 
+    private RecyclerView mTrailerRecyclerView;
+    private TrailerAdapter mTrailerAdapter;
+    private GridLayoutManager mGridLayoutManager;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+
+        mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
+        mGridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
+
+
+        mTrailerAdapter = new TrailerAdapter(this);
+
+        mTrailerRecyclerView.setLayoutManager(mGridLayoutManager);
+
+        mTrailerRecyclerView.setAdapter(mTrailerAdapter);
+
 
         mDetailMovieTitle = (TextView) findViewById(R.id.detailTitle);
         mDetailMovieOverView = (TextView) findViewById(R.id.detailOverview);
@@ -59,6 +86,12 @@ public class DetailActivity extends AppCompatActivity {
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
         String urlForImage = TmdbUrlUtils.getImageUrl(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
         Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
+
+        String movieId = String.valueOf(mReceivedMovie.getmId());
+
+        FetchTrailerTask task = new FetchTrailerTask();
+        task.execute(TmdbUrlUtils.getTrailerJsonUrl(movieId));
+
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -148,6 +181,36 @@ public class DetailActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_TEXT, mDetailMovieOverView.getText());
         intent.setType("text/plain");
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        String trailerUrlPath = mTrailerAdapter.getItemClicked(position);
+        Toast.makeText(this, "Item clicked " + trailerUrlPath, Toast.LENGTH_SHORT).show();
+        String youTubeUrl = TmdbUrlUtils.getYouTubeUrl(trailerUrlPath);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(youTubeUrl));
+        startActivity(intent);
+    }
+
+    public class FetchTrailerTask extends AsyncTask<String, Void, List<String>> {
+        @Override
+        protected List<String> doInBackground(String... strings) {
+            String i = strings[0];
+            String json = NetworkUtils.getDataFromNetwork(i);
+            try {
+                return MovieJsonUtils.parseTrailerData(json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> strings) {
+            //super.onPostExecute(strings);
+            mTrailerAdapter.setData(strings);
+        }
     }
 }
 

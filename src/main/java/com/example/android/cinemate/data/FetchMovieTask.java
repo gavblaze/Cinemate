@@ -3,6 +3,9 @@ package com.example.android.cinemate.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.android.cinemate.Movie;
 import com.example.android.cinemate.utilities.MovieJsonUtils;
@@ -17,16 +20,21 @@ import java.util.List;
  */
 
 public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
+    private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+    public View mLoadingIndicator;
     private Context mContext;
+    private AsyncTaskResponse mResponse;
 
 
-    public FetchMovieTask(Context context) {
+    public FetchMovieTask(Context context, AsyncTaskResponse response) {
         this.mContext = context;
+        this.mResponse = response;
     }
-
 
     @Override
     protected List<Movie> doInBackground(String... strings) {
+        Log.i(LOG_TAG, "TEST.......................FetchMovieTask doInBackground() called");
+
         String i = strings[0];
         String url = NetworkUtils.getDataFromNetwork(i);
         try {
@@ -39,10 +47,13 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
 
     @Override
     protected void onPostExecute(List<Movie> movies) {
+        Log.i(LOG_TAG, "TEST.......................FetchMovieTask onPostExecute() called");
 
-        insertIntoDb(movies);
+        if (movies != null) {
+            mResponse.asyncTaskResult(movies);
+            insertIntoDb(movies);
+        }
     }
-
 
     public void insertIntoDb(List<Movie> listMovie) {
         for (Movie movie : listMovie) {
@@ -57,5 +68,11 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
             mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
 
         }
+    }
+
+
+    /*We create an interface so we can pass the list of Movie objects back to MainActivity*/
+    public interface AsyncTaskResponse {
+        void asyncTaskResult(List<Movie> data);
     }
 }

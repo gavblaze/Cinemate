@@ -14,6 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="57dp"
+        android:layout_marginStart="57dp"
         android:layout_marginTop="56dp"
         android:src="@drawable/ic_favorite_border_black_24dp"
         app:layout_constraintLeft_toRightOf="@+id/detailRating"
@@ -24,18 +25,18 @@
         android:layout_width="69dp"
         android:layout_height="105dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailTitle"
-        tools:src="@mipmap/ic_launcher"
-        />
+        tools:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/detailOverview"
         android:layout_width="348dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        app:layout_constraintHorizontal_bias="0.444"
+        android:layout_marginTop="16dp"
+        app:layout_constraintHorizontal_bias="0.438"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailMovieImageView"
@@ -46,11 +47,10 @@
         style="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_width="0dp"
         android:layout_height="69dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="-2dp"
         android:gravity="center_vertical"
         android:text="TextView"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -61,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginLeft="130dp"
+        android:layout_marginStart="130dp"
         android:layout_marginTop="10dp"
         android:text="TextView"
         app:layout_constraintLeft_toRightOf="@+id/detailMovieImageView"
@@ -71,12 +72,34 @@
         android:id="@+id/detailRating"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginLeft="0dp"
         android:layout_marginTop="7dp"
         android:text="TextView"
         app:layout_constraintLeft_toLeftOf="@+id/detailYear"
         app:layout_constraintTop_toBottomOf="@+id/detailYear"
         tools:text="8.5/10"/>
+
+    <TextView
+        android:id="@+id/trailersLabelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="38dp"
+        android:layout_marginTop="8dp"
+        android:text="Trailers"
+        android:textSize="30dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailOverview"/>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/trailerRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trailersLabelTextView">
+    </android.support.v7.widget.RecyclerView>
 
 
 </android.support.constraint.ConstraintLayout>

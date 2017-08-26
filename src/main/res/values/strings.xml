@@ -3,7 +3,7 @@
 
     <string name="sort_order_title">Sort By</string>
     <string name="sort_order_key">sort_order</string>
-    <string name="sort_order_default_value">top_rated</string>
+    <string name="sort_order_default_value">popular</string>
 
     <string name="most_popular_label">Most Popular</string>
     <string name="most_populary_value">popular</string>
@@ -11,7 +11,7 @@
     <string name="top_rated_label">Top Rated</string>
     <string name="top_rated_value">top_rated</string>
 
-    <string name="favourite_label">Favourite</string>
+    <string name="favourite_label">Favourites</string>
     <string name="favourite_value">favourites</string>
 
 </resources>

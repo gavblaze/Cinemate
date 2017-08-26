@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.data.FetchMovieTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
@@ -23,8 +25,9 @@ import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor>, FetchMovieTask.AsyncTaskResponse {
 
     public static final int INDEX_MOVIE_ID = 0;
     public static final int INDEX_MOVIE_TITLE = 1;
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private GridLayoutManager mGridLayoutMananger;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
+    private TextView mEmptyStateTextView;
 
     /*Movie is Parcelable. So we can check if instance state is null on rotate. We declare mMovieList*/
     private ArrayList<Movie> mMovieList;
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "TEST.......MainActivity onCreate() called");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         if (!MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
             /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
             if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
-                FetchMovieTask task = new FetchMovieTask(this);
+                FetchMovieTask task = new FetchMovieTask(this, this);
                 task.execute(TmdbUrlUtils.urlFromPreferences(this));
             } else {
                  /*If saved instance state is NOT null we already have an ArrayList of Parcebale Movie objects.
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mEmptyStateTextView = (TextView) findViewById(R.id.emptyStateTextView);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -84,14 +90,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        showLoading();
+
 
         mLoaderManager = getSupportLoaderManager();
 
         mLoaderManager.initLoader(LOADER, null, this);
 
+        showLoading();
+
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
+        super.onResume();
+        //mLoaderManager.initLoader(LOADER, null, this);
     }
 
 
@@ -100,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         outState.putParcelableArrayList(MOVIE_KEY, mMovieList);
         super.onSaveInstanceState(outState);
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -120,10 +137,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         return new CursorLoader(this, MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
     }
 
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        showMovieDataView();
+        Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
+
         mMovieAdapter.swapCursor(data);
+        showMovieDataView();
+
+        if (mMovieAdapter.getItemCount() == 0 && MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
+            showErrorMessage();
+        }
     }
 
     @Override
@@ -137,10 +161,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
 
         if (MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
+            mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         } else {
-            FetchMovieTask task = new FetchMovieTask(this);
+            FetchMovieTask task = new FetchMovieTask(this, this);
             task.execute(TmdbUrlUtils.urlFromPreferences(this));
+            mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
         }
     }
@@ -184,14 +210,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         /* First, hide the loading indicator */
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Finally, make sure the weather data is visible */
+        mEmptyStateTextView.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     private void showLoading() {
         /* Then, hide the weather data */
         mRecyclerView.setVisibility(View.INVISIBLE);
+        mEmptyStateTextView.setVisibility(View.INVISIBLE);
         /* Finally, show the loading indicator */
         mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage() {
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mEmptyStateTextView.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -199,6 +233,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void asyncTaskResult(List<Movie> data) {
+        mMovieList = (ArrayList<Movie>) data;
     }
 }
 
