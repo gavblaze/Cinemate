@@ -1,13 +1,13 @@
-package com.example.android.cinemate;
+package com.example.android.cinemate.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.cinemate.R;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
     private static final String LOG_TAG = TrailerAdapter.class.getSimpleName();
-    private List<String> mStringList;
+    private List<String> mTrailerPathList;
     private ListItemClickHandler mListItemClickhandler;
 
     public TrailerAdapter(ListItemClickHandler listItemClickhandler) {
@@ -34,29 +34,27 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     }
 
     public String getItemClicked(int position) {
-        String path = mStringList.get(position);
+        String path = mTrailerPathList.get(position);
         return path;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Context context = holder.mTrailerImageView.getContext();
-        String videoImageUrl = TmdbUrlUtils.getVideoImgUrl(mStringList.get(position));
+        String videoImageUrl = TmdbUrlUtils.getVideoImgUrl(mTrailerPathList.get(position));
 
-        Log.i(LOG_TAG, "TEST..........." + videoImageUrl);
-
-        Picasso.with(context).load(videoImageUrl).into(holder.mTrailerImageView);
+        Picasso.with(context).load(videoImageUrl).fit().centerInside().into(holder.mTrailerImageView);
 
     }
 
     @Override
     public int getItemCount() {
-        if (mStringList == null) return 0;
-        return mStringList.size();
+        if (mTrailerPathList == null) return 0;
+        return mTrailerPathList.size();
     }
 
     public void setData(List<String> data) {
-        mStringList = data;
+        mTrailerPathList = data;
         notifyDataSetChanged();
     }
 

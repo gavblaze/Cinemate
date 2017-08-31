@@ -1,4 +1,4 @@
-package com.example.android.cinemate;
+package com.example.android.cinemate.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.cinemate.MainActivity;
+import com.example.android.cinemate.R;
 import com.example.android.cinemate.data.MovieContract;
+import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 

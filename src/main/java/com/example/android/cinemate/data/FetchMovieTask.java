@@ -5,9 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
-import com.example.android.cinemate.Movie;
+import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.MovieJsonUtils;
 import com.example.android.cinemate.utilities.NetworkUtils;
 
@@ -34,6 +33,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     @Override
     protected List<Movie> doInBackground(String... strings) {
         Log.i(LOG_TAG, "TEST.......................FetchMovieTask doInBackground() called");
+
 
         String i = strings[0];
         String url = NetworkUtils.getDataFromNetwork(i);
@@ -69,7 +69,6 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
 
         }
     }
-
 
     /*We create an interface so we can pass the list of Movie objects back to MainActivity*/
     public interface AsyncTaskResponse {

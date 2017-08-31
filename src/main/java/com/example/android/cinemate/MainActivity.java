@@ -17,14 +17,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.android.cinemate.adapters.MovieAdapter;
 import com.example.android.cinemate.data.FetchMovieTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.data.MoviePreferences;
+import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor>, FetchMovieTask.AsyncTaskResponse {
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public static final int INDEX_MOVIE_VOTE_AVERAGE = 5;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
-
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
             MovieEntry.COLUMN_NAME_TITLE,
@@ -47,16 +46,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             MovieEntry.COLUMN_NAME_VOTE_AVERAGE,
             MovieEntry.COLUMN_NAME_SORT_ORDER
     };
+    private boolean PREFERENCE_CHANGED;
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutMananger;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
     private TextView mEmptyStateTextView;
-
-    /*Movie is Parcelable. So we can check if instance state is null on rotate. We declare mMovieList*/
-    private ArrayList<Movie> mMovieList;
-    private String MOVIE_KEY = "movies_key";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -65,18 +61,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /* If our preference is NOT an instance of Favourite*/
-        if (!MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
-            /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
-            if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
-                FetchMovieTask task = new FetchMovieTask(this, this);
-                task.execute(TmdbUrlUtils.urlFromPreferences(this));
-            } else {
-                 /*If saved instance state is NOT null we already have an ArrayList of Parcebale Movie objects.
-                 We can re-use these on rotate instead of fetching the same data*/
-                mMovieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
-            }
-        }
+        mLoaderManager = getSupportLoaderManager();
+
+
+//        /* If our preference is NOT an instance of Favourite*/
+//      //  if (!MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
+//            /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
+//            if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
+//                FetchMovieTask task = new FetchMovieTask(this, this);
+//                task.execute(TmdbUrlUtils.urlFromPreferences(this));
+//            } else {
+//                 /*If saved instance state is NOT null we already have an ArrayList of Parcebale Movie objects.
+//                 We can re-use these on rotate instead of fetching the same data*/
+//                mLoaderManager.restartLoader(LOADER, null, this);
+//                mMovieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
+//        //    }
+//        }
+
+        mLoaderManager.initLoader(LOADER, null, this);
+
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -91,11 +94,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mRecyclerView.setAdapter(mMovieAdapter);
 
 
-
-        mLoaderManager = getSupportLoaderManager();
-
-        mLoaderManager.initLoader(LOADER, null, this);
-
         showLoading();
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -103,19 +101,28 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     }
 
+
     @Override
     protected void onResume() {
-        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
         super.onResume();
-        //mLoaderManager.initLoader(LOADER, null, this);
+
+        if (PREFERENCE_CHANGED) {
+            mMovieAdapter.swapCursor(null);
+            mLoaderManager.restartLoader(LOADER, null, this);
+        }
+
+        /*If there is NOTHING in the Db for Top_Rated or Popular preferences & preference instance is NOT Favourite - fetch data*/
+        if (zipInDbForPopularOrTopRatedPrefs() && !MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
+            FetchMovieTask task = new FetchMovieTask(this, this);
+            task.execute(TmdbUrlUtils.urlFromPreferences(this));
+            //loader restarted after result of AsyncTask doInBackground (Loaders onLoadFinished() will be called before the background task completes)
+
+            mMovieAdapter.swapCursor(null);
+            mLoaderManager.restartLoader(LOADER, null, this);
+
+        }
     }
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(MOVIE_KEY, mMovieList);
-        super.onSaveInstanceState(outState);
-    }
 
 
     @Override
@@ -156,21 +163,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
 
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.i(LOG_TAG, "TEST.......MainActivity onSharedPreferenceChanged() called");
 
-        if (MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
-            mMovieAdapter.swapCursor(null);
-            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
-        } else {
-            FetchMovieTask task = new FetchMovieTask(this, this);
-            task.execute(TmdbUrlUtils.urlFromPreferences(this));
-            mMovieAdapter.swapCursor(null);
-            mLoaderManager.restartLoader(LOADER, null, MainActivity.this);
-        }
+        PREFERENCE_CHANGED = true;
     }
-
 
     @Override
     public void onItemClicked(int position) {
@@ -179,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         intent.putExtra(Intent.EXTRA_TEXT, movie);
         startActivity(intent);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -228,6 +226,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     }
 
+    public boolean zipInDbForPopularOrTopRatedPrefs() {
+        String selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
+        String[] selectionArgs = new String[]{MoviePreferences.preferenceSelected(this)};
+        Cursor cursor = getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
+        if (cursor.getCount() <= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -235,9 +245,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
+
     @Override
+    /*This method from the AsyncTask interface allows us to get the value from onPostExecute()*/
     public void asyncTaskResult(List<Movie> data) {
-        mMovieList = (ArrayList<Movie>) data;
+        Log.i(LOG_TAG, "TEST.......MainActivity asyncTaskResult() called");
+        /*We initialize our loader here - after we have received our value from FetchMovie AsyncTask
+        * so we can be sure onLoadFinished() is called AFTER doInBackground and not before
+        *
+        * When our loader was initialised in onCreate() it's onLoadFinished was
+        * being called twice (before doInBackground was complete and after)*/
+
+
+        /*NOT IMPLEMENTED*/
+
     }
 }
 

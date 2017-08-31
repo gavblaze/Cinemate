@@ -5,12 +5,14 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,47 +21,51 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//import com.example.android.cinemate.data.FetchTrailerTask;
+import com.example.android.cinemate.adapters.ReviewAdapter;
+import com.example.android.cinemate.adapters.TrailerAdapter;
+import com.example.android.cinemate.data.FetchReviewTask;
+import com.example.android.cinemate.data.FetchTrailerTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
-import com.example.android.cinemate.utilities.MovieJsonUtils;
-import com.example.android.cinemate.utilities.NetworkUtils;
+import com.example.android.cinemate.models.Movie;
+import com.example.android.cinemate.models.Review;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-
+import java.util.ArrayList;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickHandler {
-    private static String LOG_TAG = DetailActivity.class.getSimpleName();
-
-
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickHandler, FetchTrailerTask.TrailerAsyncResponse, FetchReviewTask.ReviewAsyncResponse {
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+    private static final String TRAILER_KEY = "trailer_key";
+    private static final String REVIEW_KEY = "review_key";
     private TextView mDetailMovieTitle;
     private TextView mDetailMovieOverView;
     private TextView mDetailMovieRating;
     private TextView mDetailMovieReleaseDate;
     private ImageView mDetailMovieImageView;
     private FloatingActionButton mFab;
-
     private String mUrlPosterPath;
-
     private Movie mReceivedMovie;
-
     private RecyclerView mTrailerRecyclerView;
     private TrailerAdapter mTrailerAdapter;
     private GridLayoutManager mGridLayoutManager;
-
-
+    private TextView mTrailerLabelTextView;
+    private TextView mReviewLabelTextView;
+    private RecyclerView mReviewRecyclerView;
+    private ReviewAdapter mReviewAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
+    private ArrayList<String> mTrailerList;
+    private ArrayList<Review> mReviewList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "TEST.......DetailActivity onCreate() called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
 
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
         mGridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
-
 
         mTrailerAdapter = new TrailerAdapter(this);
 
@@ -68,11 +74,32 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView.setAdapter(mTrailerAdapter);
 
 
+        mReviewRecyclerView = (RecyclerView) findViewById(R.id.reviewRecyclerView);
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        mReviewAdapter = new ReviewAdapter();
+
+        mReviewRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        mReviewRecyclerView.setAdapter(mReviewAdapter);
+        mReviewRecyclerView.setNestedScrollingEnabled(false);
+
+
+
+
         mDetailMovieTitle = (TextView) findViewById(R.id.detailTitle);
         mDetailMovieOverView = (TextView) findViewById(R.id.detailOverview);
         mDetailMovieRating = (TextView) findViewById(R.id.detailRating);
         mDetailMovieReleaseDate = (TextView) findViewById(R.id.detailYear);
         mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
+
+
+        mTrailerLabelTextView = (TextView) findViewById(R.id.trailersLabelTextView);
+        mReviewLabelTextView = (TextView) findViewById(R.id.reviewLabelTextView);
+
+
+
 
         Intent intentThatStartedActivity = getIntent();
 
@@ -89,8 +116,24 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         String movieId = String.valueOf(mReceivedMovie.getmId());
 
-        FetchTrailerTask task = new FetchTrailerTask();
-        task.execute(TmdbUrlUtils.getTrailerJsonUrl(movieId));
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(TRAILER_KEY)) {
+            showTrailerView();
+            mTrailerList = savedInstanceState.getStringArrayList(TRAILER_KEY);
+            mTrailerAdapter.setData(mTrailerList);
+        } else {
+            FetchTrailerTask trailerTask = new FetchTrailerTask(this, this);
+            trailerTask.execute(TmdbUrlUtils.getTrailerJsonUrl(movieId));
+        }
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(REVIEW_KEY)) {
+            showReviewView();
+            mReviewList = savedInstanceState.getParcelableArrayList(REVIEW_KEY);
+            mReviewAdapter.setData(mReviewList);
+        } else {
+            FetchReviewTask reviewTask = new FetchReviewTask(this, this);
+            reviewTask.execute(TmdbUrlUtils.getReviewJsonUrl(movieId));
+        }
 
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
@@ -98,7 +141,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         if (isFavourite(mReceivedMovie.getmId())) {
             mFab.setImageResource(R.drawable.ic_favorite_black_24dp);
         }
-
 
 
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +159,23 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         });
     }
 
+    @Override
+    protected void onPause() {
+        Log.i(LOG_TAG, "TEST.......DetailActivity onPause() called");
+        super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.i(LOG_TAG, "TEST.......DetailActivity onSaveInstanceState() called");
+
+        if (mTrailerList != null) outState.putStringArrayList(TRAILER_KEY, mTrailerList);
+
+        if (mReviewList != null) outState.putParcelableArrayList(REVIEW_KEY, mReviewList);
+
+        super.onSaveInstanceState(outState);
+
+    }
 
     public boolean isFavourite(int movieId) {
         Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
@@ -193,24 +252,46 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         startActivity(intent);
     }
 
-    public class FetchTrailerTask extends AsyncTask<String, Void, List<String>> {
-        @Override
-        protected List<String> doInBackground(String... strings) {
-            String i = strings[0];
-            String json = NetworkUtils.getDataFromNetwork(i);
-            try {
-                return MovieJsonUtils.parseTrailerData(json);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
+    @Override
+    /*If the result from the TrailerAsyncTask is null, hide the views related to displaying trailers*/
+    public void trailerAsyncResult(List<String> data) {
+        mTrailerList = (ArrayList<String>) data;
+        if (data.isEmpty()) {
+            hideTrailerView();
+        } else {
+            showTrailerView();
+            mTrailerAdapter.setData(data);
         }
+    }
 
-        @Override
-        protected void onPostExecute(List<String> strings) {
-            //super.onPostExecute(strings);
-            mTrailerAdapter.setData(strings);
+    public void hideTrailerView() {
+        mTrailerLabelTextView.setVisibility(View.GONE);
+        mTrailerRecyclerView.setVisibility(View.GONE);
+    }
+
+    public void showTrailerView() {
+        mTrailerLabelTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    /*If the result from the ReviewAsyncTask is null, hide the views related to displaying reviews*/
+    public void reviewAsyncResult(List<Review> data) {
+        mReviewList = (ArrayList<Review>) data;
+        if (data.isEmpty()) {
+            hideReviewView();
+        } else {
+            showReviewView();
+            mReviewAdapter.setData(data);
         }
+    }
+
+    public void hideReviewView() {
+        mReviewLabelTextView.setVisibility(View.GONE);
+        mReviewRecyclerView.setVisibility(View.GONE);
+    }
+
+    public void showReviewView() {
+        mReviewLabelTextView.setVisibility(View.VISIBLE);
     }
 }
 

@@ -81,4 +81,20 @@ public class TmdbUrlUtils {
         builder.appendPath(path);
         return builder.toString();
     }
+
+    public static String getReviewJsonUrl(String movieId) {
+        Uri baseUri = Uri.parse(BASE_MOVIE_URL);
+        Uri.Builder builder = baseUri.buildUpon();
+        builder.appendPath(movieId);
+        builder.appendPath("reviews");
+        return builder.build().toString();
+    }
+
+    public static String getMovieParticulars(String movieId) {
+        Uri baseUri = Uri.parse(BASE_MOVIE_URL);
+        Uri.Builder builder = baseUri.buildUpon();
+        builder.appendPath(movieId);
+        return builder.build().toString();
+
+    }
 }

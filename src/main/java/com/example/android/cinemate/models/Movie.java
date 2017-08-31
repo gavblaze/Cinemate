@@ -1,6 +1,5 @@
-package com.example.android.cinemate;
+package com.example.android.cinemate.models;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 

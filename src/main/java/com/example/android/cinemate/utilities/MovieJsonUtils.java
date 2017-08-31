@@ -1,11 +1,8 @@
 package com.example.android.cinemate.utilities;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.example.android.cinemate.Movie;
+import com.example.android.cinemate.models.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.android.cinemate.data.MovieContract.MovieEntry;
+import com.example.android.cinemate.models.Review;
 
 /**
  * Created by Gavin on 31-Jul-17.
@@ -64,5 +61,20 @@ public class MovieJsonUtils {
         }
         return list;
     }
+
+    public static List<Review> parseReviewData(String jsonString) throws JSONException {
+        List<Review> list = new ArrayList<>();
+
+        JSONObject root = new JSONObject(jsonString);
+        JSONArray resultsArray = root.getJSONArray("results");
+        for (int i = 0; i < resultsArray.length(); i++) {
+            JSONObject o = resultsArray.getJSONObject(i);
+            String reviewAuthor = o.getString("author");
+            String reviewContent = o.getString("content");
+            list.add(new Review(reviewAuthor, reviewContent));
+        }
+        return list;
+    }
+
 }
 
