@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.android.cinemate.models.MovieParticulars;
 import com.example.android.cinemate.models.Review;
 
 /**
@@ -76,5 +77,19 @@ public class MovieJsonUtils {
         return list;
     }
 
+    public static MovieParticulars parseMovieParticulars(String jsonString) throws JSONException {
+        JSONObject root = new JSONObject(jsonString);
+        JSONArray genreArray = root.getJSONArray("genres");
+        JSONObject genreObject = genreArray.getJSONObject(0);
+        String genre = genreObject.getString("name");
+        int runtime = root.getInt("runtime");
+        JSONArray languageArray = root.getJSONArray("spoken_language");
+        JSONObject languageObject = languageArray.getJSONObject(0);
+        String language = languageObject.getString("name");
+        String tagline = root.getString("tagline");
+        String homepage = root.getString("homepage");
+
+        return new MovieParticulars(genre, runtime, language, tagline, homepage);
+    }
 }
 
