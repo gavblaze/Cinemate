@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mGridLayoutMananger = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
 
-        mMovieAdapter = new MovieAdapter(this);
+        mMovieAdapter = new MovieAdapter(this, this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
 

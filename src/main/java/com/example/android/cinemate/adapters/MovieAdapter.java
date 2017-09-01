@@ -7,7 +7,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.example.android.cinemate.MainActivity;
 import com.example.android.cinemate.R;
@@ -22,14 +25,19 @@ import com.squareup.picasso.Picasso;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
-
+    private final static int SLIDE_DURATION = 600;
+    private static final int FADE_DURATION = 1000;
     Cursor mCursor;
+    private RelativeLayout mContainer;
+    private Context mContext;
+    private int mPreviousPosition = -1;
 
 
     private ListItemClickHandler mListItemClickHandler;
 
-    public MovieAdapter(ListItemClickHandler listItemClicked) {
+    public MovieAdapter(ListItemClickHandler listItemClicked, Context context) {
         mListItemClickHandler = listItemClicked;
+        this.mContext = context;
     }
 
     @Override
@@ -48,6 +56,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         mCursor.moveToPosition(position);
 
         int posterpathIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH);
@@ -58,6 +67,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         Context context = holder.mPosterImageView.getContext();
 
         Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
+
+
+        setAnimation(holder, position);
 
     }
 
@@ -85,16 +97,34 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return new Movie(id, title, posterpath, rating, overview, releasedate);
     }
 
+    private void setAnimation(RecyclerView.ViewHolder viewHolder, int position) {
+        // If the bound view wasn't previously displayed on screen, animate it! ie if we are scrolling down
+        if (position > mPreviousPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.slide_in_left);
+            animation.setDuration(SLIDE_DURATION);
+            viewHolder.itemView.startAnimation(animation);
+            mPreviousPosition = position;
+            // else if we are scrolling up....
+        } else if (position < mPreviousPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
+            animation.setDuration(FADE_DURATION);
+            viewHolder.itemView.startAnimation(animation);
+            mPreviousPosition = position;
+        }
+    }
+
     public interface ListItemClickHandler {
         void onItemClicked(int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final ImageView mPosterImageView;
+
         public ViewHolder(View itemView) {
             super(itemView);
 
+            mContainer = (RelativeLayout) itemView.findViewById(R.id.layoutContainer);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
 
             itemView.setOnClickListener(this);
@@ -107,3 +137,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
     }
 }
+
+
+
+
+
+
