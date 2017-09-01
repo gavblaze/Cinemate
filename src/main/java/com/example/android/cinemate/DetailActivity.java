@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -59,7 +58,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private ArrayList<String> mTrailerList;
     private ArrayList<Review> mReviewList;
 
-    private TextView mTagLine;
+    private TextView mTagLineTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +70,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
         mGridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
 
-        mTrailerAdapter = new TrailerAdapter(this);
+        mTrailerAdapter = new TrailerAdapter(this, this);
 
         mTrailerRecyclerView.setLayoutManager(mGridLayoutManager);
 
@@ -90,7 +89,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReviewRecyclerView.setNestedScrollingEnabled(false);
 
 
-        mTagLine = (TextView) findViewById(R.id.detailTagline);
+        mTagLineTextView = (TextView) findViewById(R.id.detailTagline);
 
         mDetailMovieTitle = (TextView) findViewById(R.id.detailTitle);
         mDetailMovieOverView = (TextView) findViewById(R.id.detailOverview);
@@ -179,9 +178,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     protected void onSaveInstanceState(Bundle outState) {
         Log.i(LOG_TAG, "TEST.......DetailActivity onSaveInstanceState() called");
 
-        if (mTrailerList != null) outState.putStringArrayList(TRAILER_KEY, mTrailerList);
+        if (mTrailerList.size() != 0) outState.putStringArrayList(TRAILER_KEY, mTrailerList);
 
-        if (mReviewList != null) outState.putParcelableArrayList(REVIEW_KEY, mReviewList);
+        if (mReviewList.size() != 0) outState.putParcelableArrayList(REVIEW_KEY, mReviewList);
 
         super.onSaveInstanceState(outState);
 
@@ -308,9 +307,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public void particularsAsyncResult(MovieParticulars result) {
         String tagline = result.getmTagLine();
         if (tagline.isEmpty()) {
-            mTagLine.setVisibility(View.GONE);
+            mTagLineTextView.setVisibility(View.GONE);
         } else {
-            mTagLine.setText(tagline);
+            mTagLineTextView.setText(tagline);
             Log.i(LOG_TAG, "TEST....................." + tagline);
         }
     }

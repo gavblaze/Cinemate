@@ -5,9 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.example.android.cinemate.R;
+import com.example.android.cinemate.data.FetchTrailerTask;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
@@ -19,10 +22,14 @@ import java.util.List;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
     private static final String LOG_TAG = TrailerAdapter.class.getSimpleName();
+    private static final int SLIDE_DURATION = 1000;
     private List<String> mTrailerPathList;
     private ListItemClickHandler mListItemClickhandler;
+    private Context mContext;
 
-    public TrailerAdapter(ListItemClickHandler listItemClickhandler) {
+
+    public TrailerAdapter(Context context, ListItemClickHandler listItemClickhandler) {
+        this.mContext = context;
         mListItemClickhandler = listItemClickhandler;
     }
 
@@ -45,6 +52,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
         Picasso.with(context).load(videoImageUrl).fit().centerInside().into(holder.mTrailerImageView);
 
+        setAnimation(holder);
+
     }
 
     @Override
@@ -56,6 +65,12 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     public void setData(List<String> data) {
         mTrailerPathList = data;
         notifyDataSetChanged();
+    }
+
+    private void setAnimation(RecyclerView.ViewHolder holder) {
+        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.right_to_left_interpolator);
+        animation.setDuration(SLIDE_DURATION);
+        holder.itemView.startAnimation(animation);
     }
 
     public interface ListItemClickHandler {

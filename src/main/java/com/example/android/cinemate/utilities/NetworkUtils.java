@@ -33,15 +33,7 @@ public class NetworkUtils {
         //Log.i(LOG_TAG, "TEST.......NetworkUtils makeHttpRequest() called");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.connect();
-        InputStream is = null;
-
-        Thread thread = new Thread();
-        try {
-            is = urlConnection.getInputStream();
-            thread.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        InputStream is = urlConnection.getInputStream();
 
         String line = null;
 
