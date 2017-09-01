@@ -23,10 +23,12 @@ import android.widget.Toast;
 
 import com.example.android.cinemate.adapters.ReviewAdapter;
 import com.example.android.cinemate.adapters.TrailerAdapter;
+import com.example.android.cinemate.data.FetchMovieParticulars;
 import com.example.android.cinemate.data.FetchReviewTask;
 import com.example.android.cinemate.data.FetchTrailerTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.models.Movie;
+import com.example.android.cinemate.models.MovieParticulars;
 import com.example.android.cinemate.models.Review;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
@@ -34,7 +36,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickHandler, FetchTrailerTask.TrailerAsyncResponse, FetchReviewTask.ReviewAsyncResponse {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickHandler, FetchTrailerTask.TrailerAsyncResponse, FetchReviewTask.ReviewAsyncResponse, FetchMovieParticulars.ParticularsAsyncResponse {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String TRAILER_KEY = "trailer_key";
     private static final String REVIEW_KEY = "review_key";
@@ -56,6 +58,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private LinearLayoutManager mLinearLayoutManager;
     private ArrayList<String> mTrailerList;
     private ArrayList<Review> mReviewList;
+
+    private TextView mTagLine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +90,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReviewRecyclerView.setNestedScrollingEnabled(false);
 
 
-
+        mTagLine = (TextView) findViewById(R.id.detailTagline);
 
         mDetailMovieTitle = (TextView) findViewById(R.id.detailTitle);
         mDetailMovieOverView = (TextView) findViewById(R.id.detailOverview);
@@ -116,6 +120,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         String movieId = String.valueOf(mReceivedMovie.getmId());
 
+        FetchMovieParticulars particlarsTask = new FetchMovieParticulars(this, this);
+        particlarsTask.execute(TmdbUrlUtils.getMovieParticulars(movieId));
+
+        Log.i(LOG_TAG, "TEST............URL = " + TmdbUrlUtils.getMovieParticulars(movieId));
+
 
         if (savedInstanceState != null && savedInstanceState.containsKey(TRAILER_KEY)) {
             showTrailerView();
@@ -134,6 +143,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             FetchReviewTask reviewTask = new FetchReviewTask(this, this);
             reviewTask.execute(TmdbUrlUtils.getReviewJsonUrl(movieId));
         }
+
 
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
@@ -292,6 +302,17 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     public void showReviewView() {
         mReviewLabelTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void particularsAsyncResult(MovieParticulars result) {
+        String tagline = result.getmTagLine();
+        if (tagline.isEmpty()) {
+            mTagLine.setVisibility(View.GONE);
+        } else {
+            mTagLine.setText(tagline);
+            Log.i(LOG_TAG, "TEST....................." + tagline);
+        }
     }
 }
 

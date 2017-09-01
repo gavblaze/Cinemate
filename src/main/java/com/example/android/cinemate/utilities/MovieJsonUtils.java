@@ -83,7 +83,7 @@ public class MovieJsonUtils {
         JSONObject genreObject = genreArray.getJSONObject(0);
         String genre = genreObject.getString("name");
         int runtime = root.getInt("runtime");
-        JSONArray languageArray = root.getJSONArray("spoken_language");
+        JSONArray languageArray = root.getJSONArray("spoken_languages");
         JSONObject languageObject = languageArray.getJSONObject(0);
         String language = languageObject.getString("name");
         String tagline = root.getString("tagline");

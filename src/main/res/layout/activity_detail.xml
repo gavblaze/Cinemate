@@ -44,8 +44,7 @@
             android:id="@+id/detailOverview"
             android:layout_width="348dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintHorizontal_bias="0.438"
+            android:layout_marginTop="45dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detailMovieImageView"
@@ -88,9 +87,9 @@
             android:id="@+id/trailersLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="38dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginStart="38dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="7dp"
             android:text="Trailers"
             android:textSize="30sp"
             android:visibility="invisible"
@@ -113,13 +112,10 @@
             android:id="@+id/trailerRecyclerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="7dp"
-            app:layout_constraintHorizontal_bias="1.0"
+            android:layout_marginTop="13dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/trailersLabelTextView">
         </android.support.v7.widget.RecyclerView>
 
@@ -132,6 +128,19 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/reviewLabelTextView">
         </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/detailTagline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-23dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="29dp"
+            app:layout_constraintHorizontal_bias="0.026"
+            app:layout_constraintLeft_toLeftOf="@+id/detailRating"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailRating"
+            tools:text="Before Gru,they had a history of bad bosses"/>
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>
