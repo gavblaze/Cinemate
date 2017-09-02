@@ -2,10 +2,13 @@ package com.example.android.cinemate;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.cinemate.utilities.EndlessRecyclerViewScrollListener;
@@ -155,13 +159,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Log.i(LOG_TAG, "TEST.......MainActivity onLoaderReset() called");
     }
 
-    @Override
-    public void onItemClicked(int position) {
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        Movie clickedMovie = mMovieAdapter.getPosition(position);
-        intent.putExtra(Intent.ACTION_MAIN, clickedMovie);
-        startActivity(intent);
-    }
+//    @Override
+//    public void onItemClicked(int position) {
+//        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+//        Movie clickedMovie = mMovieAdapter.getPosition(position);
+//        intent.putExtra(Intent.ACTION_MAIN, clickedMovie);
+//        startActivity(intent);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -211,6 +215,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onItemClicked(int position, Movie movie, ImageView sharedImageView) {
+
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(Intent.ACTION_MAIN, movie);
+        intent.putExtra(Intent.EXTRA_TEXT, ViewCompat.getTransitionName(sharedImageView));
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                sharedImageView,
+                ViewCompat.getTransitionName(sharedImageView));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            startActivity(intent, options.toBundle());
+        }
     }
 }
 

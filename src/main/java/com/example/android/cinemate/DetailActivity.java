@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
@@ -38,11 +40,14 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        supportPostponeEnterTransition();
+
         mTitleTextView = (TextView) findViewById(R.id.detailTitle);
         mOverviewTextView = (TextView) findViewById(R.id.detailOverview);
         mPosterImageView = (ImageView) findViewById(R.id.detailMoviePoster);
         mReleaseDateTextView = (TextView) findViewById(R.id.detailYear);
         mRatingTextView = (TextView) findViewById(R.id.detailRating);
+
 
         Intent intentThatStartedActivity = getIntent();
         if (intentThatStartedActivity.hasExtra(Intent.ACTION_MAIN)) {
@@ -58,13 +63,32 @@ public class DetailActivity extends AppCompatActivity {
 
             mTitleTextView.setText(mMovie.getmTitle());
             mOverviewTextView.setText(mMovie.getmOverView());
-            Picasso.with(this)
+
+            Bundle extras = getIntent().getExtras();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                String imageTransitionName = extras.getString(Intent.EXTRA_TEXT);
+                mPosterImageView.setTransitionName(imageTransitionName);
+            }
+
+            Picasso.with(context)
                     .load(posterUrl)
-                    .into(mPosterImageView);
+                    .into(mPosterImageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            supportStartPostponedEnterTransition();
+                        }
+
+                        @Override
+                        public void onError() {
+                            supportStartPostponedEnterTransition();
+                        }
+                    });
+
+
             mReleaseDateTextView.setText(mMovie.getmReleaseDate());
             mRatingTextView.setText(mMovie.getmVoteAverage());
 
-            Picasso.with(context).invalidate(posterUrl);
         }
 
 

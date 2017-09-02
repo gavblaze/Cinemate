@@ -2,6 +2,7 @@ package com.example.android.cinemate;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -52,8 +53,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.i(LOG_TAG, "TEST.......MovieAdapter onBindViewHolder() called");
+
+        final Movie movieItem = mMovieList.get(position);
 
         Context context = holder.mImageView.getContext();
 
@@ -71,7 +74,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 .load(imageUrl)
                 .into(holder.mImageView);
 
-        Picasso.with(context).invalidate(imageUrl);
+        ViewCompat.setTransitionName(holder.mImageView, movieItem.getmTitle());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListItemClickHandler.onItemClicked(holder.getAdapterPosition(), movieItem, holder.mImageView);
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListItemClickHandler.onItemClicked(position, movieItem, holder.mImageView);
+            }
+        });
     }
 
     @Override
@@ -109,23 +126,23 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
 
     public interface ListItemClickHandler {
-        void onItemClicked(int position);
+        void onItemClicked(int position, Movie movie, ImageView sharedImageView);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
         public ViewHolder(View itemView) {
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.imagePoster);
 
-            itemView.setOnClickListener(this);
+            //itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            mListItemClickHandler.onItemClicked(position);
-        }
+//        @Override
+//        public void onClick(View view) {
+//            int position = getAdapterPosition();
+//            mListItemClickHandler.onItemClicked(position);
+//        }
     }
 }
