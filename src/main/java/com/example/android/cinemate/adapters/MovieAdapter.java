@@ -2,6 +2,7 @@ package com.example.android.cinemate.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -68,8 +69,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
 
+        //ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 
-        setAnimation(holder, position);
+
+        // setAnimation(holder, position);
 
     }
 
@@ -97,21 +100,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return new Movie(id, title, posterpath, rating, overview, releasedate);
     }
 
-    private void setAnimation(RecyclerView.ViewHolder viewHolder, int position) {
-        // If the bound view wasn't previously displayed on screen, animate it! ie if we are scrolling down
-        if (position > mPreviousPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.slide_in_left);
-            animation.setDuration(SLIDE_DURATION);
-            viewHolder.itemView.startAnimation(animation);
-            mPreviousPosition = position;
-            // else if we are scrolling up....
-        } else if (position < mPreviousPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
-            animation.setDuration(FADE_DURATION);
-            viewHolder.itemView.startAnimation(animation);
-            mPreviousPosition = position;
-        }
-    }
+//    private void setAnimation(RecyclerView.ViewHolder viewHolder, int position) {
+//        // If the bound view wasn't previously displayed on screen, animate it! ie if we are scrolling down
+//        if (position > mPreviousPosition) {
+//            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.slide_in_left);
+//            animation.setDuration(SLIDE_DURATION);
+//            viewHolder.itemView.startAnimation(animation);
+//            mPreviousPosition = position;
+//            // else if we are scrolling up....
+//        } else if (position < mPreviousPosition) {
+//            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
+//            animation.setDuration(FADE_DURATION);
+//            viewHolder.itemView.startAnimation(animation);
+//            mPreviousPosition = position;
+//        }
+//    }
 
     public interface ListItemClickHandler {
         void onItemClicked(int position);

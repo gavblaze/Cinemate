@@ -31,8 +31,9 @@
 
         <ImageView
             android:id="@+id/detailMovieImageView"
-            android:layout_width="69dp"
-            android:layout_height="105dp"
+
+            android:layout_width="109dp"
+            android:layout_height="153dp"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"

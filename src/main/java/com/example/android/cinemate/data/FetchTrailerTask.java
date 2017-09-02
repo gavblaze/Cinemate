@@ -33,7 +33,6 @@ public class FetchTrailerTask extends AsyncTask<String, Void, List<String>> {
     protected List<String> doInBackground(String... strings) {
         Log.i(LOG_TAG, "TEST..........FetchTrailerTask doInBackGroundCalled()");
 
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 

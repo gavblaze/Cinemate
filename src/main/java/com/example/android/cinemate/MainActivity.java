@@ -1,10 +1,13 @@
 package com.example.android.cinemate;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -16,7 +19,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.cinemate.adapters.MovieAdapter;
 import com.example.android.cinemate.data.FetchMovieTask;
@@ -92,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mMovieAdapter = new MovieAdapter(this, this);
         mRecyclerView.setAdapter(mMovieAdapter);
-
 
         showLoading();
 
@@ -172,11 +176,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
     @Override
-    public void onItemClicked(int position) {
+    public void onItemClicked(final int position) {
+//        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+//        Movie movie = mMovieAdapter.getItemClicked(position);
+//        intent.putExtra(Intent.EXTRA_TEXT, movie);
+//        startActivity(intent);
+
+        View posterView = findViewById(R.id.posterImageView);
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieAdapter.getItemClicked(position);
         intent.putExtra(Intent.EXTRA_TEXT, movie);
-        startActivity(intent);
+        intent.putExtra(Intent.ACTION_MAIN, movie.getmTitle());
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, posterView, movie.getmTitle());
+            startActivity(intent, options.toBundle());
+        }
     }
 
     @Override

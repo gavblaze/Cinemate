@@ -5,17 +5,24 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +37,7 @@ import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.models.MovieParticulars;
 import com.example.android.cinemate.models.Review;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -60,11 +68,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private TextView mTagLineTextView;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "TEST.......DetailActivity onCreate() called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
+
+        supportPostponeEnterTransition();
 
 
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
@@ -113,16 +126,30 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mDetailMovieRating.setText(mReceivedMovie.getmRating());
         mDetailMovieReleaseDate.setText(mReceivedMovie.getmReleaseDate());
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String transitionName = intentThatStartedActivity.getStringExtra(Intent.ACTION_MAIN);
+            mDetailMovieImageView.setTransitionName(transitionName);
+        }
+
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
         String urlForImage = TmdbUrlUtils.getImageUrl(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
-        Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView);
+        Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).noFade().into(mDetailMovieImageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                supportStartPostponedEnterTransition();
+            }
+
+            @Override
+            public void onError() {
+                supportStartPostponedEnterTransition();
+            }
+        });
 
         String movieId = String.valueOf(mReceivedMovie.getmId());
 
         FetchMovieParticulars particlarsTask = new FetchMovieParticulars(this, this);
         particlarsTask.execute(TmdbUrlUtils.getMovieParticulars(movieId));
-
-        Log.i(LOG_TAG, "TEST............URL = " + TmdbUrlUtils.getMovieParticulars(movieId));
 
 
         if (savedInstanceState != null && savedInstanceState.containsKey(TRAILER_KEY)) {
@@ -310,7 +337,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             mTagLineTextView.setVisibility(View.GONE);
         } else {
             mTagLineTextView.setText(tagline);
-            Log.i(LOG_TAG, "TEST....................." + tagline);
         }
     }
 }
