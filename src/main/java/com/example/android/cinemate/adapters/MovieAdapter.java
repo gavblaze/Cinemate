@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -20,16 +21,18 @@ import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
+import static android.R.attr.animation;
+
 /**
  * Created by Gavin on 31-Jul-17.
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
-    private final static int SLIDE_DURATION = 600;
-    private static final int FADE_DURATION = 1000;
+    private final static int ODD_DURATION = 300;
+    private static final int EVEN_DURATION = 400;
+    private static final int FADE_DURATION = 800;
     Cursor mCursor;
-    private RelativeLayout mContainer;
     private Context mContext;
     private int mPreviousPosition = -1;
 
@@ -69,10 +72,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         Picasso.with(context).load(urlImageString).into(holder.mPosterImageView);
 
-        //ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
+        ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 
 
-        // setAnimation(holder, position);
+        setAnimation(holder, position);
 
     }
 
@@ -100,24 +103,38 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return new Movie(id, title, posterpath, rating, overview, releasedate);
     }
 
-//    private void setAnimation(RecyclerView.ViewHolder viewHolder, int position) {
-//        // If the bound view wasn't previously displayed on screen, animate it! ie if we are scrolling down
-//        if (position > mPreviousPosition) {
-//            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.slide_in_left);
-//            animation.setDuration(SLIDE_DURATION);
-//            viewHolder.itemView.startAnimation(animation);
-//            mPreviousPosition = position;
-//            // else if we are scrolling up....
-//        } else if (position < mPreviousPosition) {
-//            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
-//            animation.setDuration(FADE_DURATION);
-//            viewHolder.itemView.startAnimation(animation);
-//            mPreviousPosition = position;
-//        }
-//    }
+    @Override
+    /* To fix fast scrolling behaviour, override onViewDetachedFromWindow*/
+    public void onViewDetachedFromWindow(ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
+    }
+
+    private void setAnimation(RecyclerView.ViewHolder viewHolder, int position) {
+        // If the bound view wasn't previously displayed on screen, animate it! ie if we are scrolling down
+        if (position > mPreviousPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_bottom);
+            if (position % 2 == 0) {
+                animation.setDuration(EVEN_DURATION);
+            } else {
+                animation.setDuration(ODD_DURATION);
+            }
+            viewHolder.itemView.startAnimation(animation);
+            mPreviousPosition = position;
+
+            // else if we are scrolling up....
+        } else if (position < mPreviousPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
+            animation.setDuration(FADE_DURATION);
+            animation.setInterpolator(new OvershootInterpolator());
+            viewHolder.itemView.startAnimation(animation);
+            mPreviousPosition = position;
+
+        }
+    }
 
     public interface ListItemClickHandler {
-        void onItemClicked(int position);
+        void onItemClicked(int position, ImageView imageView);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -127,7 +144,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mContainer = (RelativeLayout) itemView.findViewById(R.id.layoutContainer);
+            //mContainer = (RelativeLayout) itemView.findViewById(R.id.layoutContainer);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
 
             itemView.setOnClickListener(this);
@@ -136,7 +153,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            mListItemClickHandler.onItemClicked(position);
+            mListItemClickHandler.onItemClicked(position, mPosterImageView);
         }
     }
 }

@@ -40,6 +40,7 @@ public class FetchReviewTask extends AsyncTask<String, Void, List<Review>> {
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
+        if (isCancelled()) return null;
         if (isConnected) {
             String i = strings[0];
             String json = NetworkUtils.getDataFromNetwork(i);
@@ -58,6 +59,12 @@ public class FetchReviewTask extends AsyncTask<String, Void, List<Review>> {
         if (review != null) {
             mReviewAsyncResponse.reviewAsyncResult(review);
         }
+    }
+
+    @Override
+    protected void onCancelled() {
+        Log.i(LOG_TAG, "CANCELLED................................FetchReviewTask!");
+        super.onCancelled();
     }
 
     public interface ReviewAsyncResponse {

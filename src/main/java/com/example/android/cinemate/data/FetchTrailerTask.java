@@ -40,6 +40,7 @@ public class FetchTrailerTask extends AsyncTask<String, Void, List<String>> {
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
+        if (isCancelled()) return null;
         if (isConnected) {
             String i = strings[0];
             String json = NetworkUtils.getDataFromNetwork(i);
@@ -58,6 +59,12 @@ public class FetchTrailerTask extends AsyncTask<String, Void, List<String>> {
         if (data != null) {
             mTrailerAsyncResponse.trailerAsyncResult(data);
         }
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        Log.i(LOG_TAG, "CANCELLED................................FetchTrailerTask!");
     }
 
     public interface TrailerAsyncResponse {

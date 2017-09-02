@@ -176,20 +176,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
     @Override
-    public void onItemClicked(final int position) {
+    public void onItemClicked(int position, ImageView sharedImageView) {
 //        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
 //        Movie movie = mMovieAdapter.getItemClicked(position);
 //        intent.putExtra(Intent.EXTRA_TEXT, movie);
 //        startActivity(intent);
 
-        View posterView = findViewById(R.id.posterImageView);
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieAdapter.getItemClicked(position);
-        intent.putExtra(Intent.EXTRA_TEXT, movie);
-        intent.putExtra(Intent.ACTION_MAIN, movie.getmTitle());
+        intent.putExtra(Intent.ACTION_MAIN, movie);
+        intent.putExtra(Intent.EXTRA_TEXT, movie.getmTitle());
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, posterView, movie.getmTitle());
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, sharedImageView, movie.getmTitle());
             startActivity(intent, options.toBundle());
         }
     }
@@ -248,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         if (cursor.getCount() <= 0) {
             return true;
         } else {
+            cursor.close();
             return false;
         }
     }

@@ -23,16 +23,6 @@ public class TmdbUrlUtils {
 
     public static final String IMG_SIZE_TYPE = "0.jpg";
 
-    //https://www.youtube.com/watch?v={key}
-
-    //To get a list of reviews from the movie Cloud Atlas (using it since there is actually some reviews for it), your request would look like:
-
-    //http://api.themoviedb.org/3/movie/83542/reviews?api_key=9bbba1ac9930bbe1a98d6ad3295520a0
-
-    //Suppose you got some reviews back, you can query the full details for said review by grabbing the id and doing this request:
-
-    //http://api.themoviedb.org/3/review/51910979760ee320eb020fc2?api_key=9bbba1ac9930bbe1a98d6ad3295520a0
-
 
 
     public static String urlFromPreferences(Context context) {

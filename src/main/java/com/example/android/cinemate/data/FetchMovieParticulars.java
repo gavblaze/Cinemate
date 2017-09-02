@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.android.cinemate.models.MovieParticulars;
 import com.example.android.cinemate.utilities.MovieJsonUtils;
@@ -16,6 +17,7 @@ import org.json.JSONException;
  */
 
 public class FetchMovieParticulars extends AsyncTask<String, Void, MovieParticulars> {
+    private static final String LOG_TAG = FetchMovieParticulars.class.getSimpleName();
     private Context mContext;
     private ParticularsAsyncResponse mParticularsResponse;
 
@@ -34,6 +36,7 @@ public class FetchMovieParticulars extends AsyncTask<String, Void, MovieParticul
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
+        if (isCancelled()) return null;
         if (isConnected) {
             String i = strings[0];
             String json = NetworkUtils.getDataFromNetwork(i);
@@ -52,6 +55,12 @@ public class FetchMovieParticulars extends AsyncTask<String, Void, MovieParticul
         if (movieParticulars != null) {
             mParticularsResponse.particularsAsyncResult(movieParticulars);
         }
+    }
+
+    @Override
+    protected void onCancelled() {
+        Log.i(LOG_TAG, "CANCELLED................................FetchTrailerTask!");
+        super.onCancelled();
     }
 
     public interface ParticularsAsyncResponse {

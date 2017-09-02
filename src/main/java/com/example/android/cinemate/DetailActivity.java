@@ -13,16 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +42,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String TRAILER_KEY = "trailer_key";
     private static final String REVIEW_KEY = "review_key";
+    public FetchTrailerTask mTrailerTask;
+    public FetchReviewTask mReviewTask;
+    public FetchMovieParticulars mParticularsTask;
     private TextView mDetailMovieTitle;
     private TextView mDetailMovieOverView;
     private TextView mDetailMovieRating;
@@ -65,7 +63,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private LinearLayoutManager mLinearLayoutManager;
     private ArrayList<String> mTrailerList;
     private ArrayList<Review> mReviewList;
-
     private TextView mTagLineTextView;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -115,11 +112,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReviewLabelTextView = (TextView) findViewById(R.id.reviewLabelTextView);
 
 
-
-
         Intent intentThatStartedActivity = getIntent();
 
-        mReceivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
+        mReceivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.ACTION_MAIN);
 
         mDetailMovieTitle.setText(mReceivedMovie.getmTitle());
         mDetailMovieOverView.setText(mReceivedMovie.getmOverview());
@@ -128,7 +123,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String transitionName = intentThatStartedActivity.getStringExtra(Intent.ACTION_MAIN);
+            Bundle extras = intentThatStartedActivity.getExtras();
+            String transitionName = extras.getString(Intent.EXTRA_TEXT);
             mDetailMovieImageView.setTransitionName(transitionName);
         }
 
@@ -148,8 +144,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         String movieId = String.valueOf(mReceivedMovie.getmId());
 
-        FetchMovieParticulars particlarsTask = new FetchMovieParticulars(this, this);
-        particlarsTask.execute(TmdbUrlUtils.getMovieParticulars(movieId));
+        mParticularsTask = new FetchMovieParticulars(this, this);
+        mParticularsTask.execute(TmdbUrlUtils.getMovieParticulars(movieId));
 
 
         if (savedInstanceState != null && savedInstanceState.containsKey(TRAILER_KEY)) {
@@ -157,8 +153,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             mTrailerList = savedInstanceState.getStringArrayList(TRAILER_KEY);
             mTrailerAdapter.setData(mTrailerList);
         } else {
-            FetchTrailerTask trailerTask = new FetchTrailerTask(this, this);
-            trailerTask.execute(TmdbUrlUtils.getTrailerJsonUrl(movieId));
+            mTrailerTask = new FetchTrailerTask(this, this);
+            mTrailerTask.execute(TmdbUrlUtils.getTrailerJsonUrl(movieId));
         }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(REVIEW_KEY)) {
@@ -166,8 +162,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             mReviewList = savedInstanceState.getParcelableArrayList(REVIEW_KEY);
             mReviewAdapter.setData(mReviewList);
         } else {
-            FetchReviewTask reviewTask = new FetchReviewTask(this, this);
-            reviewTask.execute(TmdbUrlUtils.getReviewJsonUrl(movieId));
+            mReviewTask = new FetchReviewTask(this, this);
+            mReviewTask.execute(TmdbUrlUtils.getReviewJsonUrl(movieId));
         }
 
 
@@ -219,12 +215,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         String selection = MovieEntry.COLUMN_NAME_ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
         Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
-        cursor.moveToNext();
+        if (cursor != null) {
+            cursor.moveToNext();
+        }
         int indexOfValue = cursor.getColumnIndex(MovieEntry.COLUMN_NAME_FAVOURITE);
         int value = cursor.getInt(indexOfValue);
         if (value == MovieEntry.IS_FAVOURITE) {
             return true;
         } else {
+            cursor.close();
             return false;
         }
     }
@@ -291,6 +290,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     @Override
     /*If the result from the TrailerAsyncTask is null, hide the views related to displaying trailers*/
     public void trailerAsyncResult(List<String> data) {
+        Log.i(LOG_TAG, "TEST....................... trailerAsyncResult() called");
         mTrailerList = (ArrayList<String>) data;
         if (data.isEmpty()) {
             hideTrailerView();
@@ -312,6 +312,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     @Override
     /*If the result from the ReviewAsyncTask is null, hide the views related to displaying reviews*/
     public void reviewAsyncResult(List<Review> data) {
+        Log.i(LOG_TAG, "TEST.......................reviewAsyncResult() called");
         mReviewList = (ArrayList<Review>) data;
         if (data.isEmpty()) {
             hideReviewView();
@@ -332,12 +333,22 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     @Override
     public void particularsAsyncResult(MovieParticulars result) {
+        Log.i(LOG_TAG, "TEST.......................particularsAsyncResult() called");
         String tagline = result.getmTagLine();
         if (tagline.isEmpty()) {
             mTagLineTextView.setVisibility(View.GONE);
         } else {
             mTagLineTextView.setText(tagline);
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mTrailerTask.cancel(true);
+        mReviewTask.cancel(true);
+        mParticularsTask.cancel(true);
     }
 }
 
