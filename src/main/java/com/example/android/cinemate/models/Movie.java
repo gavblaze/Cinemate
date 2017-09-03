@@ -25,16 +25,17 @@ public class Movie implements Parcelable {
     private String mRating;
     private String mOverview;
     private String mReleaseDate;
+    private String mBackdropPath;
 
 
-
-    public Movie(int id, String title, String posterPath, String rating, String overview, String releaseDate) {
+    public Movie(int id, String title, String posterPath, String backdropPath, String rating, String overview, String releaseDate) {
         this.mId = id;
         this.mTitle = title;
         this.mPosterPath = posterPath;
         this.mRating = rating;
         this.mOverview = overview;
         this.mReleaseDate = releaseDate;
+        this.mBackdropPath = backdropPath;
     }
 
     protected Movie(Parcel in) {
@@ -44,6 +45,7 @@ public class Movie implements Parcelable {
         mRating = in.readString();
         mOverview = in.readString();
         mReleaseDate = in.readString();
+        mBackdropPath = in.readString();
     }
 
     public String getmTitle() {
@@ -99,6 +101,14 @@ public class Movie implements Parcelable {
         return 0;
     }
 
+    public String getmBackdropPath() {
+        return mBackdropPath;
+    }
+
+    public void setmBackdropPath(String mBackdropPath) {
+        this.mBackdropPath = mBackdropPath;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(mId);
@@ -107,5 +117,6 @@ public class Movie implements Parcelable {
         parcel.writeString(mRating);
         parcel.writeString(mOverview);
         parcel.writeString(mReleaseDate);
+        parcel.writeString(mBackdropPath);
     }
 }

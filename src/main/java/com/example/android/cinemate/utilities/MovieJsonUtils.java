@@ -38,8 +38,9 @@ public class MovieJsonUtils {
             String rating = o.getString("vote_average");
             String overView = o.getString("overview");
             String releaseDate = o.getString("release_date");
+            String backdropPath = o.getString("backdrop_path");
             int id = o.getInt("id");
-            list.add(new Movie(id, title, posterPath, rating, overView, releaseDate));
+            list.add(new Movie(id, title, posterPath, backdropPath, rating, overView, releaseDate));
         }
         return list;
     }
@@ -52,12 +53,7 @@ public class MovieJsonUtils {
 
         for (int i = 0; i < results.length(); i++) {
             JSONObject o = results.getJSONObject(i);
-            String trailerId = o.getString("id");
             String trailerKey = o.getString("key");
-            String trailerName = o.getString("name");
-            String trailerSite = o.getString("site");
-            String trailerSize = o.getString("size");
-
             list.add(trailerKey);
         }
         return list;

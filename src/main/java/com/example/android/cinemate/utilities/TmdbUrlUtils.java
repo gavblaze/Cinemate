@@ -17,6 +17,8 @@ public class TmdbUrlUtils {
 
     public static final String BASE_IMAGE_SIZE = "w185";
 
+    public static final String BACKDROP_IMAGE_SIZE = "w780";
+
     public static final String BASE_YOUTUBE_URL = "https://www.youtube.com/watch?";
 
     public static final String BASE_YOUTUBE_IMG_URL = "http://img.youtube.com/vi/";
@@ -36,6 +38,19 @@ public class TmdbUrlUtils {
     }
 
     public static String getImageUrl(String path, String imageSize) {
+        Uri baseUri = Uri.parse(BASE_IMAGE_URL);
+        Uri.Builder builder = baseUri.buildUpon();
+        builder.appendPath(imageSize);
+        /*We use appendEncoded path because the path from JSON
+        * is already encoded with a backslash*/
+        builder.appendEncodedPath(path);
+
+        String stringUrlOfImage = builder.toString();
+
+        return stringUrlOfImage;
+    }
+
+    public static String getBackdropUrl(String path, String imageSize) {
         Uri baseUri = Uri.parse(BASE_IMAGE_URL);
         Uri.Builder builder = baseUri.buildUpon();
         builder.appendPath(imageSize);

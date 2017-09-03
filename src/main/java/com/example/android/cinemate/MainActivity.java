@@ -38,8 +38,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public static final int INDEX_MOVIE_TITLE = 1;
     public static final int INDEX_MOVIE_OVERVIEW = 2;
     public static final int INDEX_MOVIE_POSTERPATH = 3;
-    public static final int INDEX_MOVIE_RELEASE_DATE = 4;
-    public static final int INDEX_MOVIE_VOTE_AVERAGE = 5;
+    public static final int INDEX_MOVIE_BACKDROP_PATH = 4;
+    public static final int INDEX_MOVIE_RELEASE_DATE = 5;
+    public static final int INDEX_MOVIE_VOTE_AVERAGE = 6;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
     private static String[] MOVIE_TABLE_PROJECTION = {
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             MovieEntry.COLUMN_NAME_TITLE,
             MovieEntry.COLUMN_NAME_OVERVIEW,
             MovieEntry.COLUMN_NAME_POSTER_PATH,
+            MovieEntry.COLUMN_NAME_BACKDROP_PATH,
             MovieEntry.COLUMN_NAME_RELEASE_DATE,
             MovieEntry.COLUMN_NAME_VOTE_AVERAGE,
             MovieEntry.COLUMN_NAME_SORT_ORDER

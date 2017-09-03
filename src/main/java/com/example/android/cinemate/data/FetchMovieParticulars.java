@@ -28,6 +28,7 @@ public class FetchMovieParticulars extends AsyncTask<String, Void, MovieParticul
 
     @Override
     protected MovieParticulars doInBackground(String... strings) {
+        Log.i(LOG_TAG, "TEST.......................MovieParticulars doInBackground() called");
 
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -54,6 +55,8 @@ public class FetchMovieParticulars extends AsyncTask<String, Void, MovieParticul
         super.onPostExecute(movieParticulars);
         if (movieParticulars != null) {
             mParticularsResponse.particularsAsyncResult(movieParticulars);
+        } else {
+            mParticularsResponse.particularsAsyncResult(null);
         }
     }
 

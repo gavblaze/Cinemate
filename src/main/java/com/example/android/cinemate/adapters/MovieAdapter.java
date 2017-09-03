@@ -96,11 +96,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         int id = mCursor.getInt(MainActivity.INDEX_MOVIE_ID);
         String title = mCursor.getString(MainActivity.INDEX_MOVIE_TITLE);
         String posterpath = mCursor.getString(MainActivity.INDEX_MOVIE_POSTERPATH);
+        String backdropPath = mCursor.getString(MainActivity.INDEX_MOVIE_BACKDROP_PATH);
         String rating = mCursor.getString(MainActivity.INDEX_MOVIE_VOTE_AVERAGE);
         String overview = mCursor.getString(MainActivity.INDEX_MOVIE_OVERVIEW);
         String releasedate = mCursor.getString(MainActivity.INDEX_MOVIE_RELEASE_DATE);
 
-        return new Movie(id, title, posterpath, rating, overview, releasedate);
+        return new Movie(id, title, posterpath, backdropPath, rating, overview, releasedate);
     }
 
     @Override
