@@ -35,6 +35,7 @@ import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.models.MovieParticulars;
 import com.example.android.cinemate.models.Review;
 import com.example.android.cinemate.utilities.DateUtils;
+import com.example.android.cinemate.utilities.GenreUtils;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -378,7 +379,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
             String tagline = result.getmTagLine();
             String genre = result.getmGenre();
-            String duration = String.valueOf(result.getmRuntime());
+            String duration = result.getmRuntime() + " min";
             String language = result.getmLanguage();
 
             if (tagline.isEmpty()) {
@@ -390,17 +391,19 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 mDetailGenreTextView.setVisibility(View.GONE);
             } else {
                 mDetailGenreTextView.setText(genre);
-                mDetailGenreTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_cloud_off_black_24dp, 0, 0, 0);
+                GenreUtils.genreIcon(genre, mDetailGenreTextView);
             }
             if (duration.isEmpty()) {
                 mDetailDurationTextView.setVisibility(View.GONE);
             } else {
                 mDetailDurationTextView.setText(duration);
+                mDetailDurationTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.watch, 0, 0, 0);
             }
             if (language.isEmpty()) {
                 mDetailLanguageTextView.setVisibility(View.GONE);
             } else {
                 mDetailLanguageTextView.setText(language);
+                mDetailLanguageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.globe, 0, 0, 0);
             }
         }
     }
