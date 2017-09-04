@@ -50,9 +50,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
-        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
-        lp.height = (int) (parent.getMeasuredHeight() / 2);
-        v.setLayoutParams(lp);
+//        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+//        lp.height = (int) (parent.getMeasuredHeight() / 2);
+//        v.setLayoutParams(lp);
 
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -66,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         int posterpathIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH);
         String imgpath = mCursor.getString(posterpathIndex);
 
-        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.BASE_IMAGE_SIZE);
+        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.LARGE_IMAGE_SIZE);
 
         Context context = holder.mPosterImageView.getContext();
 

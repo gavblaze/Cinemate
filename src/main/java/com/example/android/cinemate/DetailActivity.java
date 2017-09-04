@@ -2,14 +2,12 @@ package com.example.android.cinemate;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +56,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private TextView mDetailMovieReleaseDate;
     private ImageView mDetailMovieImageView;
     private ImageView mDetailBackdropImageView;
+    private ImageView mDetailGenreImageView;
+    private ImageView mDetailDurationImageView;
+    private ImageView mDetailLanguageImageView;
 
     private TextView mDetailDurationTextView;
     private TextView mDetailGenreTextView;
@@ -130,6 +132,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mTrailerLabelTextView = (TextView) findViewById(R.id.trailersLabelTextView);
         mReviewLabelTextView = (TextView) findViewById(R.id.reviewLabelTextView);
+        mDetailGenreImageView = (ImageView) findViewById(R.id.genreImageView);
+        mDetailDurationImageView = (ImageView) findViewById(R.id.durationImageView);
+        mDetailLanguageImageView = (ImageView) findViewById(R.id.languageImageView);
 
 
         Intent intentThatStartedActivity = getIntent();
@@ -345,6 +350,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mDetailDurationTextView.setVisibility(View.GONE);
         mDetailGenreTextView.setVisibility(View.GONE);
         mTagLineTextView.setVisibility(View.GONE);
+        mDetailGenreImageView.setVisibility(View.GONE);
+        mDetailDurationImageView.setVisibility(View.GONE);
+        mDetailLanguageImageView.setVisibility(View.GONE);
     }
 
     @Override
@@ -389,21 +397,24 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             }
             if (genre.isEmpty()) {
                 mDetailGenreTextView.setVisibility(View.GONE);
+                mDetailGenreImageView.setVisibility(View.GONE);
             } else {
                 mDetailGenreTextView.setText(genre);
-                GenreUtils.genreIcon(genre, mDetailGenreTextView);
+                GenreUtils.setGenreIcon(genre, mDetailGenreImageView);
             }
             if (duration.isEmpty()) {
                 mDetailDurationTextView.setVisibility(View.GONE);
+                mDetailDurationImageView.setVisibility(View.GONE);
             } else {
                 mDetailDurationTextView.setText(duration);
-                mDetailDurationTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.watch, 0, 0, 0);
+                mDetailDurationImageView.setImageResource(R.drawable.watch);
             }
             if (language.isEmpty()) {
                 mDetailLanguageTextView.setVisibility(View.GONE);
+                mDetailLanguageImageView.setVisibility(View.GONE);
             } else {
                 mDetailLanguageTextView.setText(language);
-                mDetailLanguageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.globe, 0, 0, 0);
+                mDetailLanguageImageView.setImageResource(R.drawable.globe);
             }
         }
     }

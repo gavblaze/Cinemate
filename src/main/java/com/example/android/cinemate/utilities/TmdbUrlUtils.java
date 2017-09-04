@@ -17,6 +17,10 @@ public class TmdbUrlUtils {
 
     public static final String BASE_IMAGE_SIZE = "w185";
 
+    public static final String MEDIUM_IMAGE_SIZE = "w342";
+
+    public static final String LARGE_IMAGE_SIZE = "w500";
+
     public static final String BACKDROP_IMAGE_SIZE = "w780";
 
     public static final String BASE_YOUTUBE_URL = "https://www.youtube.com/watch?";

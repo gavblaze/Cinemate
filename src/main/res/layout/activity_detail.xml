@@ -35,25 +35,26 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="73dp"
-            android:layout_height="73dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_marginEnd="56dp"
             android:layout_marginRight="56dp"
             android:src="@drawable/ic_favorite_border_black_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/detailBackdropImageView"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detailBackdropImageView"
+            app:layout_constraintVertical_bias="0.493"
             tools:layout_constraintBottom_creator="1"
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintTop_creator="1"/>
 
         <ImageView
             android:id="@+id/detailMovieImageView"
-            android:layout_width="127dp"
-            android:layout_height="193dp"
+            android:layout_width="126dp"
+            android:layout_height="220dp"
             android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="211dp"
+            android:layout_marginTop="216dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_constraintLeft_creator="1"
@@ -62,35 +63,42 @@
 
         <TextView
             android:id="@+id/detailOverview"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="27dp"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textSize="14sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailGenreTextView"
+            app:layout_constraintTop_toBottomOf="@+id/detailMovieImageView"
             tools:layout_constraintLeft_creator="1"
             tools:layout_constraintTop_creator="1"
             tools:text="After getting a green card in exchange for assassinating a Cuban government official, Tony Montana (Al Pacino) stakes a claim on the drug trade in Miami."/>
 
         <TextView
             android:id="@+id/detailTitle"
-            style="@style/Base.TextAppearance.AppCompat.Large"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="15dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:textSize="18sp"
             app:layout_constraintLeft_toRightOf="@+id/detailMovieImageView"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fab"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
             tools:text="Scarface"/>
 
         <TextView
             android:id="@+id/detailYear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             app:layout_constraintLeft_toLeftOf="@+id/detailTitle"
             app:layout_constraintTop_toBottomOf="@+id/detailTagline"
             tools:text="2017"/>
@@ -99,7 +107,9 @@
             android:id="@+id/detailRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             app:layout_constraintLeft_toLeftOf="@+id/detailTitle"
             app:layout_constraintTop_toBottomOf="@+id/detailYear"
             tools:text="8.5/10"/>
@@ -122,7 +132,7 @@
             android:id="@+id/reviewLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
+            android:textSize="22sp"
             app:layout_constraintBottom_toTopOf="@+id/reviewRecyclerView"
             app:layout_constraintLeft_toLeftOf="parent"
             tools:layout_constraintBottom_creator="1"
@@ -137,6 +147,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/trailerRecyclerView"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
             tools:layout_constraintTop_creator="1">
         </android.support.v7.widget.RecyclerView>
 
@@ -144,13 +156,15 @@
             android:id="@+id/detailTagline"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="1dp"
-            android:layout_marginRight="1dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintHorizontal_bias="0.581"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textStyle="italic"
             app:layout_constraintLeft_toLeftOf="@+id/detailTitle"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detailTitle"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
             tools:text="Before Gru,they had a history of bad bosses"/>
 
         <android.support.v7.widget.RecyclerView
@@ -169,47 +183,113 @@
         <TextView
             android:id="@+id/detailGenreTextView"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="42dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginStart="16dp"
             android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@+id/detailDurationTextView"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/detailDurationTextView"
-            app:layout_constraintTop_toBottomOf="@+id/detailMovieImageView"
-            app:layout_constraintVertical_bias="1.0"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/detailOverview"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintLeft_toRightOf="@+id/detailMovieImageView"
             tools:text="Action"/>
 
         <TextView
             android:id="@+id/detailDurationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
             android:gravity="center"
-            app:layout_constraintBottom_toTopOf="@+id/detailOverview"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/detailGenreTextView"
+            app:layout_constraintHorizontal_bias="0.435"
             app:layout_constraintLeft_toRightOf="@+id/detailGenreTextView"
             app:layout_constraintRight_toLeftOf="@+id/detailLanguagueTextView"
-            app:layout_constraintTop_toBottomOf="@+id/detailMovieImageView"
-            app:layout_constraintVertical_bias="0.0"
             tools:text="187 min"/>
 
         <TextView
             android:id="@+id/detailLanguagueTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="26dp"
+            android:layout_marginRight="29dp"
             android:gravity="center"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/detailDurationTextView"
-            app:layout_constraintLeft_toRightOf="@+id/detailDurationTextView"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/detailDurationTextView"
-            app:layout_constraintVertical_bias="0.0"
+            tools:layout_constraintRight_creator="1"
             tools:text="English"/>
+
+        <ImageView
+            android:id="@+id/genreImageView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="165dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="165dp"
+            app:layout_constraintBottom_toTopOf="@+id/detailGenreTextView"
+            app:layout_constraintLeft_toLeftOf="@+id/detailGenreTextView"
+            app:layout_constraintRight_toRightOf="@+id/detailGenreTextView"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"
+            tools:srcCompat="@drawable/action"/>
+
+        <ImageView
+            android:id="@+id/durationImageView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/detailLanguagueTextView"
+            app:layout_constraintHorizontal_bias="0.45"
+            app:layout_constraintLeft_toLeftOf="@+id/detailLanguagueTextView"
+            app:layout_constraintRight_toRightOf="@+id/detailLanguagueTextView"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"
+            tools:srcCompat="@drawable/adventure"/>
+
+        <ImageView
+            android:id="@+id/languageImageView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="-1dp"
+            app:layout_constraintBottom_toTopOf="@+id/detailDurationTextView"
+            app:layout_constraintHorizontal_bias="0.652"
+            app:layout_constraintLeft_toLeftOf="@+id/detailDurationTextView"
+            app:layout_constraintRight_toRightOf="@+id/detailDurationTextView"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"
+            tools:srcCompat="@drawable/animation"/>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="237dp"
+            tools:layout_editor_absoluteX="237dp"
+            tools:layout_editor_absoluteY="81dp"/>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="20dp"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="101dp"/>
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>

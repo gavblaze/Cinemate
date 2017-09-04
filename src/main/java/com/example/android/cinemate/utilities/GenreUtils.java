@@ -1,5 +1,6 @@
 package com.example.android.cinemate.utilities;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.cinemate.R;
@@ -10,67 +11,67 @@ import com.example.android.cinemate.R;
 
 public class GenreUtils {
 
-    public static void genreIcon(String genre, TextView tv) {
+    public static void setGenreIcon(String genre, ImageView imageView) {
         switch (genre) {
             case "Action":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.action, 0, 0, 0);
+                imageView.setImageResource(R.drawable.action);
                 break;
             case "Adventure":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.adventure, 0, 0, 0);
+                imageView.setImageResource(R.drawable.adventure);
                 break;
             case "Animation":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.animation, 0, 0, 0);
+                imageView.setImageResource(R.drawable.animation);
                 break;
             case "Comedy":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.comedy, 0, 0, 0);
+                imageView.setImageResource(R.drawable.comedy);
                 break;
             case "Crime":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.crime, 0, 0, 0);
+                imageView.setImageResource(R.drawable.crime);
                 break;
             case "Documentary":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.documentary, 0, 0, 0);
+                imageView.setImageResource(R.drawable.documentary);
                 break;
             case "Drama":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.drama, 0, 0, 0);
+                imageView.setImageResource(R.drawable.drama);
                 break;
             case "Family":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.family, 0, 0, 0);
+                imageView.setImageResource(R.drawable.family);
                 break;
             case "Fantasy":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.fantasy, 0, 0, 0);
+                imageView.setImageResource(R.drawable.fantasy);
                 break;
             case "History":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.history, 0, 0, 0);
+                imageView.setImageResource(R.drawable.history);
                 break;
             case "Horror":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.horror, 0, 0, 0);
+                imageView.setImageResource(R.drawable.horror);
                 break;
             case "Music":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.music, 0, 0, 0);
+                imageView.setImageResource(R.drawable.music);
                 break;
             case "Mystery":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.mystery, 0, 0, 0);
+                imageView.setImageResource(R.drawable.mystery);
                 break;
             case "Romance":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.romance, 0, 0, 0);
+                imageView.setImageResource(R.drawable.romance);
                 break;
             case "Science Fiction":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.scifi, 0, 0, 0);
+                imageView.setImageResource(R.drawable.scifi);
                 break;
             case "TV Movie":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.tvmovie, 0, 0, 0);
+                imageView.setImageResource(R.drawable.tvmovie);
                 break;
             case "Thriller":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.thriller, 0, 0, 0);
+                imageView.setImageResource(R.drawable.thriller);
                 break;
             case "War":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.war, 0, 0, 0);
+                imageView.setImageResource(R.drawable.war);
                 break;
             case "Western":
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.western, 0, 0, 0);
+                imageView.setImageResource(R.drawable.western);
                 break;
             default:
-                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.defaulticon, 0, 0, 0);
+                imageView.setImageResource(R.drawable.defaulticon);
         }
     }
 }
