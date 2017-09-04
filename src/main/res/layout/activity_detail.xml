@@ -29,24 +29,24 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_constraintLeft_creator="1"
             tools:layout_constraintRight_creator="1"
-            tools:layout_constraintTop_creator="1"
-            />
+            tools:layout_constraintTop_creator="1"/>
 
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="56dp"
-            android:layout_marginRight="56dp"
+            android:layout_width="56dp"
+            android:layout_height="57dp"
+            android:layout_marginRight="25dp"
             android:src="@drawable/ic_favorite_border_black_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/detailBackdropImageView"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detailBackdropImageView"
-            app:layout_constraintVertical_bias="0.493"
+            app:layout_constraintVertical_bias="0.489"
             tools:layout_constraintBottom_creator="1"
             tools:layout_constraintRight_creator="1"
-            tools:layout_constraintTop_creator="1"/>
+            tools:layout_constraintTop_creator="1"
+            tools:layout_editor_absoluteX="303dp"
+            tools:layout_editor_absoluteY="169dp"/>
 
         <ImageView
             android:id="@+id/detailMovieImageView"
@@ -83,7 +83,7 @@
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:paddingTop="8dp"
+            android:paddingTop="4dp"
             android:textSize="18sp"
             app:layout_constraintLeft_toRightOf="@+id/detailMovieImageView"
             app:layout_constraintRight_toRightOf="parent"
@@ -107,7 +107,7 @@
             android:id="@+id/detailRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
+            android:paddingBottom="10dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             app:layout_constraintLeft_toLeftOf="@+id/detailTitle"
@@ -244,7 +244,7 @@
             tools:srcCompat="@drawable/action"/>
 
         <ImageView
-            android:id="@+id/durationImageView"
+            android:id="@+id/languageImageView"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginBottom="0dp"
@@ -259,12 +259,12 @@
             tools:srcCompat="@drawable/adventure"/>
 
         <ImageView
-            android:id="@+id/languageImageView"
+            android:id="@+id/durationImageView"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginBottom="-1dp"
             app:layout_constraintBottom_toTopOf="@+id/detailDurationTextView"
-            app:layout_constraintHorizontal_bias="0.652"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintLeft_toLeftOf="@+id/detailDurationTextView"
             app:layout_constraintRight_toRightOf="@+id/detailDurationTextView"
             tools:layout_constraintBottom_creator="1"
