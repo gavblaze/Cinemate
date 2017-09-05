@@ -50,10 +50,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
-//        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
-//        lp.height = (int) (parent.getMeasuredHeight() / 2);
-//        v.setLayoutParams(lp);
-
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -104,12 +100,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return new Movie(id, title, posterpath, backdropPath, rating, overview, releasedate);
     }
 
-    @Override
-    /* To fix fast scrolling behaviour, override onViewDetachedFromWindow*/
-    public void onViewDetachedFromWindow(ViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        holder.itemView.clearAnimation();
-    }
 
     private void setAnimation(RecyclerView.ViewHolder viewHolder, int position) {
         // If the bound view wasn't previously displayed on screen, animate it! ie if we are scrolling down
@@ -121,17 +111,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 animation.setDuration(ODD_DURATION);
             }
             viewHolder.itemView.startAnimation(animation);
-            mPreviousPosition = position;
-
-            // else if we are scrolling up....
-        } else if (position < mPreviousPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
-            animation.setDuration(FADE_DURATION);
-            animation.setInterpolator(new OvershootInterpolator());
-            viewHolder.itemView.startAnimation(animation);
-            mPreviousPosition = position;
-
         }
+        mPreviousPosition = position;
     }
 
     public interface ListItemClickHandler {

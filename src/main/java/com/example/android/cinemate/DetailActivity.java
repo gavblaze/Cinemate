@@ -205,7 +205,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
         if (isFavourite(mReceivedMovie.getmId())) {
-            mFab.setImageResource(R.drawable.ic_favorite_black_24dp);
+            mFab.setImageResource(R.drawable.starfilled);
         }
 
 
@@ -213,11 +213,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             public void onClick(View view) {
                 if (!isFavourite(mReceivedMovie.getmId())) {
-                    mFab.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    mFab.setImageResource(R.drawable.starfilled);
                     setToFavouriteInDb();
                     Toast.makeText(getApplication(), "Added to favourites", Toast.LENGTH_SHORT).show();
                 } else {
-                    mFab.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    mFab.setImageResource(R.drawable.starborder);
                     setToDefaultInDb();
                     Toast.makeText(getApplication(), "Removed from favourites", Toast.LENGTH_SHORT).show();
                 }

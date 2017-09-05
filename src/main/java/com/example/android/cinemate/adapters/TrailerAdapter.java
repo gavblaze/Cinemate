@@ -27,6 +27,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     private ListItemClickHandler mListItemClickhandler;
     private Context mContext;
 
+    private int mPreviousPosition = -1;
+
 
     public TrailerAdapter(Context context, ListItemClickHandler listItemClickhandler) {
         this.mContext = context;
@@ -52,7 +54,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
         Picasso.with(context).load(videoImageUrl).fit().centerInside().into(holder.mTrailerImageView);
 
-        setAnimation(holder);
+        setAnimation(holder, position);
 
     }
 
@@ -67,10 +69,13 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    private void setAnimation(RecyclerView.ViewHolder holder) {
-        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.right_to_left_interpolator);
-        animation.setDuration(SLIDE_DURATION);
+    private void setAnimation(RecyclerView.ViewHolder holder, int position) {
+        //if (position > mPreviousPosition) {
+        Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
+        animation.setDuration(2000);
         holder.itemView.startAnimation(animation);
+        mPreviousPosition = position;
+        //}
     }
 
     public interface ListItemClickHandler {
