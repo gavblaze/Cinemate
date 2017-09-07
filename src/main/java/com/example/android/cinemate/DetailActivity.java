@@ -9,11 +9,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,6 +89,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         Log.i(LOG_TAG, "TEST.......DetailActivity onCreate() called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle("test");
 
 
         mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
@@ -292,6 +298,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
             case R.id.share:
                 shareMovie();
                 return true;

@@ -121,12 +121,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         if (zipInDbForPopularOrTopRatedPrefs() && !MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
             FetchMovieTask task = new FetchMovieTask(this, this);
             task.execute(TmdbUrlUtils.urlFromPreferences(this));
-            //loader restarted after result of AsyncTask doInBackground (Loaders onLoadFinished() will be called before the background task completes)
 
             mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, this);
 
         }
+
+        PREFERENCE_CHANGED = false;
     }
 
 
@@ -183,6 +184,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 //        Movie movie = mMovieAdapter.getItemClicked(position);
 //        intent.putExtra(Intent.EXTRA_TEXT, movie);
 //        startActivity(intent);
+
+        Log.i(LOG_TAG, "TEST.......MainActivity onItemClicked() called");
 
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieAdapter.getItemClicked(position);
@@ -257,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     protected void onDestroy() {
+        Log.i(LOG_TAG, "TEST.......MainActivity onDestroy() called");
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
