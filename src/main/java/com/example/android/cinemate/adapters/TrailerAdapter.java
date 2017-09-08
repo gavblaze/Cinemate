@@ -52,7 +52,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         Context context = holder.mTrailerImageView.getContext();
         String videoImageUrl = TmdbUrlUtils.getVideoImgUrl(mTrailerPathList.get(position));
 
-        Picasso.with(context).load(videoImageUrl).fit().centerInside().into(holder.mTrailerImageView);
+        Picasso.with(context).load(videoImageUrl).fit().centerCrop().into(holder.mTrailerImageView);
 
         setAnimation(holder, position);
 

@@ -3,6 +3,7 @@ package com.example.android.cinemate;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
@@ -82,7 +83,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mGridLayoutMananger = new GridLayoutManager(this, 2);
+
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mGridLayoutMananger = new GridLayoutManager(this, 2);
+            ;
+        } else {
+            mGridLayoutMananger = new GridLayoutManager(this, 4);
+            ;
+        }
+
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
 
         mMovieAdapter = new MovieAdapter(this, this);

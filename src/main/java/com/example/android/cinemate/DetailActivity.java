@@ -430,14 +430,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 mDetailDurationImageView.setVisibility(View.GONE);
             } else {
                 mDetailDurationTextView.setText(duration);
-                mDetailDurationImageView.setImageResource(R.drawable.watch);
+                mDetailDurationImageView.setImageResource(R.drawable.time_bw);
             }
             if (language.isEmpty()) {
                 mDetailLanguageTextView.setVisibility(View.GONE);
                 mDetailLanguageImageView.setVisibility(View.GONE);
             } else {
                 mDetailLanguageTextView.setText(language);
-                mDetailLanguageImageView.setImageResource(R.drawable.globe);
+                mDetailLanguageImageView.setImageResource(R.drawable.language_bw);
             }
         }
     }
