@@ -14,4 +14,21 @@
         <item name="android:windowSharedElementsUseOverlay">false</item>
 
     </style>
+
+
+    <style name="AppThemeWithoutActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+
+        <!-- enable window content transitions -->
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- enable hide toolbars during transition -->
+        <item name="android:windowSharedElementsUseOverlay">false</item>
+
+    </style>
+
 </resources>

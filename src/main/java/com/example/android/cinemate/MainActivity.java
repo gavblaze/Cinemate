@@ -4,10 +4,12 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -70,20 +72,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mLoaderManager = getSupportLoaderManager();
 
-
-//        /* If our preference is NOT an instance of Favourite*/
-//      //  if (!MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
-//            /* If saved instance state is null we have not yet fetched any data from Json so start an AsyncTask*/
-//            if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY)) {
-//                FetchMovieTask task = new FetchMovieTask(this, this);
-//                task.execute(TmdbUrlUtils.urlFromPreferences(this));
-//            } else {
-//                 /*If saved instance state is NOT null we already have an ArrayList of Parcebale Movie objects.
-//                 We can re-use these on rotate instead of fetching the same data*/
-//                mLoaderManager.restartLoader(LOADER, null, this);
-//                mMovieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
-//        //    }
-//        }
 
         mLoaderManager.initLoader(LOADER, null, this);
 

@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,11 +12,13 @@ import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -90,6 +93,19 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+        collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT);
+        //collapsingToolbar.setTitle(mReceivedMovie.getmTitle());
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
 
         mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
 
@@ -142,6 +158,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         Intent intentThatStartedActivity = getIntent();
 
         mReceivedMovie = intentThatStartedActivity.getParcelableExtra(Intent.ACTION_MAIN);
+
+        collapsingToolbar.setTitle(mReceivedMovie.getmTitle());
 
         mDetailMovieTitle.setText(mReceivedMovie.getmTitle());
         mDetailMovieOverView.setText(mReceivedMovie.getmOverview());
@@ -425,12 +443,5 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 }
 
-//    @Override
-//    public void onBackPressed() {
-//        super.onBackPressed();
-//        mTrailerTask.cancel(true);
-//        mReviewTask.cancel(true);
-//        mParticularsTask.cancel(true);
-//    }
 
 
