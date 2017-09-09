@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private GridLayoutManager mGridLayoutMananger;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
-    private TextView mEmptyStateTextView;
+    //private TextView mEmptyStateTextView;
+
+    private View mEmptyStateView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -79,7 +81,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mEmptyStateTextView = (TextView) findViewById(R.id.emptyStateTextView);
+        //mEmptyStateTextView = (TextView) findViewById(R.id.emptyStateTextView);
+
+        mEmptyStateView = findViewById(R.id.emptyStateView);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -220,21 +224,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         /* First, hide the loading indicator */
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Finally, make sure the weather data is visible */
-        mEmptyStateTextView.setVisibility(View.INVISIBLE);
+        //mEmptyStateTextView.setVisibility(View.INVISIBLE);
+        mEmptyStateView.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     private void showLoading() {
         /* Then, hide the weather data */
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mEmptyStateTextView.setVisibility(View.INVISIBLE);
+        //mEmptyStateTextView.setVisibility(View.INVISIBLE);
+        mEmptyStateView.setVisibility(View.INVISIBLE);
         /* Finally, show the loading indicator */
         mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
     private void showErrorMessage() {
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mEmptyStateTextView.setVisibility(View.VISIBLE);
+        //mEmptyStateTextView.setVisibility(View.VISIBLE);
+        mEmptyStateView.setVisibility(View.VISIBLE);
 
     }
 

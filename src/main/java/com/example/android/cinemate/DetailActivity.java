@@ -61,6 +61,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private ImageView mDetailGenreImageView;
     private ImageView mDetailDurationImageView;
     private ImageView mDetailLanguageImageView;
+    //private ImageView mDetailRatingImageView;
 
     private TextView mDetailDurationTextView;
     private TextView mDetailGenreTextView;
@@ -110,6 +111,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
 
+        mTrailerRecyclerView.setHasFixedSize(true);
 
         mGridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
 
@@ -153,7 +155,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mDetailGenreImageView = (ImageView) findViewById(R.id.genreImageView);
         mDetailDurationImageView = (ImageView) findViewById(R.id.durationImageView);
         mDetailLanguageImageView = (ImageView) findViewById(R.id.languageImageView);
-
 
         Intent intentThatStartedActivity = getIntent();
 

@@ -20,6 +20,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingBottom="18dp"
+        android:textColor="#212121"
+        android:typeface="serif"
         tools:text="This movie is the Bomb!"/>
 
 </LinearLayout>

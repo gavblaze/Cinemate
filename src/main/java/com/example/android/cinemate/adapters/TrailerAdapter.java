@@ -22,7 +22,6 @@ import java.util.List;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
     private static final String LOG_TAG = TrailerAdapter.class.getSimpleName();
-    private static final int SLIDE_DURATION = 1000;
     private List<String> mTrailerPathList;
     private ListItemClickHandler mListItemClickhandler;
     private Context mContext;
@@ -52,7 +51,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         Context context = holder.mTrailerImageView.getContext();
         String videoImageUrl = TmdbUrlUtils.getVideoImgUrl(mTrailerPathList.get(position));
 
-        Picasso.with(context).load(videoImageUrl).fit().centerCrop().into(holder.mTrailerImageView);
+        Picasso.with(context).load(videoImageUrl).fit().centerInside().into(holder.mTrailerImageView);
 
         setAnimation(holder, position);
 
@@ -70,12 +69,11 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     }
 
     private void setAnimation(RecyclerView.ViewHolder holder, int position) {
-        //if (position > mPreviousPosition) {
-        Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in);
-        animation.setDuration(2000);
+        if (position > mPreviousPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.right_to_left);
         holder.itemView.startAnimation(animation);
+        }
         mPreviousPosition = position;
-        //}
     }
 
     public interface ListItemClickHandler {
