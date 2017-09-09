@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/window_background"
     android:fitsSystemWindows="true"
     tools:context=".DetailActivity">
 
@@ -43,10 +44,15 @@
 
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedscrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:fitsSystemWindows="true"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.constraint.ConstraintLayout

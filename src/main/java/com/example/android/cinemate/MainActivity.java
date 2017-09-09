@@ -177,10 +177,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     public void onItemClicked(int position, ImageView sharedImageView) {
-//        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-//        Movie movie = mMovieAdapter.getItemClicked(position);
-//        intent.putExtra(Intent.EXTRA_TEXT, movie);
-//        startActivity(intent);
 
         Log.i(LOG_TAG, "TEST.......MainActivity onItemClicked() called");
 

@@ -8,23 +8,20 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -97,7 +94,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT);
-        //collapsingToolbar.setTitle(mReceivedMovie.getmTitle());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,11 +109,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
 
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
+
+
         mGridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
 
         mTrailerAdapter = new TrailerAdapter(this, this);
 
         mTrailerRecyclerView.setLayoutManager(mGridLayoutManager);
+
+        mTrailerRecyclerView.setNestedScrollingEnabled(false);
 
         mTrailerRecyclerView.setAdapter(mTrailerAdapter);
 
@@ -235,11 +235,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 if (!isFavourite(mReceivedMovie.getmId())) {
                     mFab.setImageResource(R.drawable.starfilled);
                     setToFavouriteInDb();
-                    Toast.makeText(getApplication(), "Added to favourites", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.nestedscrollview), "Added to favourites", Snackbar.LENGTH_SHORT).show();
                 } else {
                     mFab.setImageResource(R.drawable.starborder);
                     setToDefaultInDb();
-                    Toast.makeText(getApplication(), "Removed from favourites", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.nestedscrollview), "Removed from favourites", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -337,7 +337,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     @Override
     public void onItemClicked(int position) {
         String trailerUrlPath = mTrailerAdapter.getItemClicked(position);
-        Toast.makeText(this, "Item clicked " + trailerUrlPath, Toast.LENGTH_SHORT).show();
         String youTubeUrl = TmdbUrlUtils.getYouTubeUrl(trailerUrlPath);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(youTubeUrl));
