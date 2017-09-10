@@ -2,6 +2,8 @@ package com.example.android.cinemate.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MergeCursor;
+import android.media.RingtoneManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -71,7 +73,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 
 
-        setAnimation(holder, position);
+        //setAnimation(holder, position);
 
     }
 
@@ -84,6 +86,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void swapCursor(Cursor newValue) {
         mCursor = newValue;
         notifyDataSetChanged();
+    }
+
+    public void changeCursor(Cursor data) {
+//        if (mCursor != null) {
+//            notifyItemRangeChanged(0, mCursor.getCount());
+//        } else {
+//            mCursor = data;
+//            notifyDataSetChanged();
+//        }
+        mCursor = data;
+        notifyItemRangeChanged(0, mCursor.getCount());
     }
 
     public Movie getItemClicked(int position) {

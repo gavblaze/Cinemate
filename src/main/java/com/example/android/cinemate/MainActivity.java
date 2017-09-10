@@ -5,12 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -23,7 +19,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.cinemate.adapters.MovieAdapter;
@@ -46,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public static final int INDEX_MOVIE_VOTE_AVERAGE = 6;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int LOADER = 0;
+    private final static String KEY = "page_key";
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
             MovieEntry.COLUMN_NAME_TITLE,
@@ -62,9 +58,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private GridLayoutManager mGridLayoutMananger;
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
-    //private TextView mEmptyStateTextView;
-
     private View mEmptyStateView;
+    private Bundle mBundle;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -93,10 +89,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             ;
         } else {
             mGridLayoutMananger = new GridLayoutManager(this, 4);
-            ;
         }
 
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
+
 
         mMovieAdapter = new MovieAdapter(this, this);
         mRecyclerView.setAdapter(mMovieAdapter);
@@ -106,6 +102,42 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
+        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+
+            }
+        };
+        mRecyclerView.addOnScrollListener(scrollListener);
+
+
+    }
+
+
+    // Append the next page of data into the adapter
+    // This method probably sends out a network request and appends new data items to your adapter.
+    public void loadNextDataFromApi(int offset) {
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        Log.i(LOG_TAG, "TEST.......MainActivity loadNextDataFromApi() called");
+
+        FetchMovieTask task = new FetchMovieTask(this, this);
+        task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(offset)));
+
+        // mMovieAdapter.notifyDataSetChanged();
+        //mMovieAdapter.swapCursor(null);
+        //mLoaderManager.restartLoader(LOADER, null, this);
+
+        mMovieAdapter.notifyDataSetChanged();
+
+        Toast.makeText(this, "Page = " + offset, Toast.LENGTH_SHORT).show();
+
     }
 
 
@@ -114,14 +146,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onResume();
 
         if (PREFERENCE_CHANGED) {
-            mMovieAdapter.swapCursor(null);
+            //mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, this);
         }
 
+
         /*If there is NOTHING in the Db for Top_Rated or Popular preferences & preference instance is NOT Favourite - fetch data*/
         if (zipInDbForPopularOrTopRatedPrefs() && !MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
+
             FetchMovieTask task = new FetchMovieTask(this, this);
-            task.execute(TmdbUrlUtils.urlFromPreferences(this));
+            task.execute(TmdbUrlUtils.urlFromPreferences(this, "1"));
 
             mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, this);
@@ -129,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         PREFERENCE_CHANGED = false;
-    }
 
+    }
 
 
     @Override
@@ -158,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
         mMovieAdapter.swapCursor(data);
+        //mMovieAdapter.changeCursor(data);
+
         showMovieDataView();
 
         if (mMovieAdapter.getItemCount() == 0 && MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
@@ -169,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void onLoaderReset(Loader<Cursor> loader) {
         mMovieAdapter.swapCursor(null);
     }
-
 
 
     @Override
