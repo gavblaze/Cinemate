@@ -130,9 +130,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         FetchMovieTask task = new FetchMovieTask(this, this);
         task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(offset)));
 
-        // mMovieAdapter.notifyDataSetChanged();
-        //mMovieAdapter.swapCursor(null);
-        //mLoaderManager.restartLoader(LOADER, null, this);
 
         mMovieAdapter.notifyDataSetChanged();
 
@@ -146,7 +143,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onResume();
 
         if (PREFERENCE_CHANGED) {
-            //mMovieAdapter.swapCursor(null);
+            EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    loadNextDataFromApi(page);
+
+                }
+            };
+            mRecyclerView.addOnScrollListener(scrollListener);
+
+            mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, this);
         }
 
