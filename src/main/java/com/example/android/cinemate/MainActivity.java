@@ -102,18 +102,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
-        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi(page);
-
-            }
-        };
-        mRecyclerView.addOnScrollListener(scrollListener);
-
-
     }
 
 
@@ -131,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(offset)));
 
 
-        mMovieAdapter.notifyDataSetChanged();
+        //  mMovieAdapter.notifyDataSetChanged();
 
         Toast.makeText(this, "Page = " + offset, Toast.LENGTH_SHORT).show();
 
@@ -142,23 +130,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     protected void onResume() {
         super.onResume();
 
-        if (PREFERENCE_CHANGED) {
-            EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                    // Triggered only when new data needs to be appended to the list
-                    // Add whatever code is needed to append new items to the bottom of the list
-                    loadNextDataFromApi(page);
-
-                }
-            };
-            mRecyclerView.addOnScrollListener(scrollListener);
-
-            mMovieAdapter.swapCursor(null);
-            mLoaderManager.restartLoader(LOADER, null, this);
-        }
-
-
         /*If there is NOTHING in the Db for Top_Rated or Popular preferences & preference instance is NOT Favourite - fetch data*/
         if (zipInDbForPopularOrTopRatedPrefs() && !MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
 
@@ -168,10 +139,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             mMovieAdapter.swapCursor(null);
             mLoaderManager.restartLoader(LOADER, null, this);
 
+            EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    Log.i(LOG_TAG, "TEST.............................MainActivity onLoadMore() 2 called");
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    loadNextDataFromApi(page);
+
+                }
+            };
+            mRecyclerView.addOnScrollListener(scrollListener);
         }
-
-        PREFERENCE_CHANGED = false;
-
     }
 
 
