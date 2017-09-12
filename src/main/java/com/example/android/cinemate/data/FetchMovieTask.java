@@ -47,7 +47,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
 
     @Override
     protected void onPostExecute(List<Movie> movies) {
-        Log.i(LOG_TAG, "TEST.......................FetchMovieTask onPostExecute() called");
+        //Log.i(LOG_TAG, "TEST.......................FetchMovieTask onPostExecute() called");
 
         if (movies != null) {
             mResponse.asyncTaskResult(movies);

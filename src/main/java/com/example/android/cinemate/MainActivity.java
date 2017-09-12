@@ -61,6 +61,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private View mEmptyStateView;
     private Bundle mBundle;
 
+    private int firstVisibleItem, visibleItemCount, totalItemCount;
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 4;
+    private int pageCount;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -86,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mGridLayoutMananger = new GridLayoutManager(this, 2);
-            ;
+
         } else {
             mGridLayoutMananger = new GridLayoutManager(this, 4);
         }
@@ -95,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
         mMovieAdapter = new MovieAdapter(this, this);
+
         mRecyclerView.setAdapter(mMovieAdapter);
 
         showLoading();
@@ -102,61 +109,112 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
+        FetchMovieTask task = new FetchMovieTask(this, this);
+        task.execute(TmdbUrlUtils.urlFromPreferences(getApplicationContext(), String.valueOf(1)));
+
+
     }
 
 
-    // Append the next page of data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
-    public void loadNextDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        Log.i(LOG_TAG, "TEST.......MainActivity loadNextDataFromApi() called");
+    public void loadMore(int page) {
+        Log.i(LOG_TAG, "INFO.......MainActivity loadMore() called");
 
         FetchMovieTask task = new FetchMovieTask(this, this);
-        task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(offset)));
+        task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(page)));
 
 
-        //  mMovieAdapter.notifyDataSetChanged();
+        // mMovieAdapter.notifyDataSetChanged();
 
-        Toast.makeText(this, "Page = " + offset, Toast.LENGTH_SHORT).show();
 
     }
+
+//    // Append the next page of data into the adapter
+//    // This method probably sends out a network request and appends new data items to your adapter.
+//    public void loadNextDataFromApi(int offset) {
+//        // Send an API request to retrieve appropriate paginated data
+//        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+//        //  --> Deserialize and construct new model objects from the API response
+//        //  --> Append the new data objects to the existing set of items inside the array of items
+//        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+//        Log.i(LOG_TAG, "TEST.......MainActivity loadNextDataFromApi() called");
+//
+//        FetchMovieTask task = new FetchMovieTask(this, this);
+//        task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(offset)));
+//
+//
+//        mMovieAdapter.notifyDataSetChanged();
+//
+//        Toast.makeText(this, "Page = " + offset, Toast.LENGTH_SHORT).show();
+//
+//    }
 
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        /*If there is NOTHING in the Db for Top_Rated or Popular preferences & preference instance is NOT Favourite - fetch data*/
-        if (zipInDbForPopularOrTopRatedPrefs() && !MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
 
-            FetchMovieTask task = new FetchMovieTask(this, this);
-            task.execute(TmdbUrlUtils.urlFromPreferences(this, "1"));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-            mMovieAdapter.swapCursor(null);
-            mLoaderManager.restartLoader(LOADER, null, this);
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-            EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                    Log.i(LOG_TAG, "TEST.............................MainActivity onLoadMore() 2 called");
-                    // Triggered only when new data needs to be appended to the list
-                    // Add whatever code is needed to append new items to the bottom of the list
-                    loadNextDataFromApi(page);
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mGridLayoutMananger.getItemCount();
+                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
+
+
+                Log.i(LOG_TAG, "INFO....visibleItemCount = " + visibleItemCount);
+                Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
+                Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
+
+                pageCount = mGridLayoutMananger.getItemCount() / 20 + 1;
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
+                        pageCount++;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
+                    loadMore(pageCount);
+                    Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
+
+                    loading = true;
 
                 }
-            };
-            mRecyclerView.addOnScrollListener(scrollListener);
+            }
+        });
+
+//        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
+//            @Override
+//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+//                loadNextDataFromApi(page);
+//
+//            }
+//        };mRecyclerView.addOnScrollListener(scrollListener);
+
+        if (PREFERENCE_CHANGED) {
+            visibleItemCount = mRecyclerView.getChildCount();
+            totalItemCount = mGridLayoutMananger.getItemCount();
+            firstVisibleItem = mMovieAdapter.getItemCount();
+
+            mLoaderManager.restartLoader(LOADER, null, this);
         }
+        PREFERENCE_CHANGED = false;
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
+
+//        FetchMovieTask task = new FetchMovieTask(this, this);
+//        task.execute(TmdbUrlUtils.urlFromPreferences(getApplicationContext(), String.valueOf(pageCount)));
 
         String selection;
         String[] selectionArgs;
@@ -179,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
         mMovieAdapter.swapCursor(data);
-        //mMovieAdapter.changeCursor(data);
 
         showMovieDataView();
 
@@ -292,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     /*This method from the AsyncTask interface allows us to get the value from onPostExecute()*/
     public void asyncTaskResult(List<Movie> data) {
-        Log.i(LOG_TAG, "TEST.......MainActivity asyncTaskResult() called");
+        //Log.i(LOG_TAG, "TEST.......MainActivity asyncTaskResult() called");
         /*We initialize our loader here - after we have received our value from FetchMovie AsyncTask
         * so we can be sure onLoadFinished() is called AFTER doInBackground and not before
         *

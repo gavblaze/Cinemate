@@ -88,16 +88,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void changeCursor(Cursor data) {
-//        if (mCursor != null) {
-//            notifyItemRangeChanged(0, mCursor.getCount());
-//        } else {
-//            mCursor = data;
-//            notifyDataSetChanged();
-//        }
-        mCursor = data;
-        notifyItemRangeChanged(0, mCursor.getCount());
-    }
 
     public Movie getItemClicked(int position) {
         mCursor.moveToPosition(position);
