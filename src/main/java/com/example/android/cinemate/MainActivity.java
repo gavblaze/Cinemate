@@ -18,7 +18,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.cinemate.adapters.MovieAdapter;
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     protected void onResume() {
+        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
         super.onResume();
 
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -207,9 +211,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 //        };mRecyclerView.addOnScrollListener(scrollListener);
 
         if (PREFERENCE_CHANGED) {
-            visibleItemCount = mRecyclerView.getChildCount();
-            totalItemCount = mGridLayoutMananger.getItemCount();
-            firstVisibleItem = mMovieAdapter.getItemCount();
+//            visibleItemCount = mRecyclerView.getChildCount();
+//            totalItemCount = mGridLayoutMananger.getItemCount();
+//            firstVisibleItem = mMovieAdapter.getItemCount();
 
             mLoaderManager.restartLoader(LOADER, null, this);
         }
@@ -286,6 +290,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+
+        MenuItem item = menu.findItem(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.list_spinner, android.R.layout.simple_spinner_dropdown_item);
+        final Spinner spinner = (Spinner) item.getActionView();
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0, false); //stops onItemSelected firing on initialisation
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+                String j = spinner.getSelectedItem().toString();
+                Toast.makeText(getApplicationContext(), "selcted: " + j, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         return true;
     }
 

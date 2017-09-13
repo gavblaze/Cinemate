@@ -14,4 +14,9 @@
         android:title="Refresh"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/spinner"
+        android:title="spinner"
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always"/>
 </menu>
