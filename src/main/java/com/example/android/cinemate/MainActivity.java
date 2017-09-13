@@ -153,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     protected void onResume() {
         super.onResume();
 
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -169,7 +171,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                 Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
                 Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
 
-                pageCount = mGridLayoutMananger.getItemCount() / 20 + 1;
+
+                pageCount = sp.getInt("page_count", 1);
 
                 if (loading) {
                     if (totalItemCount > previousTotal) {
@@ -177,6 +180,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                         previousTotal = totalItemCount;
                         Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
                         pageCount++;
+
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("page_count", pageCount);
+                        editor.apply();
+
                     }
                 }
                 if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
