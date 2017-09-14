@@ -31,9 +31,7 @@ import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor>, FetchMovieTask.AsyncTaskResponse {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int INDEX_MOVIE_ID = 0;
     public static final int INDEX_MOVIE_TITLE = 1;
@@ -48,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private static final int LOADER = 0;
     private final static String INDEX_KEY = "index";
     private final static int INDEX_DEFAULT = 0;
+    private static final String FAVOURITES = "favourites";
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
             MovieEntry.COLUMN_NAME_TITLE,
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             MovieEntry.COLUMN_NAME_VOTE_AVERAGE,
             MovieEntry.COLUMN_NAME_SORT_ORDER
     };
+    private static String mSortBy;
     private boolean PREFERENCE_CHANGED;
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private LoaderManager mLoaderManager;
     private View mLoadingIndicator;
     private View mEmptyStateView;
-    private Bundle mBundle;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
     private int previousTotal = 0;
     private boolean loading = true;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private int pageCount;
     private int popularPageCount = 1;
     private int topRatedPageCount = 1;
-    private String sortedBy;
     private Spinner mSpinner;
 
     @Override
@@ -132,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void loadMore(int page) {
         Log.i(LOG_TAG, "INFO.......MainActivity loadMore() called");
 
-        FetchMovieTask task = new FetchMovieTask(this, this);
+        FetchMovieTask task = new FetchMovieTask(this);
         task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(page)));
 
 
@@ -238,19 +236,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Log.i(LOG_TAG, "TEST.......MainActivity onCreateLoader() called");
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        //sp.registerOnSharedPreferenceChangeListener(this);
 
-//        FetchMovieTask task = new FetchMovieTask(this, this);
-//        task.execute(TmdbUrlUtils.urlFromPreferences(getApplicationContext(), String.valueOf(1)));
+        mSortBy = sp.getString(SORT_KEY, DEFAULT);
 
-        if (sortedBy != null) {
-            sortedBy = sp.getString(SORT_KEY, DEFAULT);
-        } else {
-            sortedBy = DEFAULT;
+        if (!mSortBy.equals(FAVOURITES)) {
+            FetchMovieTask task = new FetchMovieTask(this);
+            task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(1)));
         }
-
-        FetchMovieTask task = new FetchMovieTask(this, this);
-        task.execute(TmdbUrlUtils.getUrl(this, sortedBy, String.valueOf(1)));
 
 
 
@@ -258,20 +250,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         String selection;
         String[] selectionArgs;
 
-        /*If ListPreference is an instance of "Favourite" query the favourites column of db*/
-        //if (MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
-        if (sortedBy == "favourites") {
+        if (mSortBy.equals(FAVOURITES)) {
             selection = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
             selectionArgs = new String[]{String.valueOf(MovieEntry.IS_FAVOURITE)};
         } else {
-            /*If ListPreference is an instance of "Popular or Top Rated" query the sort_order column of the db*/
+
             selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
-//            if (mPath == "top_rated") {
-//                selectionArgs = new String[]{"top_rated"};
-//            } else {
-//                selectionArgs = new String[] {DEFAULT};
-//            }
-            selectionArgs = new String[]{sortedBy};
+
+            selectionArgs = new String[]{mSortBy};
         }
         return new CursorLoader(this, MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
     }
@@ -285,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         showMovieDataView();
 
-        if (mMovieAdapter.getItemCount() == 0 && MoviePreferences.preferenceSelected(this).equals(getString(R.string.favourite_value))) {
+        if (mMovieAdapter.getItemCount() == 0 && mSortBy.equals(FAVOURITES)) {
             showErrorMessage();
         }
     }
@@ -330,8 +316,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
         mSpinner.setAdapter(adapter);
-        loadSpinnerPosition();
-        //spinner.setSelection(0, false); //stops onItemSelected firing on initialisation
+        saveSpinnerIndex();  // declared this method to save the spinner index to shared preferences
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -339,15 +324,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
                 int index = mSpinner.getSelectedItemPosition();
+                mSortBy = getSpinnerTitleOfItemSelected(mSpinner);
 
-                Toast.makeText(getApplicationContext(), "selected: " + index, Toast.LENGTH_SHORT).show();
-
-                sortedBy = getSpinnerItemSelected(mSpinner);
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putInt(INDEX_KEY, index);
-                editor.putString(SORT_KEY, sortedBy);
-                Log.i(LOG_TAG, "TEST....We are on: " + sortedBy);
+                editor.putString(SORT_KEY, mSortBy);
+                Log.i(LOG_TAG, "TEST....We are on: " + mSortBy);
 
                 editor.apply();
 
@@ -405,13 +388,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     }
 
-    public boolean zipInDbForPopularOrTopRatedPrefs() {
+    public boolean dbIsEmptyForThisSelection() {
         String selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
-        String[] selectionArgs = new String[]{MoviePreferences.preferenceSelected(this)};
+        String[] selectionArgs = new String[]{mSortBy};
         Cursor cursor = getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
-        if (cursor.getCount() <= 0) {
+        if ((cursor != null ? cursor.getCount() : 0) <= 0) {
             return true;
         } else {
+            assert cursor != null;
             cursor.close();
             return false;
         }
@@ -427,30 +411,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
 
-    @Override
-    /*This method from the AsyncTask interface allows us to get the value from onPostExecute()*/
-    public void asyncTaskResult(List<Movie> data) {
-        //Log.i(LOG_TAG, "TEST.......MainActivity asyncTaskResult() called");
-        /*We initialize our loader here - after we have received our value from FetchMovie AsyncTask
-        * so we can be sure onLoadFinished() is called AFTER doInBackground and not before
-        *
-        * When our loader was initialised in onCreate() it's onLoadFinished was
-        * being called twice (before doInBackground was complete and after)*/
-
-
-        /*NOT IMPLEMENTED*/
-
-    }
-
-    public String getSpinnerItemSelected(Spinner spinner) {
-        int value = spinner.getSelectedItemPosition();
+    public String getSpinnerTitleOfItemSelected(Spinner spinner) {
+        int index = spinner.getSelectedItemPosition();
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sp.edit();
-        editor.putInt(INDEX_KEY, value);
+        editor.putInt(INDEX_KEY, index);
         editor.apply();
 
-        switch (value) {
+        switch (index) {
             case 0:
                 return "popular";
             case 1:
@@ -458,18 +427,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             case 2:
                 return "favourites";
             default:
-                break;
+                return null;
         }
-        return null;
     }
 
-    public void loadSpinnerPosition() {
+    public void saveSpinnerIndex() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         int position = sp.getInt(INDEX_KEY, INDEX_DEFAULT);
         mSpinner.setSelection(position);
     }
-
-
 }
 
 

@@ -26,12 +26,12 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     public View mLoadingIndicator;
     private Context mContext;
-    private AsyncTaskResponse mResponse;
+    //private AsyncTaskResponse mResponse;
 
 
-    public FetchMovieTask(Context context, AsyncTaskResponse response) {
+    public FetchMovieTask(Context context) {
         this.mContext = context;
-        this.mResponse = response;
+        //this.mResponse = response;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
         //Log.i(LOG_TAG, "TEST.......................FetchMovieTask onPostExecute() called");
 
         if (movies != null) {
-            mResponse.asyncTaskResult(movies);
+            //mResponse.asyncTaskResult(movies);
             insertIntoDb(movies);
         }
     }
