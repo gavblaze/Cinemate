@@ -41,6 +41,14 @@ public class TmdbUrlUtils {
         return builder.build().toString();
     }
 
+    public static String getUrl(Context context, String path, String pageNumber) {
+        Uri baseUri = Uri.parse(BASE_MOVIE_URL);
+        Uri.Builder builder = baseUri.buildUpon();
+        builder.appendPath(path);
+        builder.appendQueryParameter("page", pageNumber);
+        return builder.build().toString();
+    }
+
     public static String getImageUrl(String path, String imageSize) {
         Uri baseUri = Uri.parse(BASE_IMAGE_URL);
         Uri.Builder builder = baseUri.buildUpon();

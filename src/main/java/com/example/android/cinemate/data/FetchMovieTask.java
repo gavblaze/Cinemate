@@ -2,10 +2,14 @@ package com.example.android.cinemate.data;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
+import com.example.android.cinemate.MainActivity;
 import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.MovieJsonUtils;
 import com.example.android.cinemate.utilities.NetworkUtils;
@@ -56,6 +60,10 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     }
 
     public void insertIntoDb(List<Movie> listMovie) {
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String sortOrder = sp.getString(MainActivity.SORT_KEY, MainActivity.DEFAULT);
+
         for (Movie movie : listMovie) {
             ContentValues values = new ContentValues();
             values.put(MovieContract.MovieEntry.COLUMN_NAME_ID, movie.getmId());
@@ -65,7 +73,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
             values.put(MovieContract.MovieEntry.COLUMN_NAME_BACKDROP_PATH, movie.getmBackdropPath());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE, movie.getmReleaseDate());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getmRating());
-            values.put(MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER, MoviePreferences.preferenceSelected(mContext));
+            values.put(MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER, sortOrder);
             mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
 
         }
