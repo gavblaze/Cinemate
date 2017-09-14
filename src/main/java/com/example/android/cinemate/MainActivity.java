@@ -131,11 +131,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Log.i(LOG_TAG, "INFO.......MainActivity loadMore() called");
 
         FetchMovieTask task = new FetchMovieTask(this);
-        task.execute(TmdbUrlUtils.urlFromPreferences(this, String.valueOf(page)));
-
+        task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(page)));
 
         // mMovieAdapter.notifyDataSetChanged();
-
 
     }
 
@@ -165,55 +163,56 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
 
-//    @Override
-//    protected void onResume() {
-//        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
-//        super.onResume();
-//
-//        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//
-//
-//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                visibleItemCount = mRecyclerView.getChildCount();
-//                totalItemCount = mGridLayoutMananger.getItemCount();
-//                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
-//
-//
-//                Log.i(LOG_TAG, "INFO....visibleItemCount = " + visibleItemCount);
-//                Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
-//                Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
-//
-//
-//                pageCount = sp.getInt("page_count", 1);
-//
-//                if (loading) {
-//                    if (totalItemCount > previousTotal) {
-//                        loading = false;
-//                        previousTotal = totalItemCount;
-//                        Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
-//                        //pageCount++;
-//
-//                        SharedPreferences.Editor editor = sp.edit();
-//                        editor.putInt("page_count", pageCount);
-//                        editor.apply();
-//
-//                    }
-//                }
-//                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-//                    Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
-//                    loadMore(pageCount);
-//                    Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
-//
-//                    loading = true;
-//
-//                }
-//            }
-//        });
+    @Override
+    protected void onResume() {
+        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
+        super.onResume();
+
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mGridLayoutMananger.getItemCount();
+                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
+
+
+                Log.i(LOG_TAG, "INFO....visibleItemCount = " + visibleItemCount);
+                Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
+                Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
+
+
+                pageCount = sp.getInt("page_count", 1);
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
+                        pageCount++;
+
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("page_count", pageCount);
+                        editor.apply();
+
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
+                    loadMore(pageCount);
+                    Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
+
+                    loading = true;
+
+                }
+            }
+        });
+    }
 
 //        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
 //            @Override
@@ -239,7 +238,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mSortBy = sp.getString(SORT_KEY, DEFAULT);
 
-        if (!mSortBy.equals(FAVOURITES)) {
+        /*If the sort selection is not favourite and database is empty for selection load the first page*/
+        if (!mSortBy.equals(FAVOURITES) && dbIsEmptyForThisSelection()) {
             FetchMovieTask task = new FetchMovieTask(this);
             task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(1)));
         }
@@ -251,8 +251,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         String[] selectionArgs;
 
         if (mSortBy.equals(FAVOURITES)) {
+
             selection = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
             selectionArgs = new String[]{String.valueOf(MovieEntry.IS_FAVOURITE)};
+
         } else {
 
             selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
