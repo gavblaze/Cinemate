@@ -26,11 +26,13 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     public View mLoadingIndicator;
     private Context mContext;
+    private String mSortBy;
     //private AsyncTaskResponse mResponse;
 
 
-    public FetchMovieTask(Context context) {
+    public FetchMovieTask(Context context, String sortBy) {
         this.mContext = context;
+        this.mSortBy = sortBy;
         //this.mResponse = response;
     }
 
@@ -61,8 +63,8 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
 
     public void insertIntoDb(List<Movie> listMovie) {
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String sortOrder = sp.getString(MainActivity.SORT_KEY, MainActivity.DEFAULT);
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+//        String sortOrder = sp.getString(MainActivity.SORT_KEY, MainActivity.DEFAULT);
 
         for (Movie movie : listMovie) {
             ContentValues values = new ContentValues();
@@ -73,7 +75,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
             values.put(MovieContract.MovieEntry.COLUMN_NAME_BACKDROP_PATH, movie.getmBackdropPath());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_RELEASE_DATE, movie.getmReleaseDate());
             values.put(MovieContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getmRating());
-            values.put(MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER, sortOrder);
+            values.put(MovieContract.MovieEntry.COLUMN_NAME_SORT_ORDER, mSortBy);
             mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
 
         }

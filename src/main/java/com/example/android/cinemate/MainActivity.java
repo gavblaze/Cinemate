@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private final static String INDEX_KEY = "index";
     private final static int INDEX_DEFAULT = 0;
     private static final String FAVOURITES = "favourites";
+    private static final String MOST_POPULAR = "popular";
+    private static final String TOP_RATED = "top_rated";
     private static String[] MOVIE_TABLE_PROJECTION = {
             MovieEntry.COLUMN_NAME_ID,
             MovieEntry.COLUMN_NAME_TITLE,
@@ -66,13 +68,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private View mLoadingIndicator;
     private View mEmptyStateView;
     private int firstVisibleItem, visibleItemCount, totalItemCount;
-    private int previousTotal = 0;
+    private int previousTotal;
     private boolean loading = true;
     private int visibleThreshold = 4;
     private int pageCount;
     private int popularPageCount = 1;
     private int topRatedPageCount = 1;
     private Spinner mSpinner;
+
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -81,15 +85,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mLoaderManager = getSupportLoaderManager();
 
+        FetchMovieTask fetchPopular = new FetchMovieTask(this, MOST_POPULAR);
+        fetchPopular.execute(TmdbUrlUtils.getUrl(this, MOST_POPULAR, String.valueOf(1)));
 
-        mLoaderManager.initLoader(LOADER, null, this);
+        FetchMovieTask fetchTopRated = new FetchMovieTask(this, TOP_RATED);
+        fetchTopRated.execute(TmdbUrlUtils.getUrl(this, TOP_RATED, String.valueOf(1)));
+
 
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         //mEmptyStateTextView = (TextView) findViewById(R.id.emptyStateTextView);
+
 
         mEmptyStateView = findViewById(R.id.emptyStateView);
 
@@ -100,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             mGridLayoutMananger = new GridLayoutManager(this, 2);
 
         } else {
-            mGridLayoutMananger = new GridLayoutManager(this, 4);
+            mGridLayoutMananger = new GridLayoutManager(this, 3);
         }
 
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
@@ -112,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         showLoading();
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        sp.registerOnSharedPreferenceChangeListener(this);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        //      sp.registerOnSharedPreferenceChangeListener(this);
 
 //        FetchMovieTask task = new FetchMovieTask(this, this);
 //        task.execute(TmdbUrlUtils.urlFromPreferences(getApplicationContext(), String.valueOf(1)));
@@ -123,6 +131,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 //        FetchMovieTask task = new FetchMovieTask(this, this);
 //        task.execute(TmdbUrlUtils.getUrl(this, mPath, String.valueOf(1)));
 
+        mLoaderManager = getSupportLoaderManager();
+
+
+        mLoaderManager.initLoader(LOADER, null, this);
+
+        setOnScrollListener();
+
 
     }
 
@@ -130,14 +145,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void loadMore(int page) {
         Log.i(LOG_TAG, "INFO.......MainActivity loadMore() called");
 
-        FetchMovieTask task = new FetchMovieTask(this);
+        FetchMovieTask task = new FetchMovieTask(this, mSortBy);
         task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(page)));
 
-        // mMovieAdapter.notifyDataSetChanged();
+        mMovieAdapter.notifyDataSetChanged();
 
     }
 
-//    // Append the next page of data into the adapter
+    @Override
+    protected void onResume() {
+        Log.i(LOG_TAG, "INFO.......MainActivity onResume() called");
+        super.onResume();
+    }
+
+    //    // Append the next page of data into the adapter
 //    // This method probably sends out a network request and appends new data items to your adapter.
 //    public void loadNextDataFromApi(int offset) {
 //        // Send an API request to retrieve appropriate paginated data
@@ -163,56 +184,73 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
 
-    @Override
-    protected void onResume() {
-        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
-        super.onResume();
-
-        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                visibleItemCount = mRecyclerView.getChildCount();
-                totalItemCount = mGridLayoutMananger.getItemCount();
-                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
-
-
-                Log.i(LOG_TAG, "INFO....visibleItemCount = " + visibleItemCount);
-                Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
-                Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
-
-
-                pageCount = sp.getInt("page_count", 1);
-
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                        Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
-                        pageCount++;
-
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putInt("page_count", pageCount);
-                        editor.apply();
-
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-                    Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
-                    loadMore(pageCount);
-                    Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
-
-                    loading = true;
-
-                }
-            }
-        });
-    }
+//    @Override
+//    protected void onResume() {
+//        Log.i(LOG_TAG, "TEST.......MainActivity onResume() called");
+//        super.onResume();
+//
+//        //SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//
+//
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                visibleItemCount = mRecyclerView.getChildCount();
+//                totalItemCount = mGridLayoutMananger.getItemCount();
+//                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
+//
+//
+//                Log.i(LOG_TAG, "INFO....visibleItemCount = " + visibleItemCount);
+//                Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
+//                Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
+//
+//
+//                popularPageCount = sharedPref.getInt("pop_page_count", 1);
+//                topRatedPageCount = sharedPref.getInt("top_page_count", 1);
+//
+//                if (loading) {
+//                    if (totalItemCount > previousTotal) {
+//                        loading = false;
+//                        previousTotal = totalItemCount;
+//                        Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
+//                        if (mSortBy.equals(MOST_POPULAR)) {
+//                            popularPageCount++;
+//                            SharedPreferences.Editor editor = sharedPref.edit();
+//                            editor.putInt("pop_page_count", popularPageCount);
+//                            editor.apply();
+//                        } else if (mSortBy.equals(TOP_RATED)) {
+//                            topRatedPageCount++;
+//                            SharedPreferences.Editor editor = sharedPref.edit();
+//                            editor.putInt("top_page_count", topRatedPageCount);
+//                            editor.apply();
+//                        }
+//
+//                    }
+//                }
+//                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+//                    //Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
+//                    //loadMore(pageCount);
+//                    //Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
+//
+//                    if (mSortBy.equals(MOST_POPULAR)) {
+//                        loadMore(popularPageCount);
+//                        Log.i(LOG_TAG, "INFO.....................pop pageCount = " + popularPageCount);
+//                        Toast.makeText(getApplicationContext(), "popular page count = " + popularPageCount, Toast.LENGTH_SHORT).show();
+//                    } else if (mSortBy.equals(TOP_RATED)) {
+//                        loadMore(topRatedPageCount);
+//                        Log.i(LOG_TAG, "INFO.....................top pageCount = " + topRatedPageCount);
+//                        Toast.makeText(getApplicationContext(), "top rated page count = " + topRatedPageCount, Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    loading = true;
+//
+//                }
+//            }
+//        });
+//    }
 
 //        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(mGridLayoutMananger) {
 //            @Override
@@ -238,11 +276,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mSortBy = sp.getString(SORT_KEY, DEFAULT);
 
-        /*If the sort selection is not favourite and database is empty for selection load the first page*/
-        if (!mSortBy.equals(FAVOURITES) && dbIsEmptyForThisSelection()) {
-            FetchMovieTask task = new FetchMovieTask(this);
-            task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(1)));
-        }
+//        /*If the sort selection is not favourite and database is empty for selection load the first page*/
+//        if (!mSortBy.equals(FAVOURITES) && dbIsEmptyForThisSelection()) {
+//            FetchMovieTask task = new FetchMovieTask(this);
+//            task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(1)));
+//        }
+
 
 
 
@@ -269,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
 
+
         mMovieAdapter.swapCursor(data);
 
         showMovieDataView();
@@ -276,6 +316,68 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         if (mMovieAdapter.getItemCount() == 0 && mSortBy.equals(FAVOURITES)) {
             showErrorMessage();
         }
+
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                visibleItemCount = mRecyclerView.getChildCount();
+//                totalItemCount = mGridLayoutMananger.getItemCount();
+//                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
+//
+//
+//                Log.i(LOG_TAG, "INFO....visibleItemCount = " + visibleItemCount);
+//                Log.i(LOG_TAG, "INFO....totalItemCount = " + totalItemCount);
+//                Log.i(LOG_TAG, "INFO....firstVisibleItem = " + firstVisibleItem);
+//
+////
+//                popularPageCount = sharedPref.getInt("pop_page_count", 1);
+//                topRatedPageCount = sharedPref.getInt("top_page_count", 1);
+//
+//                if (loading) {
+//
+//                    if (totalItemCount > previousTotal) {
+//                        loading = false;
+//                        previousTotal = totalItemCount;
+//                        Log.i(LOG_TAG, "INFO.....................previousTotal = " + previousTotal);
+//                        if (mSortBy.equals(MOST_POPULAR)) {
+//                            popularPageCount++;
+//                            SharedPreferences.Editor editor = sharedPref.edit();
+//                            editor.putInt("pop_page_count", popularPageCount);
+//                            editor.apply();
+//                        } else if (mSortBy.equals(TOP_RATED)) {
+//                            topRatedPageCount++;
+//                            SharedPreferences.Editor editor = sharedPref.edit();
+//                            editor.putInt("top_page_count", topRatedPageCount);
+//                            editor.apply();
+//                        }
+//
+//                    }
+//                }
+//                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+//                    //Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
+//                    //loadMore(pageCount);
+//                    //Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
+//
+//                    if (mSortBy.equals(MOST_POPULAR)) {
+//
+//                        loadMore(popularPageCount);
+//                        Log.i(LOG_TAG, "INFO.....................pop pageCount = " + popularPageCount);
+//                        Toast.makeText(getApplicationContext(), "popular page count = " + popularPageCount, Toast.LENGTH_SHORT).show();
+//                    } else if (mSortBy.equals(TOP_RATED)) {
+//
+//                        loadMore(topRatedPageCount);
+//                        Log.i(LOG_TAG, "INFO.....................top pageCount = " + topRatedPageCount);
+//                        Toast.makeText(getApplicationContext(), "top rated page count = " + topRatedPageCount, Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    loading = true;
+//
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -324,6 +426,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i(LOG_TAG, "TEST....onItemSelected() called!!!! ");
 
+                previousTotal = 0;
 
                 int index = mSpinner.getSelectedItemPosition();
                 mSortBy = getSpinnerTitleOfItemSelected(mSpinner);
@@ -437,6 +540,73 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         int position = sp.getInt(INDEX_KEY, INDEX_DEFAULT);
         mSpinner.setSelection(position);
+    }
+
+
+    public void setOnScrollListener() {
+        Log.i(LOG_TAG, "TEST.......MainActivity setOnScrollListener() called");
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mGridLayoutMananger.getItemCount();
+                firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
+
+
+                Log.i(LOG_TAG, "TEST......................visibleItemCount = " + visibleItemCount);
+                Log.i(LOG_TAG, "TEST......................totalItemCount = " + totalItemCount);
+                Log.i(LOG_TAG, "TEST......................firstVisibleItem = " + firstVisibleItem);
+
+//
+                popularPageCount = sharedPref.getInt("pop_page_count", 1);
+                topRatedPageCount = sharedPref.getInt("top_page_count", 1);
+
+                if (loading) {
+
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        Log.i(LOG_TAG, "TEST..........................previousTotal = " + previousTotal);
+                        if (mSortBy.equals(MOST_POPULAR)) {
+                            popularPageCount++;
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putInt("pop_page_count", popularPageCount);
+                            editor.apply();
+                        } else if (mSortBy.equals(TOP_RATED)) {
+                            topRatedPageCount++;
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putInt("top_page_count", topRatedPageCount);
+                            editor.apply();
+                        }
+
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    //Toast.makeText(getApplicationContext(), "page = " + pageCount, Toast.LENGTH_SHORT).show();
+                    //loadMore(pageCount);
+                    //Log.i(LOG_TAG, "INFO.....................pageCount = " + pageCount);
+
+                    if (mSortBy.equals(MOST_POPULAR)) {
+
+                        loadMore(popularPageCount);
+                        Log.i(LOG_TAG, "INFO.....................pop pageCount = " + popularPageCount);
+                        Toast.makeText(getApplicationContext(), "popular page count = " + popularPageCount, Toast.LENGTH_SHORT).show();
+                    } else if (mSortBy.equals(TOP_RATED)) {
+
+                        loadMore(topRatedPageCount);
+                        Log.i(LOG_TAG, "INFO.....................top pageCount = " + topRatedPageCount);
+                        Toast.makeText(getApplicationContext(), "top rated page count = " + topRatedPageCount, Toast.LENGTH_SHORT).show();
+                    }
+
+                    loading = true;
+
+                }
+            }
+        });
+
     }
 }
 
