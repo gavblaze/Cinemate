@@ -1,6 +1,7 @@
 package com.example.android.cinemate;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             MovieEntry.COLUMN_NAME_VOTE_AVERAGE,
             MovieEntry.COLUMN_NAME_SORT_ORDER
     };
-    private String mSortBy = DEFAULT;
+    //private String mSortBy = DEFAULT;
     private boolean PREFERENCE_CHANGED;
     private MovieAdapter mMovieAdapter;
     private RecyclerView mRecyclerView;
@@ -74,12 +75,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private int previousTotal;
     private boolean loading = true;
     private int visibleThreshold = 4;
-
     private int popularPageCount;
     private int topRatedPageCount;
     private Spinner mSpinner;
-    private int mIndex;
+    private int mPage;
     private boolean userIsInteracting;
+    private Context mContext;
 
 
     private SharedPreferences sharedPref;
@@ -92,11 +93,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         setContentView(R.layout.activity_main);
 
 
+        mContext = getApplicationContext();
 
-        if (savedInstanceState != null) {
-            firstVisibleItem = savedInstanceState.getInt(FIRST_VISIBLE_KEY);
-            previousTotal = savedInstanceState.getInt("previousTotal");
-        }
+
+//        if (savedInstanceState != null) {
+//            firstVisibleItem = savedInstanceState.getInt(FIRST_VISIBLE_KEY);
+//            previousTotal = savedInstanceState.getInt("previousTotal");
+//        }
 
         if (dbIsEmpty()) {
 
@@ -154,38 +157,35 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void loadMore(int page) {
         Log.i(LOG_TAG, "INFO.......MainActivity loadMore() called");
 
-        FetchMovieTask task = new FetchMovieTask(this, mSortBy);
-        task.execute(TmdbUrlUtils.getUrl(this, mSortBy, String.valueOf(page)));
+        FetchMovieTask task = new FetchMovieTask(this, MoviePreferences.getSortedBy(this));
+        task.execute(TmdbUrlUtils.getUrl(this, MoviePreferences.getSortedBy(this), String.valueOf(page)));
 
         mMovieAdapter.notifyDataSetChanged();
 
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        Log.i(LOG_TAG, "TEST.......MainActivity onSaveInstanceState() called");
-        super.onSaveInstanceState(outState);
-        outState.putInt(FIRST_VISIBLE_KEY, firstVisibleItem);
-        outState.putInt("previousTotal", previousTotal);
-    }
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        Log.i(LOG_TAG, "TEST.......MainActivity onSaveInstanceState() called");
+//        super.onSaveInstanceState(outState);
+//        outState.putInt(FIRST_VISIBLE_KEY, firstVisibleItem);
+//        outState.putInt("previousTotal", previousTotal);
+//    }
 
     @Override
     protected void onResume() {
         Log.i(LOG_TAG, "INFO.......MainActivity onResume() called");
         super.onResume();
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mSortBy = sp.getString(SORT_KEY, DEFAULT);
-
-        if (mSortBy.equals(MOST_POPULAR)) {
-            resetScrollListener(0, true, popularPageCount);
-        } else if (mSortBy.equals(TOP_RATED)) {
-            resetScrollListener(0, true, topRatedPageCount);
-        } else {
-            reloadData();
-        }
+//        if (MoviePreferences.getSortedBy(this).equals(MOST_POPULAR)) {
+//            resetScrollListener(0, true, popularPageCount);
+//        } else if (MoviePreferences.getSortedBy(this).equals(TOP_RATED)) {
+//            resetScrollListener(0, true, topRatedPageCount);
+//        } else {
+//            reloadData();
+//        }
+        resetScrollListener(0, true, 1);
     }
-
 
 
     public void reloadData() {
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         String selection;
         String[] selectionArgs;
 
-        if (mSortBy.equals(FAVOURITES)) {
+        if (MoviePreferences.getSortedBy(mContext).equals(FAVOURITES)) {
 
             selection = MovieEntry.COLUMN_NAME_FAVOURITE + "=?";
             selectionArgs = new String[]{String.valueOf(MovieEntry.IS_FAVOURITE)};
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
             selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
 
-            selectionArgs = new String[]{mSortBy};
+            selectionArgs = new String[]{MoviePreferences.getSortedBy(this)};
         }
         return new CursorLoader(this, MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
     }
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         showMovieDataView();
 
-        if (mMovieAdapter.getItemCount() == 0 && mSortBy.equals(FAVOURITES)) {
+        if (mMovieAdapter.getItemCount() == 0 && MoviePreferences.getSortedBy(this).equals(FAVOURITES)) {
             showNoFavouritesMessage();
         }
     }
@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.list_spinner, R.layout.spinner_dropdown_item);
         mSpinner = (Spinner) item.getActionView();
         mSpinner.setAdapter(adapter);
-        saveSpinnerIndex();  // declared this method to save the spinner index to shared preferences
+        mSpinner.setSelection(MoviePreferences.getSavedSpinnerIndex(mContext));  // declared this method to save the spinner index to shared preferences
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -276,22 +276,29 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
                 if (userIsInteracting) {
 
+
                     int index = mSpinner.getSelectedItemPosition();
-                    mSortBy = getSpinnerTitleOfItemSelected(mSpinner);
+                    String sortBy = getTitleOfItemSelected(index);
 
-                    if (mSortBy.equals(MOST_POPULAR)) {
-                        resetScrollListener(0, true, popularPageCount);
-                    } else if (mSortBy.equals(TOP_RATED)) {
-                        resetScrollListener(0, true, topRatedPageCount);
-                    }
+                    resetScrollListener(0, true, 1); // reset the scrollListener back to true if the user changes preference
 
-                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putInt(INDEX_KEY, index);
-                    editor.putString(SORT_KEY, mSortBy);
-                    Log.i(LOG_TAG, "TEST....We are on: " + mSortBy);
+//                    if (mSortBy.equals(MOST_POPULAR)) {
+//                        resetScrollListener(0, true, popularPageCount);
+//                    } else if (mSortBy.equals(TOP_RATED)) {
+//                        resetScrollListener(0, true, topRatedPageCount);
+//                    }
 
-                    editor.apply();
+//                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//                    SharedPreferences.Editor editor = sp.edit();
+//                    editor.putInt(INDEX_KEY, index);
+//                    editor.putString(SORT_KEY, mSortBy);
+//                    Log.i(LOG_TAG, "TEST....We are on: " + mSortBy);
+//
+//                    editor.apply();
+
+                    MoviePreferences.setSpinnerIndex(mContext, index);
+                    MoviePreferences.setSortBy(mContext, sortBy);
+
 
                     reloadData();
                 }
@@ -350,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     public boolean dbIsEmpty() {
         String selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
-        String[] selectionArgs = new String[]{mSortBy};
+        String[] selectionArgs = new String[]{MoviePreferences.getSortedBy(this)};
         Cursor cursor = getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
         if ((cursor != null ? cursor.getCount() : 0) <= 0) {
             return true;
@@ -373,12 +380,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
 
-    public String getSpinnerTitleOfItemSelected(Spinner spinner) {
-        int index = spinner.getSelectedItemPosition();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putInt(INDEX_KEY, index);
-        editor.apply();
+    public String getTitleOfItemSelected(int index) {
+//        int index = spinner.getSelectedItemPosition();
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        SharedPreferences.Editor editor = sp.edit();
+//        editor.putInt(INDEX_KEY, index);
+//        editor.apply();
+        //MoviePreferences.setSpinnerIndex(mContext, index);
 
         switch (index) {
             case 0:
@@ -392,11 +400,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
     }
 
-    public void saveSpinnerIndex() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        int position = sp.getInt(INDEX_KEY, INDEX_DEFAULT);
-        mSpinner.setSelection(position);
-    }
+//    public void getSavedSpinnerIndex() {
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+//        int position = sp.getInt(INDEX_KEY, INDEX_DEFAULT);
+//        mSpinner.setSelection(position);
+//    }
 
     @Override
     public void onUserInteraction() {
@@ -425,12 +433,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                         loading = false;
                         previousTotal = totalItemCount;
                         Log.i(LOG_TAG, "INFO..........................previousTotal = " + previousTotal);
-                        if (mSortBy.equals(MOST_POPULAR)) {
+                        if (MoviePreferences.getSortedBy(mContext).equals(MOST_POPULAR)) {
 
                             MoviePreferences.setPopularPageCount(getApplicationContext(), popularPageCount);
                             popularPageCount++;
 
-                        } else if (mSortBy.equals(TOP_RATED)) {
+                        } else if (MoviePreferences.getSortedBy(mContext).equals(TOP_RATED)) {
 
                             MoviePreferences.setTopRatedPageCount(getApplicationContext(), topRatedPageCount);
                             topRatedPageCount++;
@@ -440,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
                 if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
 
-                    if (mSortBy.equals(MOST_POPULAR)) {
+                    if (MoviePreferences.getSortedBy(mContext).equals(MOST_POPULAR)) {
 
                         loadMore(popularPageCount);
                         Log.i(LOG_TAG, "INFO.....................pop pageCount = " + popularPageCount);
@@ -448,7 +456,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                         loading = true;
 
 
-                    } else if (mSortBy.equals(TOP_RATED)) {
+                    } else if (MoviePreferences.getSortedBy(mContext).equals(TOP_RATED)) {
 
                         loadMore(topRatedPageCount);
                         Log.i(LOG_TAG, "INFO.....................top pageCount = " + topRatedPageCount);
@@ -468,7 +476,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void resetScrollListener(int previousTotal, boolean loading, int page) {
         this.previousTotal = previousTotal;
         this.loading = loading;
-        this.mIndex = page;
+        this.mPage = page;
     }
 }
 

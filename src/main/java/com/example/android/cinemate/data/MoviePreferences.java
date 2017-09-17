@@ -15,9 +15,13 @@ public class MoviePreferences {
     public static final String SORT_BY_DEFAULT = "popular";
 
     public static final String POPULAR_PAGE_COUNT_KEY = "popularPageCount";
+    public static final String TOPRATED_PAGE_COUNT_KEY = "topRatedPageCount";
     public static final int PAGE_COUNT_DEFAULT = 1;
 
-    public static final String TOPRATED_PAGE_COUNT_KEY = "topRatedPageCount";
+    public static final String SPINNER_INDEX_KEY = "spinner_index";
+    public static final int SPINNER_INDEX_DEFAULT = 0;
+
+
 
 
 //    public static String preferenceSelected(Context context) {
@@ -30,7 +34,7 @@ public class MoviePreferences {
 //    }
 
 
-    public static String sortedBy(Context context) {
+    public static String getSortedBy(Context context) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         String selectedListPref = sharedPrefs.getString(SORT_BY_KEY, SORT_BY_DEFAULT);
         return selectedListPref;
@@ -40,6 +44,19 @@ public class MoviePreferences {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(SORT_BY_KEY, sortBy);
+        editor.apply();
+    }
+
+    public static int getSavedSpinnerIndex(Context context) {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int index = sharedPrefs.getInt(SPINNER_INDEX_KEY, SPINNER_INDEX_DEFAULT);
+        return index;
+    }
+
+    public static void setSpinnerIndex(Context context, int index) {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt(SPINNER_INDEX_KEY, index);
         editor.apply();
     }
 

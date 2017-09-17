@@ -27,7 +27,6 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     public View mLoadingIndicator;
     private Context mContext;
     private String mSortBy;
-    //private AsyncTaskResponse mResponse;
 
 
     public FetchMovieTask(Context context, String sortBy) {
@@ -62,9 +61,6 @@ public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
     }
 
     public void insertIntoDb(List<Movie> listMovie) {
-
-//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-//        String sortOrder = sp.getString(MainActivity.SORT_KEY, MainActivity.DEFAULT);
 
         for (Movie movie : listMovie) {
             ContentValues values = new ContentValues();
