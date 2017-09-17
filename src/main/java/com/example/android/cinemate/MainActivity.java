@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.example.android.cinemate.adapters.MovieAdapter;
 import com.example.android.cinemate.data.FetchMovieTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
+import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
@@ -133,15 +134,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         showLoading();
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        //      sp.registerOnSharedPreferenceChangeListener(this);
-
-//        FetchMovieTask task = new FetchMovieTask(this, this);
-//        task.execute(TmdbUrlUtils.urlFromPreferences(getApplicationContext(), String.valueOf(1)));
-
-//        mPath = sp.getString(KEY, DEFAULT);
-//
-//        FetchMovieTask task = new FetchMovieTask(this, this);
-//        task.execute(TmdbUrlUtils.getUrl(this, mPath, String.valueOf(1)));
 
         mLoaderManager = getSupportLoaderManager();
 
@@ -149,9 +141,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mLoaderManager.initLoader(LOADER, null, this);
 
 
-        //SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        popularPageCount = sharedPref.getInt("pop_page_count", 1);
-        topRatedPageCount = sharedPref.getInt("top_page_count", 1);
+        popularPageCount = MoviePreferences.getPopularPageCount(this);
+        topRatedPageCount = MoviePreferences.getTopRatedPageCount(this);
+
 
         setOnScrollListener();
 
@@ -414,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     public void setOnScrollListener() {
 
+
         Log.i(LOG_TAG, "TEST.......MainActivity setOnScrollListener() called");
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -434,16 +427,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                         Log.i(LOG_TAG, "INFO..........................previousTotal = " + previousTotal);
                         if (mSortBy.equals(MOST_POPULAR)) {
 
-                            //Log.i(LOG_TAG, "INFO..........................popularPageCount = " + popularPageCount);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putInt("pop_page_count", popularPageCount);
-                            editor.apply();
+                            MoviePreferences.setPopularPageCount(getApplicationContext(), popularPageCount);
                             popularPageCount++;
+
                         } else if (mSortBy.equals(TOP_RATED)) {
 
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putInt("top_page_count", topRatedPageCount);
-                            editor.apply();
+                            MoviePreferences.setTopRatedPageCount(getApplicationContext(), topRatedPageCount);
                             topRatedPageCount++;
                         }
                     }
@@ -453,7 +442,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
                     if (mSortBy.equals(MOST_POPULAR)) {
 
-
                         loadMore(popularPageCount);
                         Log.i(LOG_TAG, "INFO.....................pop pageCount = " + popularPageCount);
                         Toast.makeText(getApplicationContext(), "popular page count = " + popularPageCount, Toast.LENGTH_SHORT).show();
@@ -461,7 +449,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
                     } else if (mSortBy.equals(TOP_RATED)) {
-
 
                         loadMore(topRatedPageCount);
                         Log.i(LOG_TAG, "INFO.....................top pageCount = " + topRatedPageCount);

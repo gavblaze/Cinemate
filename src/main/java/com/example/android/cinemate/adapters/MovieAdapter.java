@@ -64,7 +64,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         int posterpathIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH);
         String imgpath = mCursor.getString(posterpathIndex);
 
-        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.LARGE_IMAGE_SIZE);
+        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.BASE_IMAGE_SIZE);
 
         Context context = holder.mPosterImageView.getContext();
 
