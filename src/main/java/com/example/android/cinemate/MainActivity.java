@@ -9,12 +9,14 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private int topRatedPageCount;
     private Spinner mSpinner;
     private int mIndex;
+    private boolean userIsInteracting;
 
 
     private SharedPreferences sharedPref;
@@ -93,23 +96,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         setContentView(R.layout.activity_main);
 
 
+
         if (savedInstanceState != null) {
             firstVisibleItem = savedInstanceState.getInt(FIRST_VISIBLE_KEY);
+            previousTotal = savedInstanceState.getInt("previousTotal");
         }
 
+        if (dbIsEmpty()) {
 
-        FetchMovieTask fetchPopular = new FetchMovieTask(this, MOST_POPULAR);
-        fetchPopular.execute(TmdbUrlUtils.getUrl(this, MOST_POPULAR, String.valueOf(1)));
+            FetchMovieTask fetchPopular = new FetchMovieTask(this, MOST_POPULAR);
+            fetchPopular.execute(TmdbUrlUtils.getUrl(this, MOST_POPULAR, String.valueOf(1)));
 
-        FetchMovieTask fetchTopRated = new FetchMovieTask(this, TOP_RATED);
-        fetchTopRated.execute(TmdbUrlUtils.getUrl(this, TOP_RATED, String.valueOf(1)));
+            FetchMovieTask fetchTopRated = new FetchMovieTask(this, TOP_RATED);
+            fetchTopRated.execute(TmdbUrlUtils.getUrl(this, TOP_RATED, String.valueOf(1)));
+        }
 
 
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        //mEmptyStateTextView = (TextView) findViewById(R.id.emptyStateTextView);
-
 
         mEmptyStateView = findViewById(R.id.emptyStateView);
 
@@ -174,13 +179,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Log.i(LOG_TAG, "TEST.......MainActivity onSaveInstanceState() called");
         super.onSaveInstanceState(outState);
         outState.putInt(FIRST_VISIBLE_KEY, firstVisibleItem);
-        loading = false;
+        outState.putInt("previousTotal", previousTotal);
+        //loading = false;
     }
 
     @Override
     protected void onResume() {
         Log.i(LOG_TAG, "INFO.......MainActivity onResume() called");
         super.onResume();
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mSortBy = sp.getString(SORT_KEY, DEFAULT);
         if (mSortBy.equals(MOST_POPULAR)) {
             resetScrollListener(0, true, popularPageCount);
         } else if (mSortBy.equals(TOP_RATED)) {
@@ -221,8 +230,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(LOG_TAG, "TEST.......MainActivity onLoadFinished() called");
-
-
 
         mMovieAdapter.swapCursor(data);
 
@@ -268,38 +275,37 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         inflater.inflate(R.menu.main_menu, menu);
 
         MenuItem item = menu.findItem(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.list_spinner, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.list_spinner, R.layout.spinner_dropdown_item);
         mSpinner = (Spinner) item.getActionView();
-
-
         mSpinner.setAdapter(adapter);
-        //   mSpinner.setSelection(0, false); // stop onItemSelected call on initialization
-
         saveSpinnerIndex();  // declared this method to save the spinner index to shared preferences
+
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i(LOG_TAG, "TEST....onItemSelected() called!!!! ");
 
-                if (mSortBy.equals(MOST_POPULAR)) {
-                    resetScrollListener(visibleItemCount, true, popularPageCount);
-                } else if (mSortBy.equals(TOP_RATED)) {
-                    resetScrollListener(visibleItemCount, true, topRatedPageCount);
+                if (userIsInteracting) {
+
+                    int index = mSpinner.getSelectedItemPosition();
+                    mSortBy = getSpinnerTitleOfItemSelected(mSpinner);
+
+                    if (mSortBy.equals(MOST_POPULAR)) {
+                        resetScrollListener(0, true, popularPageCount);
+                    } else if (mSortBy.equals(TOP_RATED)) {
+                        resetScrollListener(0, true, topRatedPageCount);
+                    }
+
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putInt(INDEX_KEY, index);
+                    editor.putString(SORT_KEY, mSortBy);
+                    Log.i(LOG_TAG, "TEST....We are on: " + mSortBy);
+
+                    editor.apply();
+
+                    reloadData();
                 }
-
-
-                int index = mSpinner.getSelectedItemPosition();
-                mSortBy = getSpinnerTitleOfItemSelected(mSpinner);
-
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putInt(INDEX_KEY, index);
-                editor.putString(SORT_KEY, mSortBy);
-                Log.i(LOG_TAG, "TEST....We are on: " + mSortBy);
-
-                editor.apply();
-
-                reloadData();
             }
 
             @Override
@@ -315,14 +321,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         int id = item.getItemId();
         switch (id) {
-            case R.id.refresh:
-                mLoadingIndicator.setVisibility(View.VISIBLE);
-                mMovieAdapter.swapCursor(null);
-                getSupportLoaderManager().restartLoader(LOADER, null, this);
-                return true;
-            case R.id.settings:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
+//            case R.id.refresh:
+//                mLoadingIndicator.setVisibility(View.VISIBLE);
+//                mMovieAdapter.swapCursor(null);
+//                getSupportLoaderManager().restartLoader(LOADER, null, this);
+//                return true;
+//            case R.id.settings:
+//                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+//                startActivity(intent);
             default:
                 return false;
         }
@@ -353,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     }
 
-    public boolean dbIsEmptyForThisSelection() {
+    public boolean dbIsEmpty() {
         String selection = MovieEntry.COLUMN_NAME_SORT_ORDER + "=?";
         String[] selectionArgs = new String[]{mSortBy};
         Cursor cursor = getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_TABLE_PROJECTION, selection, selectionArgs, null);
@@ -366,17 +372,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
     }
 
-
-    /*
-    Because after you pause the activity and resume again, the condition
-    !loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)
-    is always false, thus onLoadMore is never called.*/
-
-    public void resetScrollListener(int previousTotal, boolean loading, int page) {
-        this.previousTotal = previousTotal;
-        this.loading = loading;
-        this.mIndex = page;
-    }
 
 
     @Override
@@ -414,6 +409,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mSpinner.setSelection(position);
     }
 
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        userIsInteracting = true;
+    }
 
     public void setOnScrollListener() {
 
@@ -428,10 +428,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                 totalItemCount = mGridLayoutMananger.getItemCount();
                 firstVisibleItem = mGridLayoutMananger.findFirstVisibleItemPosition();
 
-
-//                Log.i(LOG_TAG, "INFO......................visibleItemCount = " + visibleItemCount);
-//                Log.i(LOG_TAG, "INFO......................totalItemCount = " + totalItemCount);
-//                Log.i(LOG_TAG, "INFO......................firstVisibleItem = " + firstVisibleItem);
 
                 if (loading) {
 
@@ -478,6 +474,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                 }
             }
         });
+    }
+
+        /*
+    Because after you pause the activity and resume again, the condition
+    !loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)
+    is always false, thus onLoadMore is never called.*/
+
+    public void resetScrollListener(int previousTotal, boolean loading, int page) {
+        this.previousTotal = previousTotal;
+        this.loading = loading;
+        this.mIndex = page;
     }
 }
 

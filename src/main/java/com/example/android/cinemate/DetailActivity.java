@@ -319,9 +319,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             case R.id.share:
                 shareMovie();
                 return true;
-            case R.id.detail_settings:
-                Intent intent = new Intent(DetailActivity.this, SettingsActivity.class);
-                startActivity(intent);
+//            case R.id.detail_settings:
+//                Intent intent = new Intent(DetailActivity.this, SettingsActivity.class);
+//                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }

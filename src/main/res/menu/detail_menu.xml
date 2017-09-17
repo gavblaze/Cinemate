@@ -8,9 +8,9 @@
         android:title="Share"
         app:showAsAction="ifRoom"/>
 
-    <item
-        android:id="@+id/detail_settings"
-        android:icon="@drawable/settings"
-        android:title="Settings"
-        app:showAsAction="always"/>
+    <!--<item-->
+    <!--android:id="@+id/detail_settings"-->
+    <!--android:icon="@drawable/settings"-->
+    <!--android:title="Settings"-->
+    <!--app:showAsAction="always"/>-->
 </menu>
