@@ -5,23 +5,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -180,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onSaveInstanceState(outState);
         outState.putInt(FIRST_VISIBLE_KEY, firstVisibleItem);
         outState.putInt("previousTotal", previousTotal);
-        //loading = false;
     }
 
     @Override
@@ -190,10 +184,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSortBy = sp.getString(SORT_KEY, DEFAULT);
+
         if (mSortBy.equals(MOST_POPULAR)) {
             resetScrollListener(0, true, popularPageCount);
         } else if (mSortBy.equals(TOP_RATED)) {
             resetScrollListener(0, true, topRatedPageCount);
+        } else {
+            reloadData();
         }
     }
 
@@ -236,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         showMovieDataView();
 
         if (mMovieAdapter.getItemCount() == 0 && mSortBy.equals(FAVOURITES)) {
-            showErrorMessage();
+            showNoFavouritesMessage();
         }
     }
 
@@ -352,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
-    private void showErrorMessage() {
+    private void showNoFavouritesMessage() {
         mRecyclerView.setVisibility(View.INVISIBLE);
         //mEmptyStateTextView.setVisibility(View.VISIBLE);
         mEmptyStateView.setVisibility(View.VISIBLE);
