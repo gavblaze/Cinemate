@@ -1,14 +1,18 @@
 package com.example.android.cinemate;
 
 import android.app.ActivityOptions;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -22,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -82,8 +87,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private int mPage;
     private boolean userIsInteracting;
     private Context mContext;
+    private Movie mMovie;
     private ImageView mLikeImageView;
-
+    private ImageButton mShareImageButton;
 
     private SharedPreferences sharedPref;
 
@@ -96,6 +102,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
         mContext = getApplicationContext();
+
+
+//        ImageButton mLikeImageButton = (ImageButton) findViewById(R.id.likeImageView);
+//        mShareImageButton = (ImageButton) findViewById(R.id.shareImageView);
 
 //        if (savedInstanceState != null) {
 //            firstVisibleItem = savedInstanceState.getInt(FIRST_VISIBLE_KEY);
@@ -143,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
         mLoaderManager.initLoader(LOADER, null, this);
+
+        mLikeImageView = (ImageView) findViewById(R.id.likeImageView);
 
 
         popularPageCount = MoviePreferences.getPopularPageCount(this);
@@ -257,6 +269,65 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, sharedImageView, movie.getmTitle());
             startActivity(intent, options.toBundle());
         }
+    }
+
+    @Override
+    public void onLikeClicked(int position, Context context) {
+        mMovie = mMovieAdapter.getItemClicked(position);
+        mLikeImageView = (ImageView) findViewById(R.id.likeImageView);
+
+        if (!isFavourite(mMovie.getmId())) {
+
+            mLikeImageView.setImageResource(R.drawable.starfilled);
+            setToFavouriteInDb();
+            Snackbar.make(findViewById(R.id.recyclerView), mMovie.getmTitle() + " added to favourites", Snackbar.LENGTH_SHORT).show();
+        } else {
+            //mLikeImageView.setImageResource(R.drawable.starborder);
+            setToDefaultInDb();
+            Snackbar.make(findViewById(R.id.recyclerView), mMovie.getmTitle() + " removed from favourites", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onShareClicked(int position, Context context) {
+
+    }
+
+    public boolean isFavourite(int movieId) {
+        Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
+        String[] projection = {MovieEntry.COLUMN_NAME_FAVOURITE};
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+        Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
+        if (cursor != null) {
+            cursor.moveToNext();
+        }
+        int indexOfValue = cursor.getColumnIndex(MovieEntry.COLUMN_NAME_FAVOURITE);
+        int value = cursor.getInt(indexOfValue);
+        if (value == MovieEntry.IS_FAVOURITE) {
+            return true;
+        } else {
+            cursor.close();
+            return false;
+        }
+    }
+
+    public void setToFavouriteInDb() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_FAVOURITE);
+        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mMovie.getmId());
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
+    }
+
+    public void setToDefaultInDb() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_DEFAULT);
+        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mMovie.getmId());
+        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
     }
 
     @Override

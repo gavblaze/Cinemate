@@ -75,6 +75,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 
 
+        holder.mLikeImageView.setImageResource(R.drawable.starborder);
+        holder.mShareImageView.setImageResource(android.R.drawable.ic_menu_share);
+
+
         //setAnimation(holder, position);
 
     }
@@ -122,37 +126,63 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public interface ListItemClickHandler {
         void onItemClicked(int position, ImageView imageView);
+
+        void onLikeClicked(int position, Context context);
+
+        void onShareClicked(int position, Context context);
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final ImageView mPosterImageView;
-        public final ImageButton mLikeImageView;
-        public final ImageButton mShareImageView;
+        public final ImageView mLikeImageView;
+        public final ImageView mShareImageView;
+        //
+        View.OnClickListener like = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = getAdapterPosition();
+                mListItemClickHandler.onLikeClicked(position, mContext);
+            }
+        };
+        View.OnClickListener share = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = getAdapterPosition();
+                mListItemClickHandler.onShareClicked(position, mContext);
 
+            }
+        };
         public ViewHolder(View itemView) {
             super(itemView);
 
             //mContainer = (RelativeLayout) itemView.findViewById(R.id.layoutContainer);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
-            mLikeImageView = (ImageButton) itemView.findViewById(R.id.likeImageView);
-            mShareImageView = (ImageButton) itemView.findViewById(R.id.shareImageView);
+            mLikeImageView = (ImageView) itemView.findViewById(R.id.likeImageView);
+            mShareImageView = (ImageView) itemView.findViewById(R.id.shareImageView);
 
             mPosterImageView.setOnClickListener(this);
+            mLikeImageView.setOnClickListener(like);
+            mShareImageView.setOnClickListener(share);
 
-            mLikeImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(mContext, "Like clicked", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            mShareImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(mContext, "Share clicked", Toast.LENGTH_SHORT).show();
-                }
-            });
+//            mLikeImageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    int position = getAdapterPosition();
+//                    mListItemClickHandler.onLikeClicked(position);
+//                    //Toast.makeText(mContext, "Like clicked", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//
+//            mShareImageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    int position = getAdapterPosition();
+//                    mListItemClickHandler.onShareClicked(position);
+//                    //Toast.makeText(mContext, "Share clicked", Toast.LENGTH_SHORT).show();
+//                }
+//            });
         }
 
         @Override
@@ -160,7 +190,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             int position = getAdapterPosition();
             mListItemClickHandler.onItemClicked(position, mPosterImageView);
         }
+
     }
+
 }
 
 
