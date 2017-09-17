@@ -9,8 +9,10 @@
         android:id="@+id/reviewAuthorTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:paddingBottom="5dp"
+        android:textColor="@color/textSecondaryColor"
         android:textStyle="bold"
         tools:text="Gavin"/>
 
@@ -18,10 +20,10 @@
         android:id="@+id/reviewContentTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
         android:gravity="center"
         android:paddingBottom="18dp"
-        android:textColor="#212121"
-        android:typeface="serif"
+        android:textColor="@color/textSecondaryColor"
         tools:text="This movie is the Bomb!"/>
 
 </LinearLayout>

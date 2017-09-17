@@ -65,7 +65,7 @@
             android:paddingTop="8dp"
             android:text="Get started adding a movie"
             android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="#A2AAB0"/>
+            android:textColor="#757575"/>
 
         <Spinner
             android:id="@+id/spinner2"
