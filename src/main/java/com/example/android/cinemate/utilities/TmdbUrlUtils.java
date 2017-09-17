@@ -30,16 +30,16 @@ public class TmdbUrlUtils {
     public static final String IMG_SIZE_TYPE = "0.jpg";
 
 
-    public static String urlFromPreferences(Context context, String pageNumber) {
-
-        String adoptedPath = MoviePreferences.preferenceSelected(context);
-
-        Uri baseUri = Uri.parse(BASE_MOVIE_URL);
-        Uri.Builder builder = baseUri.buildUpon();
-        builder.appendPath(adoptedPath);
-        builder.appendQueryParameter("page", pageNumber);
-        return builder.build().toString();
-    }
+//    public static String urlFromPreferences(Context context, String pageNumber) {
+//
+//        String adoptedPath = MoviePreferences.preferenceSelected(context);
+//
+//        Uri baseUri = Uri.parse(BASE_MOVIE_URL);
+//        Uri.Builder builder = baseUri.buildUpon();
+//        builder.appendPath(adoptedPath);
+//        builder.appendQueryParameter("page", pageNumber);
+//        return builder.build().toString();
+//    }
 
     public static String getUrl(Context context, String path, String pageNumber) {
         Uri baseUri = Uri.parse(BASE_MOVIE_URL);
