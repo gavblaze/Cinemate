@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.android.cinemate.MainActivity;
 import com.example.android.cinemate.R;
@@ -125,14 +127,32 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final ImageView mPosterImageView;
+        public final ImageButton mLikeImageView;
+        public final ImageButton mShareImageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             //mContainer = (RelativeLayout) itemView.findViewById(R.id.layoutContainer);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
+            mLikeImageView = (ImageButton) itemView.findViewById(R.id.likeImageView);
+            mShareImageView = (ImageButton) itemView.findViewById(R.id.shareImageView);
 
-            itemView.setOnClickListener(this);
+            mPosterImageView.setOnClickListener(this);
+
+            mLikeImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(mContext, "Like clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            mShareImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(mContext, "Share clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         @Override

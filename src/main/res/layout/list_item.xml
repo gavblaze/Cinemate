@@ -11,7 +11,7 @@
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_height="290dp"
+        android:layout_height="320dp"
         card_view:cardBackgroundColor="@color/window_background"
         card_view:cardCornerRadius="2dp"
         card_view:cardElevation="1.4dp"
@@ -19,12 +19,54 @@
         card_view:cardPreventCornerOverlap="false"
         card_view:cardUseCompatPadding="true">
 
-        <ImageView
-            android:id="@+id/posterImageView"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            tools:src="@mipmap/ic_launcher"/>
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/posterImageView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="0dp"
+                android:scaleType="fitXY"
+                card_view:layout_constraintBottom_toTopOf="@+id/likeImageView"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent"
+                card_view:layout_constraintVertical_bias="0.0"
+                tools:src="@mipmap/ic_launcher"
+                />
+
+            <ImageButton
+                android:id="@+id/likeImageView"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintTop_toTopOf="@+id/shareImageView"
+                card_view:layout_constraintVertical_bias="1.0"
+                card_view:srcCompat="@drawable/ic_favorite_border_black_24dp"/>
+
+            <ImageButton
+                android:id="@+id/shareImageView"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/posterImageView"
+                card_view:srcCompat="@android:drawable/ic_menu_share"/>
+
+        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
 </RelativeLayout>

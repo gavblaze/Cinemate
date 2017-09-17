@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private int mPage;
     private boolean userIsInteracting;
     private Context mContext;
+    private ImageView mLikeImageView;
 
 
     private SharedPreferences sharedPref;
@@ -94,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
         mContext = getApplicationContext();
-
 
 //        if (savedInstanceState != null) {
 //            firstVisibleItem = savedInstanceState.getInt(FIRST_VISIBLE_KEY);
