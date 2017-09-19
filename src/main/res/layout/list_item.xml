@@ -5,14 +5,14 @@
                 android:id="@+id/layoutContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#e0e0e0"
+                android:background="@color/window_background"
                 android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="320dp"
-        card_view:cardBackgroundColor="@color/window_background"
+        card_view:cardBackgroundColor="@android:color/white"
         card_view:cardCornerRadius="2dp"
         card_view:cardElevation="1.4dp"
         card_view:cardMaxElevation="1.8dp"
@@ -26,46 +26,65 @@
             <ImageView
                 android:id="@+id/posterImageView"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="8dp"
+                android:layout_height="245dp"
+                android:layout_marginBottom="48dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:scaleType="fitXY"
-                card_view:layout_constraintBottom_toTopOf="@+id/likeImageView"
-                card_view:layout_constraintHorizontal_bias="0.0"
+                android:scaleType="centerInside"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintHorizontal_bias="1.0"
                 card_view:layout_constraintLeft_toLeftOf="parent"
                 card_view:layout_constraintRight_toRightOf="parent"
                 card_view:layout_constraintTop_toTopOf="parent"
                 card_view:layout_constraintVertical_bias="0.0"
-                tools:src="@mipmap/ic_launcher"
-                />
+                tools:src="@mipmap/ic_launcher"/>
 
             <ImageView
                 android:id="@+id/likeImageView"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
                 android:src="@drawable/starborder"
-                card_view:layout_constraintBottom_toBottomOf="parent"
-                card_view:layout_constraintLeft_toLeftOf="parent"
-                card_view:layout_constraintTop_toTopOf="@+id/shareImageView"
-                card_view:layout_constraintVertical_bias="1.0"/>
+                card_view:layout_constraintBottom_toBottomOf="@+id/shareImageView"
+                card_view:layout_constraintRight_toLeftOf="@+id/shareImageView"
+                card_view:layout_constraintTop_toTopOf="@+id/shareImageView"/>
 
             <ImageView
                 android:id="@+id/shareImageView"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintRight_toRightOf="parent"
                 card_view:layout_constraintTop_toBottomOf="@+id/posterImageView"
-                card_view:layout_constraintVertical_bias="0.0"
-                card_view:srcCompat="@android:drawable/ic_menu_share"/>
+                card_view:layout_constraintVertical_bias="0.515"
+                card_view:srcCompat="?attr/actionModeShareDrawable"/>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="24dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:text="The Art of War"
+                android:textColor="@color/textSecondaryColor"
+                android:textSize="16sp"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toLeftOf="@+id/likeImageView"
+                card_view:layout_constraintTop_toBottomOf="@+id/posterImageView"
+                card_view:layout_constraintVertical_bias="0.0"/>
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>

@@ -12,7 +12,7 @@
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                  android:layout_width="150dp"
-                 android:layout_height="150dp">
+                 android:layout_height="130dp">
 
         <ImageView
             android:id="@+id/trailerImageView"
@@ -25,9 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="center"
-            android:src="@drawable/youtube"
+            android:src="@drawable/youtube32"
             android:visibility="visible"/>
-
 
     </FrameLayout>
 </android.support.v7.widget.CardView>
