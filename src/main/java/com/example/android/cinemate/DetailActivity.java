@@ -36,6 +36,7 @@ import com.example.android.cinemate.models.Movie;
 import com.example.android.cinemate.models.MovieParticulars;
 import com.example.android.cinemate.models.Review;
 import com.example.android.cinemate.utilities.DateUtils;
+import com.example.android.cinemate.utilities.FavouriteUtils;
 import com.example.android.cinemate.utilities.GenreUtils;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Callback;
@@ -225,7 +226,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
-        if (isFavourite(mReceivedMovie.getmId())) {
+        if (FavouriteUtils.isFavourite(this, mReceivedMovie.getmId())) {
             mFab.setImageResource(R.drawable.starfilled);
         }
 
@@ -233,13 +234,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isFavourite(mReceivedMovie.getmId())) {
+                if (!FavouriteUtils.isFavourite(getApplicationContext(), mReceivedMovie.getmId())) {
                     mFab.setImageResource(R.drawable.starfilled);
-                    setToFavouriteInDb();
+                    FavouriteUtils.setToFavouriteInDb(getApplicationContext(), mReceivedMovie.getmId());
                     Snackbar.make(findViewById(R.id.nestedscrollview), "Added to favourites", Snackbar.LENGTH_SHORT).show();
                 } else {
                     mFab.setImageResource(R.drawable.starborder);
-                    setToDefaultInDb();
+                    FavouriteUtils.setToDefaultInDb(getApplicationContext(), mReceivedMovie.getmId());
                     Snackbar.make(findViewById(R.id.nestedscrollview), "Removed from favourites", Snackbar.LENGTH_SHORT).show();
                 }
             }
@@ -264,42 +265,42 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     }
 
-    public boolean isFavourite(int movieId) {
-        Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
-        String[] projection = {MovieEntry.COLUMN_NAME_FAVOURITE};
-        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-        Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
-        if (cursor != null) {
-            cursor.moveToNext();
-        }
-        int indexOfValue = cursor.getColumnIndex(MovieEntry.COLUMN_NAME_FAVOURITE);
-        int value = cursor.getInt(indexOfValue);
-        if (value == MovieEntry.IS_FAVOURITE) {
-            return true;
-        } else {
-            cursor.close();
-            return false;
-        }
-    }
-
-    public void setToFavouriteInDb() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_FAVOURITE);
-        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
-        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
-        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
-    }
-
-    public void setToDefaultInDb() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_DEFAULT);
-        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
-        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
-        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
-    }
+//    public boolean isFavourite(int movieId) {
+//        Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
+//        String[] projection = {MovieEntry.COLUMN_NAME_FAVOURITE};
+//        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+//        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+//        Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
+//        if (cursor != null) {
+//            cursor.moveToNext();
+//        }
+//        int indexOfValue = cursor.getColumnIndex(MovieEntry.COLUMN_NAME_FAVOURITE);
+//        int value = cursor.getInt(indexOfValue);
+//        if (value == MovieEntry.IS_FAVOURITE) {
+//            return true;
+//        } else {
+//            cursor.close();
+//            return false;
+//        }
+//    }
+//
+//    public void setToFavouriteInDb() {
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_FAVOURITE);
+//        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
+//        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+//        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+//        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
+//    }
+//
+//    public void setToDefaultInDb() {
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_DEFAULT);
+//        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mReceivedMovie.getmId());
+//        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
+//        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
+//        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
+//    }
 
 
     @Override

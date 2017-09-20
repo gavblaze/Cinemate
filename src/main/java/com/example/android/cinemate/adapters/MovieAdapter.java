@@ -168,6 +168,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             int position = getAdapterPosition();
             int id = view.getId();
             if (id == R.id.posterImageView) {
+                /*We pass a view for shared element transition*/
                 mListItemClickHandler.onItemClicked(position, mPosterImageView);
             } else if (id == R.id.likeImageView) {
                 mListItemClickHandler.onLikeClicked(position);
