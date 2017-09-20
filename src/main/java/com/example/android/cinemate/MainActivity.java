@@ -36,6 +36,7 @@ import com.example.android.cinemate.data.FetchMovieTask;
 import com.example.android.cinemate.data.MovieContract.MovieEntry;
 import com.example.android.cinemate.data.MoviePreferences;
 import com.example.android.cinemate.models.Movie;
+import com.example.android.cinemate.utilities.FavouriteUtils;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -272,63 +273,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
     @Override
-    public void onLikeClicked(int position, Context context) {
+    public void onLikeClicked(int position) {
         mMovie = mMovieAdapter.getItemClicked(position);
-        mLikeImageView = (ImageView) findViewById(R.id.likeImageView);
-
-        if (!isFavourite(mMovie.getmId())) {
-
-            mLikeImageView.setImageResource(R.drawable.starfilled);
-            setToFavouriteInDb();
-            Snackbar.make(findViewById(R.id.recyclerView), mMovie.getmTitle() + " added to favourites", Snackbar.LENGTH_SHORT).show();
+        /*If movie clicked is NOT yet a favourite add it to favourites in database*/
+        if (!FavouriteUtils.isFavourite(this, mMovie.getmId())) {
+            FavouriteUtils.setToFavouriteInDb(this, mMovie.getmId());
         } else {
-            //mLikeImageView.setImageResource(R.drawable.starborder);
-            setToDefaultInDb();
-            Snackbar.make(findViewById(R.id.recyclerView), mMovie.getmTitle() + " removed from favourites", Snackbar.LENGTH_SHORT).show();
+            FavouriteUtils.setToDefaultInDb(this, mMovie.getmId());
         }
     }
 
     @Override
-    public void onShareClicked(int position, Context context) {
+    public void onShareClicked(int position) {
 
     }
 
-    public boolean isFavourite(int movieId) {
-        Uri uri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
-        String[] projection = {MovieEntry.COLUMN_NAME_FAVOURITE};
-        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-        Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
-        if (cursor != null) {
-            cursor.moveToNext();
-        }
-        int indexOfValue = cursor.getColumnIndex(MovieEntry.COLUMN_NAME_FAVOURITE);
-        int value = cursor.getInt(indexOfValue);
-        if (value == MovieEntry.IS_FAVOURITE) {
-            return true;
-        } else {
-            cursor.close();
-            return false;
-        }
-    }
-
-    public void setToFavouriteInDb() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_FAVOURITE);
-        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mMovie.getmId());
-        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
-        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
-    }
-
-    public void setToDefaultInDb() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieEntry.COLUMN_NAME_FAVOURITE, MovieEntry.IS_DEFAULT);
-        Uri uriToUpdate = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, mMovie.getmId());
-        String selection = MovieEntry.COLUMN_NAME_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uriToUpdate))};
-        getContentResolver().update(MovieEntry.CONTENT_URI, contentValues, selection, selectionArgs);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -22,6 +22,7 @@ import com.example.android.cinemate.MainActivity;
 import com.example.android.cinemate.R;
 import com.example.android.cinemate.data.MovieContract;
 import com.example.android.cinemate.models.Movie;
+import com.example.android.cinemate.utilities.FavouriteUtils;
 import com.example.android.cinemate.utilities.TmdbUrlUtils;
 import com.squareup.picasso.Picasso;
 
@@ -75,7 +76,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 
 
-        holder.mLikeImageView.setImageResource(R.drawable.starborder);
+        int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_ID);
+        int movieId = mCursor.getInt(idIndex);
+
+        if (FavouriteUtils.isFavourite(mContext, movieId)) {
+            holder.mLikeImageView.setImageResource(R.drawable.starfilled);
+        } else {
+            holder.mLikeImageView.setImageResource(R.drawable.starborder);
+        }
+
         holder.mShareImageView.setImageResource(android.R.drawable.ic_menu_share);
 
 
@@ -127,9 +136,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public interface ListItemClickHandler {
         void onItemClicked(int position, ImageView imageView);
 
-        void onLikeClicked(int position, Context context);
+        void onLikeClicked(int position);
 
-        void onShareClicked(int position, Context context);
+        void onShareClicked(int position);
     }
 
 
@@ -138,22 +147,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public final ImageView mPosterImageView;
         public final ImageView mLikeImageView;
         public final ImageView mShareImageView;
-        //
-        View.OnClickListener like = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = getAdapterPosition();
-                mListItemClickHandler.onLikeClicked(position, mContext);
-            }
-        };
-        View.OnClickListener share = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = getAdapterPosition();
-                mListItemClickHandler.onShareClicked(position, mContext);
 
-            }
-        };
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -163,36 +158,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             mShareImageView = (ImageView) itemView.findViewById(R.id.shareImageView);
 
             mPosterImageView.setOnClickListener(this);
-            mLikeImageView.setOnClickListener(like);
-            mShareImageView.setOnClickListener(share);
+            mLikeImageView.setOnClickListener(this);
+            mShareImageView.setOnClickListener(this);
 
-//            mLikeImageView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    int position = getAdapterPosition();
-//                    mListItemClickHandler.onLikeClicked(position);
-//                    //Toast.makeText(mContext, "Like clicked", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//
-//            mShareImageView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    int position = getAdapterPosition();
-//                    mListItemClickHandler.onShareClicked(position);
-//                    //Toast.makeText(mContext, "Share clicked", Toast.LENGTH_SHORT).show();
-//                }
-//            });
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            mListItemClickHandler.onItemClicked(position, mPosterImageView);
+            int id = view.getId();
+            if (id == R.id.posterImageView) {
+                mListItemClickHandler.onItemClicked(position, mPosterImageView);
+            } else if (id == R.id.likeImageView) {
+                mListItemClickHandler.onLikeClicked(position);
+            } else if (id == R.id.shareImageView) {
+                mListItemClickHandler.onShareClicked(position);
+            }
         }
-
     }
-
 }
 
 
