@@ -74,63 +74,125 @@ public class GenreUtils {
 //                imageView.setImageResource(R.drawable.defaulticon);
 //        }
 
+//        switch (genre) {
+//            case "Action":
+//                imageView.setImageResource(R.drawable.action_bw);
+//                break;
+//            case "Adventure":
+//                imageView.setImageResource(R.drawable.adventure_bw);
+//                break;
+//            case "Animation":
+//                imageView.setImageResource(R.drawable.animation_bw);
+//                break;
+//            case "Comedy":
+//                imageView.setImageResource(R.drawable.comedy_bw);
+//                break;
+//            case "Crime":
+//                imageView.setImageResource(R.drawable.crime_bw);
+//                break;
+//            case "Documentary":
+//                imageView.setImageResource(R.drawable.documentary_bw);
+//                break;
+//            case "Drama":
+//                imageView.setImageResource(R.drawable.drama_bw);
+//                break;
+//            case "Family":
+//                imageView.setImageResource(R.drawable.family_bw);
+//                break;
+//            case "Fantasy":
+//                imageView.setImageResource(R.drawable.fantasy_bw);
+//                break;
+//            case "History":
+//                imageView.setImageResource(R.drawable.history_bw);
+//                break;
+//            case "Horror":
+//                imageView.setImageResource(R.drawable.horror_bw);
+//                break;
+//            case "Music":
+//                imageView.setImageResource(R.drawable.music_bw);
+//                break;
+//            case "Mystery":
+//                imageView.setImageResource(R.drawable.mystery_bw);
+//                break;
+//            case "Romance":
+//                imageView.setImageResource(R.drawable.romance_bw);
+//                break;
+//            case "Science Fiction":
+//                imageView.setImageResource(R.drawable.scifi_bw);
+//                break;
+//            case "TV Movie":
+//                imageView.setImageResource(R.drawable.tvmovie_bw);
+//                break;
+//            case "Thriller":
+//                imageView.setImageResource(R.drawable.thriller_bw);
+//                break;
+//            case "War":
+//                imageView.setImageResource(R.drawable.war_bw);
+//                break;
+//            case "Western":
+//                imageView.setImageResource(R.drawable.western_bw);
+//                break;
+//            default:
+//                imageView.setImageResource(R.drawable.defaulticon);
+//        }
+
         switch (genre) {
             case "Action":
-                imageView.setImageResource(R.drawable.action_bw);
+                imageView.setImageResource(R.drawable.action_grey);
                 break;
             case "Adventure":
-                imageView.setImageResource(R.drawable.adventure_bw);
+                imageView.setImageResource(R.drawable.adventure_grey);
                 break;
             case "Animation":
-                imageView.setImageResource(R.drawable.animation_bw);
+                imageView.setImageResource(R.drawable.animation_grey);
                 break;
             case "Comedy":
-                imageView.setImageResource(R.drawable.comedy_bw);
+                imageView.setImageResource(R.drawable.comedy_grey);
                 break;
             case "Crime":
-                imageView.setImageResource(R.drawable.crime_bw);
+                imageView.setImageResource(R.drawable.crime_grey);
                 break;
             case "Documentary":
-                imageView.setImageResource(R.drawable.documentary_bw);
+                imageView.setImageResource(R.drawable.doco_grey);
                 break;
             case "Drama":
-                imageView.setImageResource(R.drawable.drama_bw);
+                imageView.setImageResource(R.drawable.drama_grey);
                 break;
             case "Family":
-                imageView.setImageResource(R.drawable.family_bw);
+                imageView.setImageResource(R.drawable.family_grey);
                 break;
             case "Fantasy":
-                imageView.setImageResource(R.drawable.fantasy_bw);
+                imageView.setImageResource(R.drawable.fantasy_grey);
                 break;
             case "History":
-                imageView.setImageResource(R.drawable.history_bw);
+                imageView.setImageResource(R.drawable.history_grey);
                 break;
             case "Horror":
-                imageView.setImageResource(R.drawable.horror_bw);
+                imageView.setImageResource(R.drawable.horror_grey);
                 break;
             case "Music":
-                imageView.setImageResource(R.drawable.music_bw);
+                imageView.setImageResource(R.drawable.music_grey);
                 break;
             case "Mystery":
-                imageView.setImageResource(R.drawable.mystery_bw);
+                imageView.setImageResource(R.drawable.mystery_grey);
                 break;
             case "Romance":
-                imageView.setImageResource(R.drawable.romance_bw);
+                imageView.setImageResource(R.drawable.romance_grey);
                 break;
             case "Science Fiction":
-                imageView.setImageResource(R.drawable.scifi_bw);
+                imageView.setImageResource(R.drawable.scifi_grey);
                 break;
             case "TV Movie":
-                imageView.setImageResource(R.drawable.tvmovie_bw);
+                imageView.setImageResource(R.drawable.tvmovie_grey);
                 break;
             case "Thriller":
-                imageView.setImageResource(R.drawable.thriller_bw);
+                imageView.setImageResource(R.drawable.thriller_grey);
                 break;
             case "War":
-                imageView.setImageResource(R.drawable.war_bw);
+                imageView.setImageResource(R.drawable.war_grey);
                 break;
             case "Western":
-                imageView.setImageResource(R.drawable.western_bw);
+                imageView.setImageResource(R.drawable.western_grey);
                 break;
             default:
                 imageView.setImageResource(R.drawable.defaulticon);

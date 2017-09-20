@@ -70,7 +70,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         Context context = holder.mPosterImageView.getContext();
 
-        Picasso.with(context).load(urlImageString).placeholder(R.drawable.cinemate64_greyscale).into(holder.mPosterImageView);
+        Picasso.with(context).load(urlImageString).fit().centerCrop().noFade().placeholder(R.drawable.cinema128grey).into(holder.mPosterImageView);
 
         ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 

@@ -175,7 +175,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mUrlBackdropPath = mReceivedMovie.getmBackdropPath();
         String urlForBackdrop = TmdbUrlUtils.getBackdropUrl(mUrlBackdropPath, TmdbUrlUtils.BACKDROP_IMAGE_SIZE);
-        Picasso.with(mDetailBackdropImageView.getContext()).load(urlForBackdrop).fit().centerCrop().into(mDetailBackdropImageView);
+        Picasso.with(mDetailBackdropImageView.getContext()).load(urlForBackdrop).fit().centerCrop().placeholder(R.drawable.cinema512grey).noFade().into(mDetailBackdropImageView);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -430,14 +430,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 mDetailDurationImageView.setVisibility(View.GONE);
             } else {
                 mDetailDurationTextView.setText(duration);
-                mDetailDurationImageView.setImageResource(R.drawable.time_bw);
+                mDetailDurationImageView.setImageResource(R.drawable.time2);
             }
             if (language.isEmpty()) {
                 mDetailLanguageTextView.setVisibility(View.GONE);
                 mDetailLanguageImageView.setVisibility(View.GONE);
             } else {
                 mDetailLanguageTextView.setText(language);
-                mDetailLanguageImageView.setImageResource(R.drawable.language_bw);
+                mDetailLanguageImageView.setImageResource(R.drawable.map3);
             }
         }
     }
