@@ -77,6 +77,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private GridLayoutManager mGridLayoutManager;
     private TextView mTrailerLabelTextView;
     private TextView mReviewLabelTextView;
+    private View mTrailerDividerView;
+    private View mReviewDividerView;
     private RecyclerView mReviewRecyclerView;
     private ReviewAdapter mReviewAdapter;
     private LinearLayoutManager mLinearLayoutManager;
@@ -153,6 +155,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mTrailerLabelTextView = (TextView) findViewById(R.id.trailersLabelTextView);
         mReviewLabelTextView = (TextView) findViewById(R.id.reviewLabelTextView);
+        mTrailerDividerView = findViewById(R.id.trailerDivider);
+        mReviewDividerView = findViewById(R.id.reviewDivider);
         mDetailGenreImageView = (ImageView) findViewById(R.id.genreImageView);
         mDetailDurationImageView = (ImageView) findViewById(R.id.durationImageView);
         mDetailLanguageImageView = (ImageView) findViewById(R.id.languageImageView);
@@ -187,7 +191,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mUrlPosterPath = mReceivedMovie.getmPosterPath();
         String urlForImage = TmdbUrlUtils.getImageUrl(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
-        Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).into(mDetailMovieImageView, new Callback() {
+        Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).placeholder(R.drawable.cinema256grey).into(mDetailMovieImageView, new Callback() {
             @Override
             public void onSuccess() {
                 supportStartPostponedEnterTransition();
@@ -256,13 +260,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.i(LOG_TAG, "TEST.......DetailActivity onSaveInstanceState() called");
+        super.onSaveInstanceState(outState);
 
         if (mTrailerList != null) outState.putStringArrayList(TRAILER_KEY, mTrailerList);
 
         if (mReviewList != null) outState.putParcelableArrayList(REVIEW_KEY, mReviewList);
-
-        super.onSaveInstanceState(outState);
-
     }
 
 //    public boolean isFavourite(int movieId) {
@@ -349,22 +351,26 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     /*If the result from the TrailerAsyncTask is null, hide the views related to displaying trailers*/
     public void trailerAsyncResult(List<String> data) {
         Log.i(LOG_TAG, "TEST....................... trailerAsyncResult() called");
-        mTrailerList = (ArrayList<String>) data;
         if (data.size() == 0) {
             hideTrailerView();
         } else {
+            mTrailerList = (ArrayList<String>) data;
             showTrailerView();
             mTrailerAdapter.setData(data);
         }
     }
 
     public void hideTrailerView() {
+        Log.i(LOG_TAG, "TEST.......DetailActivity hideTrailerView() called");
         mTrailerLabelTextView.setVisibility(View.GONE);
         mTrailerRecyclerView.setVisibility(View.GONE);
+        mTrailerDividerView.setVisibility(View.GONE);
     }
 
     public void showTrailerView() {
+        Log.i(LOG_TAG, "TEST.......DetailActivity showTrailerView() called");
         mTrailerLabelTextView.setVisibility(View.VISIBLE);
+        mTrailerDividerView.setVisibility(View.VISIBLE);
         mTrailerLabelTextView.setText("Trailers");
     }
 
@@ -383,10 +389,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     /*If the result from the ReviewAsyncTask is null, hide the views related to displaying reviews*/
     public void reviewAsyncResult(List<Review> data) {
         Log.i(LOG_TAG, "TEST.......................reviewAsyncResult() called");
-        mReviewList = (ArrayList<Review>) data;
         if (data.size() == 0) {
             hideReviewView();
         } else {
+            mReviewList = (ArrayList<Review>) data;
             showReviewView();
             mReviewAdapter.setData(data);
         }
@@ -395,10 +401,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public void hideReviewView() {
         mReviewLabelTextView.setVisibility(View.GONE);
         mReviewRecyclerView.setVisibility(View.GONE);
+        mReviewDividerView.setVisibility(View.GONE);
     }
 
     public void showReviewView() {
         mReviewLabelTextView.setVisibility(View.VISIBLE);
+        mReviewDividerView.setVisibility(View.VISIBLE);
         mReviewLabelTextView.setText("Reviews");
     }
 

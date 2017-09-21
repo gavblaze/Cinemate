@@ -96,6 +96,7 @@
                     android:id="@+id/detailOverview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center"
                     android:lineSpacingExtra="8sp"
@@ -166,8 +167,9 @@
                 android:textColor="#212121"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider3"
-                tools:text="Trailers"/>
+                app:layout_constraintTop_toBottomOf="@+id/trailerDivider"
+                tools:text="Trailers"
+                />
 
             <TextView
                 android:id="@+id/reviewLabelTextView"
@@ -180,8 +182,9 @@
                 android:textColor="#212121"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider4"
-                tools:text="Reviews"/>
+                app:layout_constraintTop_toBottomOf="@+id/reviewDivider"
+                tools:text="Reviews"
+                />
 
             <TextView
                 android:id="@+id/detailTagline"
@@ -300,23 +303,28 @@
                 tools:srcCompat="@drawable/animation"/>
 
             <View
-                android:id="@+id/divider3"
+                android:id="@+id/trailerDivider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:background="@color/dividerColor"
-                app:layout_constraintHorizontal_bias="0.0"
+                android:visibility="invisible"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView"/>
 
             <View
-                android:id="@+id/divider4"
+                android:id="@+id/reviewDivider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_marginTop="16dp"
                 android:background="@color/dividerColor"
-                app:layout_constraintHorizontal_bias="0.0"
+                android:visibility="invisible"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/trailerRecyclerView"/>
