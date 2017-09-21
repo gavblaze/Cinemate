@@ -105,7 +105,7 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="8dp"
-                    android:textColor="@color/textPrimaryColor"
+                    android:textColor="@color/textSecondaryColor"
                     tools:text="After getting a green card in exchange for assassinating a Cuban government official, Tony Montana (Al Pacino) stakes a claim on the drug trade in Miami."/>
             </android.support.v7.widget.CardView>
 
