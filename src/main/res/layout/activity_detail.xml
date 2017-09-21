@@ -146,13 +146,17 @@
                 android:id="@+id/detailRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="0dp"
                 android:fontFamily="sans-serif"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="0dp"
                 android:textColor="@color/textSecondaryColor"
+                app:layout_constraintBottom_toTopOf="@+id/durationImageView"
                 app:layout_constraintLeft_toLeftOf="@+id/detailYear"
                 app:layout_constraintTop_toBottomOf="@+id/detailYear"
+                app:layout_constraintVertical_bias="0.0"
                 tools:text="8.5/10"/>
 
             <TextView

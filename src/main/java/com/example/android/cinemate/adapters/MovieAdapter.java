@@ -16,6 +16,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.cinemate.MainActivity;
@@ -66,26 +67,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         int posterpathIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_POSTER_PATH);
         String imgpath = mCursor.getString(posterpathIndex);
-
-        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.LARGE_IMAGE_SIZE);
-
+        String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.XLARGE_IMAGE_SIZE);
         Context context = holder.mPosterImageView.getContext();
-
-        Picasso.with(context).load(urlImageString).fit().centerCrop().noFade().placeholder(R.drawable.cinema128grey).into(holder.mPosterImageView);
-
+        Picasso.with(context).load(urlImageString).fit().noFade().placeholder(R.drawable.cinema64grey).into(holder.mPosterImageView);
         ViewCompat.setTransitionName(holder.mPosterImageView, imgpath);
 
+        int titleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_TITLE);
+        String title = mCursor.getString(titleIndex);
+        holder.mMainTitleTextView.setText(title);
 
         int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_ID);
         int movieId = mCursor.getInt(idIndex);
-
         if (FavouriteUtils.isFavourite(mContext, movieId)) {
             holder.mLikeImageView.setImageResource(R.drawable.starfilled);
         } else {
             holder.mLikeImageView.setImageResource(R.drawable.starborder);
         }
 
-        holder.mShareImageView.setImageResource(android.R.drawable.ic_menu_share);
+        //holder.mShareImageView.setImageResource(R.drawable.share_grey);
 
 
         //setAnimation(holder, position);
@@ -138,7 +137,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         void onLikeClicked(int position);
 
-        void onShareClicked(int position);
+        //void onShareClicked(int position);
     }
 
 
@@ -146,7 +145,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         public final ImageView mPosterImageView;
         public final ImageView mLikeImageView;
-        public final ImageView mShareImageView;
+        //public final ImageView mShareImageView;
+        public final TextView mMainTitleTextView;
 
 
         public ViewHolder(View itemView) {
@@ -155,11 +155,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             //mContainer = (RelativeLayout) itemView.findViewById(R.id.layoutContainer);
             mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
             mLikeImageView = (ImageView) itemView.findViewById(R.id.likeImageView);
-            mShareImageView = (ImageView) itemView.findViewById(R.id.shareImageView);
+            //mShareImageView = (ImageView) itemView.findViewById(R.id.shareImageView);
+            mMainTitleTextView = (TextView) itemView.findViewById(R.id.mainTitleTextView);
 
             mPosterImageView.setOnClickListener(this);
             mLikeImageView.setOnClickListener(this);
-            mShareImageView.setOnClickListener(this);
+            //mShareImageView.setOnClickListener(this);
 
         }
 
@@ -172,9 +173,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 mListItemClickHandler.onItemClicked(position, mPosterImageView);
             } else if (id == R.id.likeImageView) {
                 mListItemClickHandler.onLikeClicked(position);
-            } else if (id == R.id.shareImageView) {
-                mListItemClickHandler.onShareClicked(position);
             }
+//            else if (id == R.id.shareImageView) {
+//                mListItemClickHandler.onShareClicked(position);
+//            }
         }
     }
 }

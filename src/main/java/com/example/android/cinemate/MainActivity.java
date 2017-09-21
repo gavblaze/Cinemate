@@ -283,10 +283,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
     }
 
-    @Override
-    public void onShareClicked(int position) {
-
-    }
+//    @Override
+//    public void onShareClicked(int position) {
+//
+//    }
 
 
     @Override
