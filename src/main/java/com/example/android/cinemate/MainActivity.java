@@ -1,15 +1,11 @@
 package com.example.android.cinemate;
 
 import android.app.ActivityOptions;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -125,11 +121,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
 
         mLoadingIndicator = findViewById(R.id.loadingIndicator);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewMain);
 
         mEmptyStateView = findViewById(R.id.emptyStateView);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewMain);
         mRecyclerView.setHasFixedSize(true);
 
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -278,8 +274,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         /*If movie clicked is NOT yet a favourite add it to favourites in database*/
         if (!FavouriteUtils.isFavourite(this, mMovie.getmId())) {
             FavouriteUtils.setToFavouriteInDb(this, mMovie.getmId());
+            Snackbar.make(findViewById(R.id.recyclerViewMain), mMovie.getmTitle() + " added to favourites", Snackbar.LENGTH_SHORT).show();
         } else {
             FavouriteUtils.setToDefaultInDb(this, mMovie.getmId());
+            Snackbar.make(findViewById(R.id.recyclerViewMain), "Removed from favourites", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -483,7 +481,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
                         loadMore(popularPageCount);
                         Log.i(LOG_TAG, "INFO.....................pop pageCount = " + popularPageCount);
-                        Toast.makeText(getApplicationContext(), "popular page count = " + popularPageCount, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "popular page count = " + popularPageCount, Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.recyclerViewMain), "Loading page " + popularPageCount, Snackbar.LENGTH_SHORT).show();
                         loading = true;
 
 
@@ -491,7 +490,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
                         loadMore(topRatedPageCount);
                         Log.i(LOG_TAG, "INFO.....................top pageCount = " + topRatedPageCount);
-                        Toast.makeText(getApplicationContext(), "top rated page count = " + topRatedPageCount, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "top rated page count = " + topRatedPageCount, Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.recyclerViewMain), "Loading page " + topRatedPageCount, Snackbar.LENGTH_SHORT).show();
                         loading = true;
                     }
                 }
