@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -260,10 +261,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Movie movie = mMovieAdapter.getItemClicked(position);
         intent.putExtra(Intent.ACTION_MAIN, movie);
-        intent.putExtra(Intent.EXTRA_TEXT, movie.getmTitle());
+        intent.putExtra(Intent.EXTRA_TEXT, ViewCompat.getTransitionName(sharedImageView));
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, sharedImageView, movie.getmTitle());
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, sharedImageView, ViewCompat.getTransitionName(sharedImageView));
             startActivity(intent, options.toBundle());
         }
     }

@@ -104,12 +104,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
+        supportPostponeEnterTransition();
 
         mDetailMovieImageView = (ImageView) findViewById(R.id.detailMovieImageView);
-
-        supportPostponeEnterTransition();
 
 
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.trailerRecyclerView);
@@ -183,15 +180,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         Picasso.with(mDetailBackdropImageView.getContext()).load(urlForBackdrop).fit().centerCrop().placeholder(R.drawable.cinema512grey).noFade().into(mDetailBackdropImageView);
 
 
+        mUrlPosterPath = mReceivedMovie.getmPosterPath();
+        String urlForImage = TmdbUrlUtils.getImageUrl(mUrlPosterPath, TmdbUrlUtils.LARGE_IMAGE_SIZE);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle extras = intentThatStartedActivity.getExtras();
             String transitionName = extras.getString(Intent.EXTRA_TEXT);
             mDetailMovieImageView.setTransitionName(transitionName);
         }
 
-        mUrlPosterPath = mReceivedMovie.getmPosterPath();
-        String urlForImage = TmdbUrlUtils.getImageUrl(mUrlPosterPath, TmdbUrlUtils.BASE_IMAGE_SIZE);
-        Picasso.with(mDetailMovieImageView.getContext()).load(urlForImage).placeholder(R.drawable.cinema256grey).into(mDetailMovieImageView, new Callback() {
+        Picasso.with(this).load(urlForImage).noFade().placeholder(R.drawable.cinema256grey).into(mDetailMovieImageView, new Callback() {
             @Override
             public void onSuccess() {
                 supportStartPostponedEnterTransition();
