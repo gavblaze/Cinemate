@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:gravity="center"
+        android:lineSpacingExtra="1sp"
         android:paddingBottom="18dp"
         android:textColor="@color/textSecondaryColor"
         tools:text="This movie is the Bomb!"/>

@@ -231,7 +231,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
         if (FavouriteUtils.isFavourite(this, mReceivedMovie.getmId())) {
-            mFab.setImageResource(R.drawable.starfilled);
+            mFab.setImageResource(R.drawable.starfilledwhite);
         }
 
 
@@ -239,11 +239,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             public void onClick(View view) {
                 if (!FavouriteUtils.isFavourite(getApplicationContext(), mReceivedMovie.getmId())) {
-                    mFab.setImageResource(R.drawable.starfilled);
+                    mFab.setImageResource(R.drawable.starfilledwhite);
                     FavouriteUtils.setToFavouriteInDb(getApplicationContext(), mReceivedMovie.getmId());
-                    Snackbar.make(findViewById(R.id.nestedscrollview), "Added to favourites", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.nestedscrollview), "Added to favourites!", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    mFab.setImageResource(R.drawable.starborder);
+                    mFab.setImageResource(R.drawable.starborderwhite);
                     FavouriteUtils.setToDefaultInDb(getApplicationContext(), mReceivedMovie.getmId());
                     Snackbar.make(findViewById(R.id.nestedscrollview), "Removed from favourites", Snackbar.LENGTH_SHORT).show();
                 }
@@ -333,9 +333,22 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public void shareMovie() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, mDetailMovieOverView.getText());
+        //intent.putExtra(Intent.EXTRA_TEXT, mDetailMovieOverView.getText());
         intent.setType("text/plain");
-        startActivity(intent);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Movie suggestion for you :)");
+//        String path = mTrailerList.get(0);
+//        if (!path.isEmpty()) {
+//            String trailerUrl = TmdbUrlUtils.getYouTubeUrl(path);
+//            intent.putExtra(Intent.EXTRA_TEXT, trailerUrl);
+//        }
+        if (mTrailerList != null) {
+            String path = mTrailerList.get(0);
+            String trailerUrl = TmdbUrlUtils.getYouTubeUrl(path);
+            intent.putExtra(Intent.EXTRA_TEXT, trailerUrl);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Unable to share. Check network connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             mGridLayoutMananger = new GridLayoutManager(this, 2);
 
         } else {
-            mGridLayoutMananger = new GridLayoutManager(this, 3);
+            mGridLayoutMananger = new GridLayoutManager(this, 4);
         }
 
         mRecyclerView.setLayoutManager(mGridLayoutMananger);
@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         /*If movie clicked is NOT yet a favourite add it to favourites in database*/
         if (!FavouriteUtils.isFavourite(this, mMovie.getmId())) {
             FavouriteUtils.setToFavouriteInDb(this, mMovie.getmId());
-            Snackbar.make(findViewById(R.id.recyclerViewMain), mMovie.getmTitle() + " added to favourites", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.recyclerViewMain), mMovie.getmTitle() + " added to favourites!", Snackbar.LENGTH_SHORT).show();
         } else {
             FavouriteUtils.setToDefaultInDb(this, mMovie.getmId());
             Snackbar.make(findViewById(R.id.recyclerViewMain), "Removed from favourites", Snackbar.LENGTH_SHORT).show();
