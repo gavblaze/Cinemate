@@ -69,7 +69,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         String imgpath = mCursor.getString(posterpathIndex);
         String urlImageString = TmdbUrlUtils.getImageUrl(imgpath, TmdbUrlUtils.LARGE_IMAGE_SIZE);
         Context context = holder.mPosterImageView.getContext();
-        Picasso.with(context).load(urlImageString).fit().placeholder(R.drawable.cinema64grey).into(holder.mPosterImageView);
+        Picasso.with(context).load(urlImageString).noFade().fit().placeholder(R.drawable.cinema64grey).into(holder.mPosterImageView);
         ViewCompat.setTransitionName(holder.mPosterImageView, urlImageString); // set a unique transition name - in this case we are using the full img url string
 
         int titleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_NAME_TITLE);

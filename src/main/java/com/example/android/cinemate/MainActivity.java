@@ -6,9 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.transition.Fade;
+import android.support.transition.Transition;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     private SharedPreferences sharedPref;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         Log.i(LOG_TAG, "TEST.......MainActivity onCreate() called");
@@ -98,17 +103,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mContext = getApplicationContext();
-
-
-//        ImageButton mLikeImageButton = (ImageButton) findViewById(R.id.likeImageView);
-//        mShareImageButton = (ImageButton) findViewById(R.id.shareImageView);
-
-//        if (savedInstanceState != null) {
-//            firstVisibleItem = savedInstanceState.getInt(FIRST_VISIBLE_KEY);
-//            previousTotal = savedInstanceState.getInt("previousTotal");
-//        }
 
         if (dbIsEmpty()) {
 
