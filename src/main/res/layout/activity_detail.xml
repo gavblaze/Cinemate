@@ -371,7 +371,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_margin="22dp"
-        android:src="@drawable/starborderwhite"
+        android:src="@android:drawable/star_big_off"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right"
         app:rippleColor="@android:color/white"

@@ -50,6 +50,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String TRAILER_KEY = "trailer_key";
     private static final String REVIEW_KEY = "review_key";
+    private static final String PARTICULARS_KEY = "particulars_key";
     public FetchTrailerTask mTrailerTask;
     public FetchReviewTask mReviewTask;
     public FetchMovieParticulars mParticularsTask;
@@ -84,6 +85,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private LinearLayoutManager mLinearLayoutManager;
     private ArrayList<String> mTrailerList;
     private ArrayList<Review> mReviewList;
+    private MovieParticulars mParticularsList;
     private TextView mTagLineTextView;
 
 
@@ -230,7 +232,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
         if (FavouriteUtils.isFavourite(this, mReceivedMovie.getmId())) {
-            mFab.setImageResource(R.drawable.starfilledwhite);
+            mFab.setImageResource(android.R.drawable.star_big_on);
         }
 
 
@@ -238,11 +240,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             @Override
             public void onClick(View view) {
                 if (!FavouriteUtils.isFavourite(getApplicationContext(), mReceivedMovie.getmId())) {
-                    mFab.setImageResource(R.drawable.starfilledwhite);
+                    mFab.setImageResource(android.R.drawable.star_big_on);
                     FavouriteUtils.setToFavouriteInDb(getApplicationContext(), mReceivedMovie.getmId());
                     Snackbar.make(findViewById(R.id.nestedscrollview), "Added to favourites!", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    mFab.setImageResource(R.drawable.starborderwhite);
+                    mFab.setImageResource(android.R.drawable.star_big_off);
                     FavouriteUtils.setToDefaultInDb(getApplicationContext(), mReceivedMovie.getmId());
                     Snackbar.make(findViewById(R.id.nestedscrollview), "Removed from favourites", Snackbar.LENGTH_SHORT).show();
                 }
