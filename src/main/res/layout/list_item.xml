@@ -12,6 +12,8 @@
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="320dp"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         card_view:cardBackgroundColor="#FAFAFA"
         card_view:cardCornerRadius="3dp"
         card_view:cardElevation="2dp"
@@ -32,6 +34,7 @@
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
                 android:background="#CFD8DC"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:scaleType="centerInside"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintHorizontal_bias="1.0"
@@ -43,15 +46,16 @@
 
             <ImageView
                 android:id="@+id/likeImageView"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/starborder"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintRight_toRightOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@+id/posterImageView"/>
+                card_view:layout_constraintTop_toBottomOf="@+id/posterImageView"
+                card_view:layout_constraintVertical_bias="0.5"/>
 
             <!--<ImageView-->
             <!--android:id="@+id/shareImageView"-->
@@ -72,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="24dp"
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif"
@@ -84,6 +88,7 @@
                 card_view:layout_constraintLeft_toLeftOf="parent"
                 card_view:layout_constraintRight_toLeftOf="@+id/likeImageView"
                 card_view:layout_constraintTop_toBottomOf="@+id/posterImageView"
+                card_view:layout_constraintVertical_bias="0.65"
                 tools:text="The Art of War"/>
 
         </android.support.constraint.ConstraintLayout>
